@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import '../theme.dart';
+import '../../../shared/theme.dart';
 
 class StorageDashboardScreen extends StatefulWidget {
   final Function(String, [Map<String, dynamic>]) onNavigate;

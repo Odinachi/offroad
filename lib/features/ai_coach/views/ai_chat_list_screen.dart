@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../theme.dart';
+import '../../../shared/theme.dart';
 
 class ChatsListScreen extends StatelessWidget {
   final Function(String, [Map<String, dynamic>]) onNavigate;

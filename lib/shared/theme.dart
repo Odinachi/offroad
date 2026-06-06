@@ -97,22 +97,40 @@ class JemenaiTheme {
   }
 
   // Get colors matching CSS variables
-  static Color background(bool isDark) => isDark ? const Color(0xFF09090B) : const Color(0xFFFAFAFA);
-  static Color foreground(bool isDark) => isDark ? const Color(0xFFFAFAFA) : const Color(0xFF09090B);
-  static Color card(bool isDark) => isDark ? const Color(0xFF111113) : const Color(0xFFFFFFFF);
-  static Color border(bool isDark) => isDark ? Colors.white.withOpacity(0.07) : const Color(0xFF09090B).withOpacity(0.08);
-  static Color primary(bool isDark) => isDark ? const Color(0xFF818CF8) : const Color(0xFF4F46E5);
-  static Color secondary(bool isDark) => isDark ? const Color(0xFF1C1C25) : const Color(0xFFF4F4F5);
-  static Color muted(bool isDark) => isDark ? const Color(0xFF18181B) : const Color(0xFFF4F4F5);
+  static Color background(bool isDark) =>
+      isDark ? const Color(0xFF09090B) : const Color(0xFFFAFAFA);
+  static Color foreground(bool isDark) =>
+      isDark ? const Color(0xFFFAFAFA) : const Color(0xFF09090B);
+  static Color card(bool isDark) =>
+      isDark ? const Color(0xFF111113) : const Color(0xFFFFFFFF);
+  static Color border(bool isDark) =>
+      isDark
+          ? Colors.white.withOpacity(0.07)
+          : const Color(0xFF09090B).withOpacity(0.08);
+  static Color primary(bool isDark) =>
+      isDark ? const Color(0xFF818CF8) : const Color(0xFF4F46E5);
+  static Color secondary(bool isDark) =>
+      isDark ? const Color(0xFF1C1C25) : const Color(0xFFF4F4F5);
+  static Color muted(bool isDark) =>
+      isDark ? const Color(0xFF18181B) : const Color(0xFFF4F4F5);
   static Color mutedForeground(bool isDark) => const Color(0xFF71717A);
-  static Color accent(bool isDark) => isDark ? const Color(0xFF1E1B4B) : const Color(0xFFEDE9FE);
-  static Color accentForeground(bool isDark) => isDark ? const Color(0xFFA5B4FC) : const Color(0xFF4F46E5);
-  static Color destructive(bool isDark) => isDark ? const Color(0xFFF87171) : const Color(0xFFEF4444);
-  static Color switchBackground(bool isDark) => isDark ? const Color(0xFF3F3F46) : const Color(0xFFD4D4D8);
-  static Color navBackground(bool isDark) => isDark ? const Color(0xFF09090B).withOpacity(0.88) : const Color(0xFFFAFAFA).withOpacity(0.88);
+  static Color accent(bool isDark) =>
+      isDark ? const Color(0xFF1E1B4B) : const Color(0xFFEDE9FE);
+  static Color accentForeground(bool isDark) =>
+      isDark ? const Color(0xFFA5B4FC) : const Color(0xFF4F46E5);
+  static Color destructive(bool isDark) =>
+      isDark ? const Color(0xFFF87171) : const Color(0xFFEF4444);
+  static Color switchBackground(bool isDark) =>
+      isDark ? const Color(0xFF3F3F46) : const Color(0xFFD4D4D8);
+  static Color navBackground(bool isDark) =>
+      isDark
+          ? const Color(0xFF09090B).withOpacity(0.88)
+          : const Color(0xFFFAFAFA).withOpacity(0.88);
 
-  static Color jmIndigo(bool isDark) => isDark ? const Color(0xFF818CF8) : const Color(0xFF4F46E5);
-  static Color jmViolet(bool isDark) => isDark ? const Color(0xFFA78BFA) : const Color(0xFF7C3AED);
+  static Color jmIndigo(bool isDark) =>
+      isDark ? const Color(0xFF818CF8) : const Color(0xFF4F46E5);
+  static Color jmViolet(bool isDark) =>
+      isDark ? const Color(0xFFA78BFA) : const Color(0xFF7C3AED);
 
   // Text themes
   static TextStyle fontDisplay({

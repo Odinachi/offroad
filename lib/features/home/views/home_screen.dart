@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import '../theme.dart';
+import '../../../shared/theme.dart';
 
 class HomeScreen extends StatefulWidget {
   final Function(String, [Map<String, dynamic>]) onNavigate;

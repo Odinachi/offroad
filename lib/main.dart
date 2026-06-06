@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'theme.dart';
-import 'widgets/phone_frame.dart';
-import 'widgets/desktop_sidebar.dart';
-import 'screens/onboarding_screen.dart';
-import 'screens/home_screen.dart';
-import 'screens/models_store_screen.dart';
-import 'screens/chat_screen.dart';
-import 'screens/voice_chat_screen.dart';
-import 'screens/storage_dashboard_screen.dart';
-import 'screens/settings_screen.dart';
-import 'screens/quick_action_screen.dart';
-import 'screens/chats_list_screen.dart';
+import 'shared/theme.dart';
+import 'shared/phone_frame.dart';
+import 'shared/desktop_sidebar.dart';
+import 'features/auth/views/onboarding_screen.dart';
+import 'features/home/views/home_screen.dart';
+import 'features/ai_coach/views/models_store_screen.dart';
+import 'features/ai_coach/views/chat_screen.dart';
+import 'features/ai_coach/views/voice_chat_screen.dart';
+import 'features/dashboard/views/storage_dashboard_screen.dart';
+import 'features/settings/views/settings_screen.dart';
+import 'features/ai_coach/views/quick_action_screen.dart';
+import 'features/ai_coach/views/ai_chat_list_screen.dart';
 
 void main() {
   runApp(const JemenaiApp());
