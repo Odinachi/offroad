@@ -4,13 +4,13 @@ import 'shared/phone_frame.dart';
 import 'shared/desktop_sidebar.dart';
 import 'features/auth/views/onboarding_screen.dart';
 import 'features/home/views/home_screen.dart';
-import 'features/ai_coach/views/models_store_screen.dart';
-import 'features/ai_coach/views/chat_screen.dart';
-import 'features/ai_coach/views/voice_chat_screen.dart';
+import 'features/ai/views/models_store_screen.dart';
+import 'features/ai/views/chat_screen.dart';
+import 'features/ai/views/voice_chat_screen.dart';
 import 'features/dashboard/views/storage_dashboard_screen.dart';
 import 'features/settings/views/settings_screen.dart';
-import 'features/ai_coach/views/quick_action_screen.dart';
-import 'features/ai_coach/views/ai_chat_list_screen.dart';
+import 'features/ai/views/quick_action_screen.dart';
+import 'features/ai/views/ai_chat_list_screen.dart';
 
 void main() {
   runApp(const JemenaiApp());
