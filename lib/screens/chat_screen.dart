@@ -348,7 +348,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       child: Container(
         decoration: BoxDecoration(
           color: cardBg,
-          borderRadius: BorderRadius.circular(50),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(color: border),
           boxShadow: JemenaiTheme.shadowFloat(widget.isDark),
         ),

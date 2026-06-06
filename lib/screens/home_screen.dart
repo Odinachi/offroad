@@ -631,7 +631,7 @@ class _HomeScreenState extends State<HomeScreen>
                   width: 100,
                   decoration: BoxDecoration(
                     color: JemenaiTheme.secondary(widget.isDark),
-                    borderRadius: BorderRadius.circular(50),
+                    borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: border,
                       style:
