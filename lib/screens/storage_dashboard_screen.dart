@@ -24,9 +24,14 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
   final Set<String> _deleted = {};
 
   final List<Map<String, dynamic>> _modelsStorage = [
-    { 'name': "Llama 3.2 3B", 'gb': 2.0, 'color': const Color(0xFF818CF8) },
-    { 'name': "Phi-3 Mini", 'gb': 1.8, 'color': const Color(0xFFA78BFA) },
-    { 'name': "Mistral 7B*", 'gb': 2.8, 'color': const Color(0xFF38BDF8), 'partial': true },
+    {'name': "Llama 3.2 3B", 'gb': 2.0, 'color': const Color(0xFF818CF8)},
+    {'name': "Phi-3 Mini", 'gb': 1.8, 'color': const Color(0xFFA78BFA)},
+    {
+      'name': "Mistral 7B*",
+      'gb': 2.8,
+      'color': const Color(0xFF38BDF8),
+      'partial': true,
+    },
   ];
 
   @override
@@ -37,10 +42,14 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
     final border = JemenaiTheme.border(widget.isDark);
 
     // Filter active items
-    final activeModels = _modelsStorage.where((m) => !_deleted.contains(m['name'])).toList();
+    final activeModels =
+        _modelsStorage.where((m) => !_deleted.contains(m['name'])).toList();
 
     // Recompute sizes
-    final double aiGB = activeModels.fold(0.0, (acc, m) => acc + (m['gb'] as double));
+    final double aiGB = activeModels.fold(
+      0.0,
+      (acc, m) => acc + (m['gb'] as double),
+    );
     final double usedGB = aiGB + _otherGB;
     final double freeGB = _totalGB - usedGB;
     final double usedPct = (usedGB / _totalGB) * 100;
@@ -106,12 +115,15 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
 
             // Donut Ring Card
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 4.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20.0,
+                vertical: 4.0,
+              ),
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: cardBg,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(50),
                   border: Border.all(color: border),
                   boxShadow: JemenaiTheme.shadowCard(widget.isDark),
                 ),
@@ -163,7 +175,8 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                         children: [
                           _buildDonutStatRow(
                             label: 'Used',
-                            valueText: '${usedGB.toStringAsFixed(1)} / ${_totalGB.toInt()} GB',
+                            valueText:
+                                '${usedGB.toStringAsFixed(1)} / ${_totalGB.toInt()} GB',
                             pct: usedPct,
                             color: JemenaiTheme.primary(widget.isDark),
                             isPrimary: true,
@@ -192,7 +205,14 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
             const SizedBox(height: 20),
 
             // Breakdown
-            _buildBreakdownSection(activeModels, aiGB, border, cardBg, foreColor, mutedFore),
+            _buildBreakdownSection(
+              activeModels,
+              aiGB,
+              border,
+              cardBg,
+              foreColor,
+              mutedFore,
+            ),
 
             // Tips Section
             _buildTipsSection(foreColor, mutedFore),
@@ -220,7 +240,10 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
               style: JemenaiTheme.fontBody(
                 fontSize: 11,
                 fontWeight: isPrimary ? FontWeight.bold : FontWeight.normal,
-                color: isPrimary ? JemenaiTheme.foreground(widget.isDark) : JemenaiTheme.mutedForeground(widget.isDark),
+                color:
+                    isPrimary
+                        ? JemenaiTheme.foreground(widget.isDark)
+                        : JemenaiTheme.mutedForeground(widget.isDark),
               ),
             ),
             Text(
@@ -293,20 +316,31 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                   child: Container(
                     height: 12,
                     color: JemenaiTheme.secondary(widget.isDark),
-                    child: activeModels.isEmpty
-                        ? const SizedBox.shrink()
-                        : Row(
-                            children: activeModels.map((m) {
-                              final ratio = totalModelsGB > 0 ? (m['gb'] as double) / totalModelsGB : 0;
-                              return Expanded(
-                                flex: (ratio * 1000).toInt().clamp(1, 1000),
-                                child: Container(
-                                  margin: const EdgeInsets.only(right: 1.5),
-                                  color: m['color'] as Color,
-                                ),
-                              );
-                            }).toList(),
-                          ),
+                    child:
+                        activeModels.isEmpty
+                            ? const SizedBox.shrink()
+                            : Row(
+                              children:
+                                  activeModels.map((m) {
+                                    final ratio =
+                                        totalModelsGB > 0
+                                            ? (m['gb'] as double) /
+                                                totalModelsGB
+                                            : 0;
+                                    return Expanded(
+                                      flex: (ratio * 1000).toInt().clamp(
+                                        1,
+                                        1000,
+                                      ),
+                                      child: Container(
+                                        margin: const EdgeInsets.only(
+                                          right: 1.5,
+                                        ),
+                                        color: m['color'] as Color,
+                                      ),
+                                    );
+                                  }).toList(),
+                            ),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -315,31 +349,42 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                 Wrap(
                   spacing: 12,
                   runSpacing: 6,
-                  children: _modelsStorage.map((m) {
-                    final isAct = !_deleted.contains(m['name']);
-                    return Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            color: isAct ? (m['color'] as Color) : mutedFore.withOpacity(0.4),
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          (m['name'] as String).split(' ').take(2).join(' '),
-                          style: JemenaiTheme.fontBody(
-                            fontSize: 11,
-                            color: isAct ? foreColor : mutedFore.withOpacity(0.6),
-                            fontWeight: isAct ? FontWeight.bold : FontWeight.normal,
-                          ),
-                        ),
-                      ],
-                    );
-                  }).toList(),
+                  children:
+                      _modelsStorage.map((m) {
+                        final isAct = !_deleted.contains(m['name']);
+                        return Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                color:
+                                    isAct
+                                        ? (m['color'] as Color)
+                                        : mutedFore.withOpacity(0.4),
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              (m['name'] as String)
+                                  .split(' ')
+                                  .take(2)
+                                  .join(' '),
+                              style: JemenaiTheme.fontBody(
+                                fontSize: 11,
+                                color:
+                                    isAct
+                                        ? foreColor
+                                        : mutedFore.withOpacity(0.6),
+                                fontWeight:
+                                    isAct ? FontWeight.bold : FontWeight.normal,
+                              ),
+                            ),
+                          ],
+                        );
+                      }).toList(),
                 ),
               ],
             ),
@@ -351,83 +396,88 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Column(
-            children: _modelsStorage.map((m) {
-              final isDel = _deleted.contains(m['name']);
-              if (isDel) return const SizedBox.shrink();
+            children:
+                _modelsStorage.map((m) {
+                  final isDel = _deleted.contains(m['name']);
+                  if (isDel) return const SizedBox.shrink();
 
-              final isPartial = m['partial'] as bool? ?? false;
-              final color = m['color'] as Color;
+                  final isPartial = m['partial'] as bool? ?? false;
+                  final color = m['color'] as Color;
 
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: cardBg,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: border),
-                    boxShadow: JemenaiTheme.shadowCard(widget.isDark),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          color: color.withOpacity(0.12),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Icon(
-                          LucideIcons.zap,
-                          color: color,
-                          size: 16,
-                        ),
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: cardBg,
+                        borderRadius: BorderRadius.circular(50),
+                        border: Border.all(color: border),
+                        boxShadow: JemenaiTheme.shadowCard(widget.isDark),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              m['name'] as String,
-                              style: JemenaiTheme.fontBody(
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                                color: foreColor,
-                              ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 36,
+                            height: 36,
+                            decoration: BoxDecoration(
+                              color: color.withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            Text(
-                              '${(m['gb'] as double).toStringAsFixed(1)} GB${isPartial ? " (downloading)" : ""}',
-                              style: JemenaiTheme.fontBody(
-                                fontSize: 11,
-                                color: mutedFore,
-                              ),
+                            child: Icon(
+                              LucideIcons.zap,
+                              color: color,
+                              size: 16,
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  m['name'] as String,
+                                  style: JemenaiTheme.fontBody(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                    color: foreColor,
+                                  ),
+                                ),
+                                Text(
+                                  '${(m['gb'] as double).toStringAsFixed(1)} GB${isPartial ? " (downloading)" : ""}',
+                                  style: JemenaiTheme.fontBody(
+                                    fontSize: 11,
+                                    color: mutedFore,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _deleted.add(m['name'] as String);
+                              });
+                            },
+                            icon: Icon(
+                              LucideIcons.trash2,
+                              size: 16,
+                              color: JemenaiTheme.destructive(widget.isDark),
+                            ),
+                            style: IconButton.styleFrom(
+                              backgroundColor: JemenaiTheme.destructive(
+                                widget.isDark,
+                              ).withOpacity(0.08),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              padding: const EdgeInsets.all(8),
+                            ),
+                          ),
+                        ],
                       ),
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            _deleted.add(m['name'] as String);
-                          });
-                        },
-                        icon: Icon(
-                          LucideIcons.trash2,
-                          size: 16,
-                          color: JemenaiTheme.destructive(widget.isDark),
-                        ),
-                        style: IconButton.styleFrom(
-                          backgroundColor: JemenaiTheme.destructive(widget.isDark).withOpacity(0.08),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          padding: const EdgeInsets.all(8),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }).toList(),
+                    ),
+                  );
+                }).toList(),
           ),
         ),
       ],
@@ -591,10 +641,11 @@ class DonutChartPainter extends CustomPainter {
     const strokeWidth = 10.0;
 
     // Background track circle
-    final bgPaint = Paint()
-      ..color = isDark ? const Color(0xFF18181B) : const Color(0xFFF4F4F5)
-      ..strokeWidth = strokeWidth
-      ..style = PaintingStyle.stroke;
+    final bgPaint =
+        Paint()
+          ..color = isDark ? const Color(0xFF18181B) : const Color(0xFFF4F4F5)
+          ..strokeWidth = strokeWidth
+          ..style = PaintingStyle.stroke;
 
     canvas.drawCircle(center, radius, bgPaint);
 
@@ -606,20 +657,15 @@ class DonutChartPainter extends CustomPainter {
       endAngle: 1.5 * math.pi,
     );
 
-    final activePaint = Paint()
-      ..shader = gradient.createShader(rect)
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke;
+    final activePaint =
+        Paint()
+          ..shader = gradient.createShader(rect)
+          ..strokeWidth = strokeWidth
+          ..strokeCap = StrokeCap.round
+          ..style = PaintingStyle.stroke;
 
     // Draw active sector (-90 deg offset)
-    canvas.drawArc(
-      rect,
-      -math.pi / 2,
-      2 * math.pi * pct,
-      false,
-      activePaint,
-    );
+    canvas.drawArc(rect, -math.pi / 2, 2 * math.pi * pct, false, activePaint);
   }
 
   @override

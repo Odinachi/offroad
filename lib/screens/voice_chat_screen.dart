@@ -18,7 +18,8 @@ class VoiceChatScreen extends StatefulWidget {
   State<VoiceChatScreen> createState() => _VoiceChatScreenState();
 }
 
-class _VoiceChatScreenState extends State<VoiceChatScreen> with TickerProviderStateMixin {
+class _VoiceChatScreenState extends State<VoiceChatScreen>
+    with TickerProviderStateMixin {
   String _state = "idle"; // 'idle' | 'listening' | 'thinking' | 'speaking'
   String _transcript = "";
   String _reply = "";
@@ -162,9 +163,6 @@ class _VoiceChatScreenState extends State<VoiceChatScreen> with TickerProviderSt
                   // Header
                   _buildHeader(),
 
-                  // Mode Toggle
-                  _buildModeToggle(),
-
                   // Center Orb & Waveform
                   Expanded(
                     child: Column(
@@ -196,11 +194,13 @@ class _VoiceChatScreenState extends State<VoiceChatScreen> with TickerProviderSt
                           height: 40,
                           width: 200,
                           child: AudioWaveformWidget(
-                            active: _state == "listening" || _state == "speaking",
+                            active:
+                                _state == "listening" || _state == "speaking",
                             waveController: _waveController,
-                            color: _state == "listening"
-                                ? const Color(0xFF818CF8)
-                                : const Color(0xFFA78BFA),
+                            color:
+                                _state == "listening"
+                                    ? const Color(0xFF818CF8)
+                                    : const Color(0xFFA78BFA),
                           ),
                         ),
                         const SizedBox(height: 24),
@@ -216,16 +216,21 @@ class _VoiceChatScreenState extends State<VoiceChatScreen> with TickerProviderSt
 
                   // Footer End button
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 16,
+                    ),
                     child: InkWell(
                       onTap: () => widget.onNavigate('home', {}),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(50),
                       child: Container(
                         height: 56,
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.08),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.white.withOpacity(0.12)),
+                          borderRadius: BorderRadius.circular(50),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.12),
+                          ),
                         ),
                         alignment: Alignment.center,
                         child: Text(
@@ -290,7 +295,9 @@ class _VoiceChatScreenState extends State<VoiceChatScreen> with TickerProviderSt
             icon: const Icon(LucideIcons.chevronLeft, color: Colors.white),
             style: IconButton.styleFrom(
               backgroundColor: Colors.white.withOpacity(0.08),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               padding: const EdgeInsets.all(10),
             ),
           ),
@@ -324,32 +331,13 @@ class _VoiceChatScreenState extends State<VoiceChatScreen> with TickerProviderSt
             ),
             style: IconButton.styleFrom(
               backgroundColor: Colors.white.withOpacity(0.08),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
               padding: const EdgeInsets.all(10),
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildModeToggle() {
-    return Center(
-      child: Container(
-        height: 38,
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.08),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withOpacity(0.1)),
-        ),
-        padding: const EdgeInsets.all(3),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildModeTab('continuous', 'Continuous'),
-            _buildModeTab('push', 'Push to Talk'),
-          ],
-        ),
       ),
     );
   }
@@ -371,7 +359,10 @@ class _VoiceChatScreenState extends State<VoiceChatScreen> with TickerProviderSt
           style: JemenaiTheme.fontBody(
             fontSize: 11,
             fontWeight: FontWeight.bold,
-            color: active ? const Color(0xFF0F172A) : Colors.white.withOpacity(0.5),
+            color:
+                active
+                    ? const Color(0xFF0F172A)
+                    : Colors.white.withOpacity(0.5),
           ),
         ),
       ),
@@ -385,56 +376,67 @@ class _VoiceChatScreenState extends State<VoiceChatScreen> with TickerProviderSt
       alignment: Alignment.center,
       child: AnimatedSwitcher(
         duration: const Duration(milliseconds: 300),
-        child: _transcript.isNotEmpty && _reply.isEmpty
-            ? Container(
-                key: const ValueKey('transcript'),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.white.withOpacity(0.1)),
-                ),
-                child: Text(
-                  _transcript,
-                  textAlign: TextAlign.center,
-                  style: JemenaiTheme.fontBody(
-                    fontSize: 13,
-                    color: Colors.white.withOpacity(0.9),
-                  ),
-                ),
-              )
-            : _reply.isNotEmpty
+        child:
+            _transcript.isNotEmpty && _reply.isEmpty
                 ? Container(
-                    key: const ValueKey('reply'),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF312E81).withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: const Color(0xFF818CF8).withOpacity(0.25)),
+                  key: const ValueKey('transcript'),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.08),
+                    borderRadius: BorderRadius.circular(50),
+                    border: Border.all(color: Colors.white.withOpacity(0.1)),
+                  ),
+                  child: Text(
+                    _transcript,
+                    textAlign: TextAlign.center,
+                    style: JemenaiTheme.fontBody(
+                      fontSize: 13,
+                      color: Colors.white.withOpacity(0.9),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'JEMENAI AI',
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFFA5B4FC),
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          _reply.length > 130 ? '${_reply.substring(0, 130)}...' : _reply,
-                          style: JemenaiTheme.fontBody(
-                            fontSize: 12,
-                            color: Colors.white.withOpacity(0.88),
-                            lineHeight: 1.4,
-                          ),
-                        ),
-                      ],
+                  ),
+                )
+                : _reply.isNotEmpty
+                ? Container(
+                  key: const ValueKey('reply'),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF312E81).withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(50),
+                    border: Border.all(
+                      color: const Color(0xFF818CF8).withOpacity(0.25),
                     ),
-                  )
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'JEMENAI AI',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFA5B4FC),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        _reply.length > 130
+                            ? '${_reply.substring(0, 130)}...'
+                            : _reply,
+                        style: JemenaiTheme.fontBody(
+                          fontSize: 12,
+                          color: Colors.white.withOpacity(0.88),
+                          lineHeight: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
                 : const SizedBox.shrink(key: ValueKey('empty')),
       ),
     );
@@ -464,26 +466,37 @@ class _VoiceChatScreenState extends State<VoiceChatScreen> with TickerProviderSt
                 final item = _history[index];
                 final isUser = item['who'] == 'user';
                 return Align(
-                  alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+                  alignment:
+                      isUser ? Alignment.centerRight : Alignment.centerLeft,
                   child: Container(
                     margin: const EdgeInsets.symmetric(vertical: 2.0),
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
-                      color: isUser
-                          ? Colors.white.withOpacity(0.06)
-                          : const Color(0xFF312E81).withOpacity(0.18),
+                      color:
+                          isUser
+                              ? Colors.white.withOpacity(0.06)
+                              : const Color(0xFF312E81).withOpacity(0.18),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: widget.isDark
-                            ? Colors.white.withOpacity(0.04)
-                            : Colors.white.withOpacity(0.08),
+                        color:
+                            widget.isDark
+                                ? Colors.white.withOpacity(0.04)
+                                : Colors.white.withOpacity(0.08),
                       ),
                     ),
                     child: Text(
-                      item['text']!.length > 60 ? '${item['text']!.substring(0, 60)}…' : item['text']!,
+                      item['text']!.length > 60
+                          ? '${item['text']!.substring(0, 60)}…'
+                          : item['text']!,
                       style: JemenaiTheme.fontBody(
                         fontSize: 11,
-                        color: isUser ? Colors.white.withOpacity(0.7) : const Color(0xFFA5B4FC),
+                        color:
+                            isUser
+                                ? Colors.white.withOpacity(0.7)
+                                : const Color(0xFFA5B4FC),
                       ),
                     ),
                   ),
@@ -579,18 +592,26 @@ class AIOrbWidget extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: const LinearGradient(
-                  colors: [Color(0xFF4F46E5), Color(0xFF7C3AED), Color(0xFFA855F7)],
+                  colors: [
+                    Color(0xFF4F46E5),
+                    Color(0xFF7C3AED),
+                    Color(0xFFA855F7),
+                  ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF4F46E5).withOpacity(active ? 0.6 : 0.3),
+                    color: const Color(
+                      0xFF4F46E5,
+                    ).withOpacity(active ? 0.6 : 0.3),
                     blurRadius: active ? 40 : 25,
                     spreadRadius: active ? 6 : 2,
                   ),
                   BoxShadow(
-                    color: const Color(0xFF7C3AED).withOpacity(active ? 0.4 : 0.15),
+                    color: const Color(
+                      0xFF7C3AED,
+                    ).withOpacity(active ? 0.4 : 0.15),
                     blurRadius: active ? 60 : 40,
                     spreadRadius: active ? 10 : 4,
                   ),
@@ -626,11 +647,7 @@ class AIOrbWidget extends StatelessWidget {
       iconData = LucideIcons.mic;
     }
 
-    return Icon(
-      iconData,
-      color: Colors.white,
-      size: 36,
-    );
+    return Icon(iconData, color: Colors.white, size: 36);
   }
 }
 
@@ -714,7 +731,8 @@ class AudioWaveformWidget extends StatelessWidget {
 
                 if (active) {
                   // Simulate wave animation depending on time and column index
-                  final phase = waveController.value * 2 * math.pi + (index * 0.7);
+                  final phase =
+                      waveController.value * 2 * math.pi + (index * 0.7);
                   barHeight = 12 + 18 * math.sin(phase).abs();
                   opacity = 0.5 + 0.5 * math.sin(phase).abs();
                 }

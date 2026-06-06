@@ -32,7 +32,7 @@ class DesktopSidebar extends StatelessWidget {
                 height: 56,
                 decoration: BoxDecoration(
                   gradient: JemenaiTheme.gradBrand,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(50),
                   boxShadow: [
                     BoxShadow(
                       color: const Color(0xFF4F46E5).withOpacity(0.4),
@@ -99,9 +99,15 @@ class DesktopSidebar extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1),
+                  color:
+                      isDark
+                          ? const Color(0xFF334155)
+                          : const Color(0xFFCBD5E1),
                 ),
-                color: isDark ? const Color(0xFF1E293B).withOpacity(0.2) : Colors.white.withOpacity(0.2),
+                color:
+                    isDark
+                        ? const Color(0xFF1E293B).withOpacity(0.2)
+                        : Colors.white.withOpacity(0.2),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -109,7 +115,10 @@ class DesktopSidebar extends StatelessWidget {
                   Icon(
                     isDark ? LucideIcons.sun : LucideIcons.moon,
                     size: 16,
-                    color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF475569),
+                    color:
+                        isDark
+                            ? const Color(0xFFCBD5E1)
+                            : const Color(0xFF475569),
                   ),
                   const SizedBox(width: 8),
                   Text(
@@ -117,7 +126,10 @@ class DesktopSidebar extends StatelessWidget {
                     style: JemenaiTheme.fontBody(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF475569),
+                      color:
+                          isDark
+                              ? const Color(0xFFCBD5E1)
+                              : const Color(0xFF475569),
                     ),
                   ),
                 ],
@@ -134,18 +146,12 @@ class DesktopSidebar extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         children: [
-          Text(
-            icon,
-            style: const TextStyle(fontSize: 16),
-          ),
+          Text(icon, style: const TextStyle(fontSize: 16)),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               text,
-              style: JemenaiTheme.fontBody(
-                fontSize: 13,
-                color: textColor,
-              ),
+              style: JemenaiTheme.fontBody(fontSize: 13, color: textColor),
             ),
           ),
         ],

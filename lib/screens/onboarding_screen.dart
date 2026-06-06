@@ -149,7 +149,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           ),
                           decoration: BoxDecoration(
                             color: colors[0].withOpacity(0.12),
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(50),
                           ),
                           child: Text(
                             slide['label'] as String,
@@ -241,7 +241,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     // Navigation Action button
                     InkWell(
                       onTap: _next,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(50),
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 250),
                         height: 56,
@@ -251,7 +251,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(50),
                           boxShadow: [
                             BoxShadow(
                               color: colors[0].withOpacity(0.3),

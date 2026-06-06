@@ -5,19 +5,60 @@ class ChatsListScreen extends StatelessWidget {
   final Function(String, [Map<String, dynamic>]) onNavigate;
   final bool isDark;
 
-  ChatsListScreen({
-    super.key,
-    required this.onNavigate,
-    required this.isDark,
-  });
+  ChatsListScreen({super.key, required this.onNavigate, required this.isDark});
 
   final List<Map<String, dynamic>> _chats = [
-    { 'id': 1, 't': "Explain React hooks in depth", 'model': "Llama 3.2", 'when': "2m ago", 'pinned': true, 'preview': "Let me break down React hooks with clear, practical examples..." },
-    { 'id': 2, 't': "Business proposal for AI startup", 'model': "Phi-3 Mini", 'when': "1h ago", 'pinned': false, 'preview': "Here's a comprehensive proposal framework tailored to your..." },
-    { 'id': 3, 't': "Python data analysis script", 'model': "Llama 3.2", 'when': "3h ago", 'pinned': false, 'preview': "I'll create a clean pandas + matplotlib pipeline for you..." },
-    { 'id': 4, 't': "Translate paragraphs to French", 'model': "Mistral 7B", 'when': "Yesterday", 'pinned': false, 'preview': "Voici les traductions demandées avec contexte naturel..." },
-    { 'id': 5, 't': "Debug TypeScript generic error", 'model': "Phi-3 Mini", 'when': "2d ago", 'pinned': false, 'preview': "The issue is a type mismatch in your generic constraint at line..." },
-    { 'id': 6, 't': "Poem about the ocean at midnight", 'model': "Gemma 2B", 'when': "3d ago", 'pinned': false, 'preview': "Waves of data, infinite and deep, silver moonlight softly..." },
+    {
+      'id': 1,
+      't': "Explain React hooks in depth",
+      'model': "Llama 3.2",
+      'when': "2m ago",
+      'pinned': true,
+      'preview':
+          "Let me break down React hooks with clear, practical examples...",
+    },
+    {
+      'id': 2,
+      't': "Business proposal for AI startup",
+      'model': "Phi-3 Mini",
+      'when': "1h ago",
+      'pinned': false,
+      'preview':
+          "Here's a comprehensive proposal framework tailored to your...",
+    },
+    {
+      'id': 3,
+      't': "Python data analysis script",
+      'model': "Llama 3.2",
+      'when': "3h ago",
+      'pinned': false,
+      'preview': "I'll create a clean pandas + matplotlib pipeline for you...",
+    },
+    {
+      'id': 4,
+      't': "Translate paragraphs to French",
+      'model': "Mistral 7B",
+      'when': "Yesterday",
+      'pinned': false,
+      'preview': "Voici les traductions demandées avec contexte naturel...",
+    },
+    {
+      'id': 5,
+      't': "Debug TypeScript generic error",
+      'model': "Phi-3 Mini",
+      'when': "2d ago",
+      'pinned': false,
+      'preview':
+          "The issue is a type mismatch in your generic constraint at line...",
+    },
+    {
+      'id': 6,
+      't': "Poem about the ocean at midnight",
+      'model': "Gemma 2B",
+      'when': "3d ago",
+      'pinned': false,
+      'preview': "Waves of data, infinite and deep, silver moonlight softly...",
+    },
   ];
 
   @override
@@ -49,10 +90,7 @@ class ChatsListScreen extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   '${_chats.length} conversations',
-                  style: JemenaiTheme.fontBody(
-                    fontSize: 12,
-                    color: mutedFore,
-                  ),
+                  style: JemenaiTheme.fontBody(fontSize: 12, color: mutedFore),
                 ),
               ],
             ),
@@ -71,12 +109,15 @@ class ChatsListScreen extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 10.0),
                   child: InkWell(
                     onTap: () => onNavigate('chat', {}),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(50),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
                       decoration: BoxDecoration(
                         color: cardBg,
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(50),
                         border: Border.all(color: border),
                         boxShadow: JemenaiTheme.shadowCard(isDark),
                       ),
@@ -130,7 +171,9 @@ class ChatsListScreen extends StatelessWidget {
                             style: JemenaiTheme.fontBody(
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
-                              color: JemenaiTheme.primary(isDark).withOpacity(0.75),
+                              color: JemenaiTheme.primary(
+                                isDark,
+                              ).withOpacity(0.75),
                             ),
                           ),
                         ],

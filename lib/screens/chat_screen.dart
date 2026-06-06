@@ -69,12 +69,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     _model = widget.modelName ?? "Llama 3.2 3B";
 
     // Add initial greeting message
-    _messages.add(Message(
-      id: "init",
-      role: "assistant",
-      content: _predefinedResponses[0],
-      ts: DateTime.now(),
-    ));
+    _messages.add(
+      Message(
+        id: "init",
+        role: "assistant",
+        content: _predefinedResponses[0],
+        ts: DateTime.now(),
+      ),
+    );
 
     // Handle initial prompt redirect
     if (widget.initialPrompt != null && widget.initialPrompt!.isNotEmpty) {
@@ -116,12 +118,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       if (pos >= text.length) {
         timer.cancel();
         setState(() {
-          _messages.add(Message(
-            id: id,
-            role: "assistant",
-            content: text,
-            ts: DateTime.now(),
-          ));
+          _messages.add(
+            Message(
+              id: id,
+              role: "assistant",
+              content: text,
+              ts: DateTime.now(),
+            ),
+          );
           _streamText = "";
           _streaming = false;
         });
@@ -141,18 +145,22 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
     _inputController.clear();
     setState(() {
-      _messages.add(Message(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        role: "user",
-        content: text,
-        ts: DateTime.now(),
-      ));
+      _messages.add(
+        Message(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          role: "user",
+          content: text,
+          ts: DateTime.now(),
+        ),
+      );
       _typing = true;
     });
     _scrollToBottom();
 
     // Simulate thinking delay
-    final thinkingDelay = Duration(milliseconds: 900 + math.Random().nextInt(600));
+    final thinkingDelay = Duration(
+      milliseconds: 900 + math.Random().nextInt(600),
+    );
     Future.delayed(thinkingDelay, () {
       if (!mounted) return;
       setState(() {
@@ -165,13 +173,18 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           lowercaseQuery.contains("function") ||
           lowercaseQuery.contains("debug")) {
         responseText = _predefinedResponses[1];
-      } else if (lowercaseQuery.contains("quantum") || lowercaseQuery.contains("explain")) {
+      } else if (lowercaseQuery.contains("quantum") ||
+          lowercaseQuery.contains("explain")) {
         responseText = _predefinedResponses[2];
-      } else if (lowercaseQuery.contains("email") || lowercaseQuery.contains("write")) {
+      } else if (lowercaseQuery.contains("email") ||
+          lowercaseQuery.contains("write")) {
         responseText = _predefinedResponses[3];
       }
 
-      _streamResponse(responseText, (DateTime.now().millisecondsSinceEpoch + 1).toString());
+      _streamResponse(
+        responseText,
+        (DateTime.now().millisecondsSinceEpoch + 1).toString(),
+      );
     });
   }
 
@@ -205,7 +218,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   child: InkWell(
                     onTap: () => setState(() => _showModels = !_showModels),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8.0,
+                        horizontal: 4.0,
+                      ),
                       child: Row(
                         children: [
                           Container(
@@ -215,7 +231,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                               gradient: JemenaiTheme.gradBrand,
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            child: const Icon(LucideIcons.sparkles, color: Colors.white, size: 16),
+                            child: const Icon(
+                              LucideIcons.sparkles,
+                              color: Colors.white,
+                              size: 16,
+                            ),
                           ),
                           const SizedBox(width: 10),
                           Expanded(
@@ -235,14 +255,18 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                   'On-device · Private',
                                   style: JemenaiTheme.fontBody(
                                     fontSize: 10,
-                                    color: JemenaiTheme.mutedForeground(widget.isDark),
+                                    color: JemenaiTheme.mutedForeground(
+                                      widget.isDark,
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
                           ),
                           Icon(
-                            _showModels ? LucideIcons.chevronUp : LucideIcons.chevronDown,
+                            _showModels
+                                ? LucideIcons.chevronUp
+                                : LucideIcons.chevronDown,
                             size: 16,
                             color: JemenaiTheme.mutedForeground(widget.isDark),
                           ),
@@ -260,7 +284,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 ),
                 IconButton(
                   onPressed: () {},
-                  icon: Icon(LucideIcons.moreHorizontal, size: 18, color: foreColor),
+                  icon: Icon(
+                    LucideIcons.moreHorizontal,
+                    size: 18,
+                    color: foreColor,
+                  ),
                 ),
                 const SizedBox(width: 8),
               ],
@@ -276,8 +304,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               Expanded(
                 child: ListView.builder(
                   controller: _scrollController,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                  itemCount: _messages.length + (_typing ? 1 : 0) + (_streaming ? 1 : 0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
+                  itemCount:
+                      _messages.length +
+                      (_typing ? 1 : 0) +
+                      (_streaming ? 1 : 0),
                   itemBuilder: (context, index) {
                     if (index < _messages.length) {
                       return _buildMessageBubble(_messages[index]);
@@ -302,7 +336,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildModelsPickerOverlay(Color cardBg, Color border, Color foreColor) {
+  Widget _buildModelsPickerOverlay(
+    Color cardBg,
+    Color border,
+    Color foreColor,
+  ) {
     return Positioned(
       top: 4,
       left: 16,
@@ -310,72 +348,81 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       child: Container(
         decoration: BoxDecoration(
           color: cardBg,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(50),
           border: Border.all(color: border),
           boxShadow: JemenaiTheme.shadowFloat(widget.isDark),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: _modelsList.map((m) {
-            final isSelected = m == _model;
-            return InkWell(
-              onTap: () {
-                setState(() {
-                  _model = m;
-                  _showModels = false;
-                });
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        gradient: widget.isDark ? JemenaiTheme.gradSubtleDark : JemenaiTheme.gradSubtleLight,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(
-                        LucideIcons.sparkles,
-                        size: 14,
-                        color: JemenaiTheme.primary(widget.isDark),
-                      ),
+          children:
+              _modelsList.map((m) {
+                final isSelected = m == _model;
+                return InkWell(
+                  onTap: () {
+                    setState(() {
+                      _model = m;
+                      _showModels = false;
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            m,
-                            style: JemenaiTheme.fontBody(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: foreColor,
-                            ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            gradient:
+                                widget.isDark
+                                    ? JemenaiTheme.gradSubtleDark
+                                    : JemenaiTheme.gradSubtleLight,
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          Text(
-                            'On-device',
-                            style: JemenaiTheme.fontBody(
-                              fontSize: 10,
-                              color: JemenaiTheme.mutedForeground(widget.isDark),
-                            ),
+                          child: Icon(
+                            LucideIcons.sparkles,
+                            size: 14,
+                            color: JemenaiTheme.primary(widget.isDark),
                           ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                m,
+                                style: JemenaiTheme.fontBody(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                  color: foreColor,
+                                ),
+                              ),
+                              Text(
+                                'On-device',
+                                style: JemenaiTheme.fontBody(
+                                  fontSize: 10,
+                                  color: JemenaiTheme.mutedForeground(
+                                    widget.isDark,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (isSelected)
+                          Icon(
+                            LucideIcons.checkCheck,
+                            size: 16,
+                            color: JemenaiTheme.primary(widget.isDark),
+                          ),
+                      ],
                     ),
-                    if (isSelected)
-                      Icon(
-                        LucideIcons.checkCheck,
-                        size: 16,
-                        color: JemenaiTheme.primary(widget.isDark),
-                      ),
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
+                  ),
+                );
+              }).toList(),
         ),
       ),
     );
@@ -387,7 +434,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Column(
-        crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        crossAxisAlignment:
+            isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           // Pinned badge
           if (msg.pinned)
@@ -396,7 +444,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(LucideIcons.pin, size: 12, color: JemenaiTheme.primary(widget.isDark)),
+                  Icon(
+                    LucideIcons.pin,
+                    size: 12,
+                    color: JemenaiTheme.primary(widget.isDark),
+                  ),
                   const SizedBox(width: 4),
                   Text(
                     'Pinned',
@@ -413,7 +465,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           Row(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+            mainAxisAlignment:
+                isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
             children: [
               // Assistant Sparkles icon
               if (!isUser)
@@ -426,7 +479,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     borderRadius: BorderRadius.circular(10),
                     boxShadow: JemenaiTheme.shadowCard(widget.isDark),
                   ),
-                  child: const Icon(LucideIcons.sparkles, color: Colors.white, size: 14),
+                  child: const Icon(
+                    LucideIcons.sparkles,
+                    color: Colors.white,
+                    size: 14,
+                  ),
                 ),
 
               // Message Content Bubble
@@ -435,17 +492,31 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   constraints: BoxConstraints(
                     maxWidth: MediaQuery.of(context).size.width * 0.72,
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
                     gradient: isUser ? JemenaiTheme.gradBrand : null,
                     color: isUser ? null : JemenaiTheme.card(widget.isDark),
                     borderRadius: BorderRadius.only(
                       topLeft: const Radius.circular(20),
                       topRight: const Radius.circular(20),
-                      bottomLeft: isUser ? const Radius.circular(20) : const Radius.circular(4),
-                      bottomRight: isUser ? const Radius.circular(4) : const Radius.circular(20),
+                      bottomLeft:
+                          isUser
+                              ? const Radius.circular(20)
+                              : const Radius.circular(4),
+                      bottomRight:
+                          isUser
+                              ? const Radius.circular(4)
+                              : const Radius.circular(20),
                     ),
-                    border: isUser ? null : Border.all(color: JemenaiTheme.border(widget.isDark)),
+                    border:
+                        isUser
+                            ? null
+                            : Border.all(
+                              color: JemenaiTheme.border(widget.isDark),
+                            ),
                     boxShadow: JemenaiTheme.shadowCard(widget.isDark),
                   ),
                   child: MarkdownBodyText(
@@ -480,18 +551,23 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   _buildBubbleAction(LucideIcons.copy, () {
                     Clipboard.setData(ClipboardData(text: msg.content));
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Copied to clipboard'), duration: Duration(seconds: 1)),
+                      const SnackBar(
+                        content: Text('Copied to clipboard'),
+                        duration: Duration(seconds: 1),
+                      ),
                     );
                   }),
                   _buildBubbleAction(
                     LucideIcons.pin,
                     () => setState(() => msg.pinned = !msg.pinned),
-                    activeColor: msg.pinned ? JemenaiTheme.primary(widget.isDark) : null,
+                    activeColor:
+                        msg.pinned ? JemenaiTheme.primary(widget.isDark) : null,
                   ),
                   _buildBubbleAction(
                     LucideIcons.thumbsUp,
                     () => setState(() => msg.liked = !msg.liked),
-                    activeColor: msg.liked ? JemenaiTheme.primary(widget.isDark) : null,
+                    activeColor:
+                        msg.liked ? JemenaiTheme.primary(widget.isDark) : null,
                   ),
                   _buildBubbleAction(LucideIcons.volume2, () {}),
                   _buildBubbleAction(LucideIcons.trash2, () {
@@ -499,7 +575,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                       _messages.removeWhere((element) => element.id == msg.id);
                     });
                   }),
-                ]
+                ],
               ],
             ),
           ),
@@ -508,7 +584,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildBubbleAction(IconData icon, VoidCallback onTap, {Color? activeColor}) {
+  Widget _buildBubbleAction(
+    IconData icon,
+    VoidCallback onTap, {
+    Color? activeColor,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(left: 4.0),
       child: InkWell(
@@ -542,7 +622,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               borderRadius: BorderRadius.circular(10),
               boxShadow: JemenaiTheme.shadowCard(widget.isDark),
             ),
-            child: const Icon(LucideIcons.sparkles, color: Colors.white, size: 14),
+            child: const Icon(
+              LucideIcons.sparkles,
+              color: Colors.white,
+              size: 14,
+            ),
           ),
 
           // Typing Bubble
@@ -584,7 +668,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               gradient: JemenaiTheme.gradBrand,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(LucideIcons.sparkles, color: Colors.white, size: 14),
+            child: const Icon(
+              LucideIcons.sparkles,
+              color: Colors.white,
+              size: 14,
+            ),
           ),
 
           Flexible(
@@ -644,7 +732,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             Container(
               decoration: BoxDecoration(
                 color: JemenaiTheme.background(widget.isDark),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(50),
                 border: Border.all(color: border),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
@@ -668,13 +756,21 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                         controller: _inputController,
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
-                        style: JemenaiTheme.fontBody(fontSize: 14, color: foreColor),
+                        style: JemenaiTheme.fontBody(
+                          fontSize: 14,
+                          color: foreColor,
+                        ),
                         onChanged: (text) => setState(() {}),
                         decoration: InputDecoration(
                           hintText: 'Message Jemenai...',
-                          hintStyle: JemenaiTheme.fontBody(fontSize: 14, color: mutedFore),
+                          hintStyle: JemenaiTheme.fontBody(
+                            fontSize: 14,
+                            color: mutedFore,
+                          ),
                           isDense: true,
-                          contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 8,
+                          ),
                           border: InputBorder.none,
                         ),
                       ),
@@ -684,32 +780,42 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   // Mic & Send
                   Row(
                     children: [
-                      _buildInputMediaBtn(LucideIcons.mic, mutedFore, onTap: () {
-                        widget.onNavigate('voice', {});
-                      }),
+                      _buildInputMediaBtn(
+                        LucideIcons.mic,
+                        mutedFore,
+                        onTap: () {
+                          widget.onNavigate('voice', {});
+                        },
+                      ),
                       const SizedBox(width: 4),
                       InkWell(
-                        onTap: hasInput && !_typing && !_streaming ? () => _send() : null,
+                        onTap:
+                            hasInput && !_typing && !_streaming
+                                ? () => _send()
+                                : null,
                         borderRadius: BorderRadius.circular(10),
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
                           width: 32,
                           height: 32,
                           decoration: BoxDecoration(
-                            gradient: hasInput && !_typing && !_streaming
-                                ? JemenaiTheme.gradBrand
-                                : null,
-                            color: hasInput && !_typing && !_streaming
-                                ? null
-                                : JemenaiTheme.secondary(widget.isDark),
+                            gradient:
+                                hasInput && !_typing && !_streaming
+                                    ? JemenaiTheme.gradBrand
+                                    : null,
+                            color:
+                                hasInput && !_typing && !_streaming
+                                    ? null
+                                    : JemenaiTheme.secondary(widget.isDark),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Icon(
                             LucideIcons.arrowUp,
                             size: 16,
-                            color: hasInput && !_typing && !_streaming
-                                ? Colors.white
-                                : mutedFore,
+                            color:
+                                hasInput && !_typing && !_streaming
+                                    ? Colors.white
+                                    : mutedFore,
                           ),
                         ),
                       ),
@@ -732,7 +838,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildInputMediaBtn(IconData icon, Color color, {VoidCallback? onTap}) {
+  Widget _buildInputMediaBtn(
+    IconData icon,
+    Color color, {
+    VoidCallback? onTap,
+  }) {
     return InkWell(
       onTap: onTap ?? () {},
       borderRadius: BorderRadius.circular(10),
@@ -754,7 +864,8 @@ class TypingBouncingDots extends StatefulWidget {
   State<TypingBouncingDots> createState() => _TypingBouncingDotsState();
 }
 
-class _TypingBouncingDotsState extends State<TypingBouncingDots> with TickerProviderStateMixin {
+class _TypingBouncingDotsState extends State<TypingBouncingDots>
+    with TickerProviderStateMixin {
   late List<AnimationController> _controllers;
   late List<Animation<double>> _animations;
 
@@ -770,10 +881,7 @@ class _TypingBouncingDotsState extends State<TypingBouncingDots> with TickerProv
 
     _animations = List.generate(3, (index) {
       return Tween<double>(begin: 0.0, end: -6.0).animate(
-        CurvedAnimation(
-          parent: _controllers[index],
-          curve: Curves.easeInOut,
-        ),
+        CurvedAnimation(parent: _controllers[index], curve: Curves.easeInOut),
       );
     });
 
@@ -828,7 +936,8 @@ class BlinkingCursor extends StatefulWidget {
   State<BlinkingCursor> createState() => _BlinkingCursorState();
 }
 
-class _BlinkingCursorState extends State<BlinkingCursor> with SingleTickerProviderStateMixin {
+class _BlinkingCursorState extends State<BlinkingCursor>
+    with SingleTickerProviderStateMixin {
   late AnimationController _cursorController;
 
   @override
@@ -877,11 +986,14 @@ class MarkdownBodyText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textStyleColor = isUser ? Colors.white : JemenaiTheme.foreground(isDark);
+    final textStyleColor =
+        isUser ? Colors.white : JemenaiTheme.foreground(isDark);
 
     // Basic Tokenizer mimicking the React splitter
     // regex splits: code blocks ```...```, bold **...**, italics *...*, and dividers ---...---
-    final parts = content.split(RegExp(r'(```[\s\S]*?```|\*\*[\s\S]*?\*\*|\*[^*]+\*|---[\s\S]*?---)'));
+    final parts = content.split(
+      RegExp(r'(```[\s\S]*?```|\*\*[\s\S]*?\*\*|\*[^*]+\*|---[\s\S]*?---)'),
+    );
 
     List<Widget> spans = [];
 
@@ -894,7 +1006,9 @@ class MarkdownBodyText extends StatelessWidget {
         final lines = inner.split('\n');
         String lang = "code";
         String code = inner;
-        if (lines.isNotEmpty && lines[0].trim().isNotEmpty && !lines[0].contains(' ')) {
+        if (lines.isNotEmpty &&
+            lines[0].trim().isNotEmpty &&
+            !lines[0].contains(' ')) {
           lang = lines[0].trim();
           code = lines.sublist(1).join('\n');
         }
@@ -902,46 +1016,52 @@ class MarkdownBodyText extends StatelessWidget {
       } else if (part.startsWith('**') && part.endsWith('**')) {
         // Bold Text
         final text = part.substring(2, part.length - 2);
-        spans.add(Text(
-          text,
-          style: JemenaiTheme.fontBody(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: textStyleColor,
-            lineHeight: 1.45,
+        spans.add(
+          Text(
+            text,
+            style: JemenaiTheme.fontBody(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: textStyleColor,
+              lineHeight: 1.45,
+            ),
           ),
-        ));
+        );
       } else if (part.startsWith('*') && part.endsWith('*')) {
         // Italic Text
         final text = part.substring(1, part.length - 1);
-        spans.add(Text(
-          text,
-          style: JemenaiTheme.fontBody(
-            fontSize: 14,
-            fontWeight: FontWeight.normal,
-            color: textStyleColor,
-            lineHeight: 1.45,
-          ).copyWith(fontStyle: FontStyle.italic),
-        ));
+        spans.add(
+          Text(
+            text,
+            style: JemenaiTheme.fontBody(
+              fontSize: 14,
+              fontWeight: FontWeight.normal,
+              color: textStyleColor,
+              lineHeight: 1.45,
+            ).copyWith(fontStyle: FontStyle.italic),
+          ),
+        );
       } else if (part.startsWith('---') && part.endsWith('---')) {
         // Section divider block
         final text = part.substring(3, part.length - 3).trim();
-        spans.add(Container(
-          margin: const EdgeInsets.symmetric(vertical: 8),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: JemenaiTheme.secondary(isDark),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: JemenaiTheme.border(isDark)),
-          ),
-          child: Text(
-            text,
-            style: GoogleFonts.firaCode(
-              fontSize: 12,
-              color: JemenaiTheme.foreground(isDark),
+        spans.add(
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 8),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: JemenaiTheme.secondary(isDark),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: JemenaiTheme.border(isDark)),
+            ),
+            child: Text(
+              text,
+              style: GoogleFonts.firaCode(
+                fontSize: 12,
+                color: JemenaiTheme.foreground(isDark),
+              ),
             ),
           ),
-        ));
+        );
       } else {
         // Regular string with line split checks for lists
         final lines = part.split('\n');
@@ -965,7 +1085,10 @@ class MarkdownBodyText extends StatelessWidget {
                     Text(
                       '• ',
                       style: TextStyle(
-                        color: isUser ? Colors.white70 : JemenaiTheme.primary(isDark),
+                        color:
+                            isUser
+                                ? Colors.white70
+                                : JemenaiTheme.primary(isDark),
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -998,10 +1121,12 @@ class MarkdownBodyText extends StatelessWidget {
           }
         }
 
-        spans.add(Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: listWidgets,
-        ));
+        spans.add(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: listWidgets,
+          ),
+        );
       }
     }
 
@@ -1016,7 +1141,6 @@ class MarkdownBodyText extends StatelessWidget {
     bool copied = false;
     return StatefulBuilder(
       builder: (context, setBlockState) {
-
         return Container(
           margin: const EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(
@@ -1029,9 +1153,14 @@ class MarkdownBodyText extends StatelessWidget {
             children: [
               // Top copy bar
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
-                  border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.08))),
+                  border: Border(
+                    bottom: BorderSide(color: Colors.white.withOpacity(0.08)),
+                  ),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1059,14 +1188,20 @@ class MarkdownBodyText extends StatelessWidget {
                           Icon(
                             copied ? LucideIcons.checkCheck : LucideIcons.copy,
                             size: 13,
-                            color: copied ? const Color(0xFF4ADE80) : const Color(0xFF71717A),
+                            color:
+                                copied
+                                    ? const Color(0xFF4ADE80)
+                                    : const Color(0xFF71717A),
                           ),
                           const SizedBox(width: 4),
                           Text(
                             copied ? 'Copied!' : 'Copy',
                             style: JemenaiTheme.fontBody(
                               fontSize: 11,
-                              color: copied ? const Color(0xFF4ADE80) : const Color(0xFF71717A),
+                              color:
+                                  copied
+                                      ? const Color(0xFF4ADE80)
+                                      : const Color(0xFF71717A),
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -1079,7 +1214,10 @@ class MarkdownBodyText extends StatelessWidget {
 
               // Code pre block
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Text(

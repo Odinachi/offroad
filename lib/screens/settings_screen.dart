@@ -109,11 +109,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ],
                     ),
                   ),
-                  Icon(
-                    LucideIcons.chevronRight,
-                    size: 18,
-                    color: mutedFore,
-                  ),
+                  Icon(LucideIcons.chevronRight, size: 18, color: mutedFore),
                 ],
               ),
             ),
@@ -124,10 +120,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 _buildToggleRow(
                   icon: widget.isDark ? LucideIcons.moon : LucideIcons.sun,
-                  iBg: widget.isDark ? const Color(0xFF1E1B4B) : const Color(0xFFFEF3C7),
-                  iColor: widget.isDark ? const Color(0xFF818CF8) : const Color(0xFFD97706),
+                  iBg:
+                      widget.isDark
+                          ? const Color(0xFF1E1B4B)
+                          : const Color(0xFFFEF3C7),
+                  iColor:
+                      widget.isDark
+                          ? const Color(0xFF818CF8)
+                          : const Color(0xFFD97706),
                   title: 'Dark Mode',
-                  sub: widget.isDark ? 'Dark theme active' : 'Light theme active',
+                  sub:
+                      widget.isDark
+                          ? 'Dark theme active'
+                          : 'Light theme active',
                   value: widget.isDark,
                   onChanged: (val) => widget.onToggleDark(),
                 ),
@@ -154,7 +159,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   iBg: const Color(0xFF022016),
                   iColor: const Color(0xFF4ADE80),
                   title: 'Offline Mode',
-                  sub: _offline ? 'Only downloaded models' : 'Smart hybrid mode',
+                  sub:
+                      _offline ? 'Only downloaded models' : 'Smart hybrid mode',
                   value: _offline,
                   onChanged: (val) => setState(() => _offline = val),
                 ),
@@ -289,7 +295,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   sub: 'Version 2.0.0 · June 2026',
                   rightWidget: Text(
                     'Latest',
-                    style: JemenaiTheme.fontBody(fontSize: 11, color: mutedFore),
+                    style: JemenaiTheme.fontBody(
+                      fontSize: 11,
+                      color: mutedFore,
+                    ),
                   ),
                   showChevron: false,
                 ),
@@ -313,7 +322,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
             // Sign Out
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20.0,
+                vertical: 8.0,
+              ),
               child: OutlinedButton.icon(
                 onPressed: () {},
                 icon: Icon(
@@ -332,7 +344,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   side: BorderSide(
-                    color: JemenaiTheme.destructive(widget.isDark).withOpacity(0.25),
+                    color: JemenaiTheme.destructive(
+                      widget.isDark,
+                    ).withOpacity(0.25),
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -346,7 +360,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildSection({required String label, required List<Widget> children}) {
+  Widget _buildSection({
+    required String label,
+    required List<Widget> children,
+  }) {
     final border = JemenaiTheme.border(widget.isDark);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
@@ -379,11 +396,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: [
                     children[index],
                     if (!isLast)
-                      Divider(
-                        height: 1,
-                        thickness: 1,
-                        color: border,
-                      ),
+                      Divider(height: 1, thickness: 1, color: border),
                   ],
                 );
               }),
@@ -462,7 +475,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(50),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
         child: Row(
@@ -575,39 +588,49 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           // Chips Selection Row
           Row(
-            children: options.map((opt) {
-              final isSel = value == opt;
-              final label = optionLabels != null ? optionLabels[opt]! : opt;
+            children:
+                options.map((opt) {
+                  final isSel = value == opt;
+                  final label = optionLabels != null ? optionLabels[opt]! : opt;
 
-              return Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 3.0),
-                  child: InkWell(
-                    onTap: () => onChanged(opt),
-                    borderRadius: BorderRadius.circular(12),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 150),
-                      height: 36,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        gradient: isSel ? JemenaiTheme.gradBrand : null,
-                        color: isSel ? null : JemenaiTheme.secondary(widget.isDark),
+                  return Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 3.0),
+                      child: InkWell(
+                        onTap: () => onChanged(opt),
                         borderRadius: BorderRadius.circular(12),
-                        boxShadow: isSel ? JemenaiTheme.glowSm(widget.isDark) : [],
-                      ),
-                      child: Text(
-                        label,
-                        style: JemenaiTheme.fontBody(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: isSel ? Colors.white : JemenaiTheme.mutedForeground(widget.isDark),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 150),
+                          height: 36,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            gradient: isSel ? JemenaiTheme.gradBrand : null,
+                            color:
+                                isSel
+                                    ? null
+                                    : JemenaiTheme.secondary(widget.isDark),
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow:
+                                isSel ? JemenaiTheme.glowSm(widget.isDark) : [],
+                          ),
+                          child: Text(
+                            label,
+                            style: JemenaiTheme.fontBody(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color:
+                                  isSel
+                                      ? Colors.white
+                                      : JemenaiTheme.mutedForeground(
+                                        widget.isDark,
+                                      ),
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-              );
-            }).toList(),
+                  );
+                }).toList(),
           ),
         ],
       ),
