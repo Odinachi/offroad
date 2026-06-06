@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../theme.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -25,7 +25,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       'icon': LucideIcons.shield,
       'label': 'Privacy First',
       'title': 'Your AI.\nYour Device.\nYour Data.',
-      'sub': 'Conversations never leave your phone. No cloud, no surveillance, no compromise.',
+      'sub':
+          'Conversations never leave your phone. No cloud, no surveillance, no compromise.',
       'colors': [const Color(0xFF4F46E5), const Color(0xFF7C3AED)],
       'accent': const Color(0xFF818CF8),
     },
@@ -33,7 +34,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       'icon': LucideIcons.wifiOff,
       'label': 'Offline Ready',
       'title': 'Works Without\nInternet.\nAlways.',
-      'sub': 'Download models once. Run them forever — on a plane, in a tunnel, off the grid.',
+      'sub':
+          'Download models once. Run them forever — on a plane, in a tunnel, off the grid.',
       'colors': [const Color(0xFF0891B2), const Color(0xFF0E7490)],
       'accent': const Color(0xFF38BDF8),
     },
@@ -41,7 +43,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       'icon': LucideIcons.zap,
       'label': 'Instant Speed',
       'title': 'On-Device\nMeans Zero\nLatency.',
-      'sub': 'No round-trips to servers. Responses begin in milliseconds, not seconds.',
+      'sub':
+          'No round-trips to servers. Responses begin in milliseconds, not seconds.',
       'colors': [const Color(0xFF7C3AED), const Color(0xFFA855F7)],
       'accent': const Color(0xFFC084FC),
     },
@@ -49,7 +52,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       'icon': LucideIcons.cpu,
       'label': 'Powerful Models',
       'title': 'State-of-Art AI\nFits in Your\nPocket.',
-      'sub': "Llama, Mistral, Phi, Gemma — the world's best open models, running locally.",
+      'sub':
+          "Llama, Mistral, Phi, Gemma — the world's best open models, running locally.",
       'colors': [const Color(0xFF059669), const Color(0xFF0D9488)],
       'accent': const Color(0xFF34D399),
     },
@@ -70,10 +74,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     if (_phase == 'auth') {
-      return AuthScreen(
-        onComplete: widget.onComplete,
-        isDark: widget.isDark,
-      );
+      return AuthScreen(onComplete: widget.onComplete, isDark: widget.isDark);
     }
 
     final slide = _slides[_idx];
@@ -91,7 +92,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             children: [
               // Top Bar (Skip Button)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24.0,
+                  vertical: 8.0,
+                ),
                 child: Align(
                   alignment: Alignment.centerRight,
                   child: InkWell(
@@ -102,11 +106,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     },
                     borderRadius: BorderRadius.circular(12),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
-                        color: widget.isDark
-                            ? Colors.white.withOpacity(0.06)
-                            : Colors.black.withOpacity(0.04),
+                        color:
+                            widget.isDark
+                                ? Colors.white.withOpacity(0.06)
+                                : Colors.black.withOpacity(0.04),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
@@ -135,7 +143,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         duration: const Duration(milliseconds: 300),
                         child: Container(
                           key: ValueKey<int>(_idx),
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
                             color: colors[0].withOpacity(0.12),
                             borderRadius: BorderRadius.circular(20),
@@ -198,7 +209,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
               // Bottom control bar
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 32.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32.0,
+                  vertical: 32.0,
+                ),
                 child: Column(
                   children: [
                     // Slide Indicators
@@ -211,9 +225,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           height: 8,
                           margin: const EdgeInsets.only(right: 6),
                           decoration: BoxDecoration(
-                            color: isActive
-                                ? accent
-                                : JemenaiTheme.mutedForeground(widget.isDark).withOpacity(0.3),
+                            color:
+                                isActive
+                                    ? accent
+                                    : JemenaiTheme.mutedForeground(
+                                      widget.isDark,
+                                    ).withOpacity(0.3),
                             borderRadius: BorderRadius.circular(4),
                           ),
                         );
@@ -248,7 +265,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              _idx < _slides.length - 1 ? 'Continue' : 'Get Started',
+                              _idx < _slides.length - 1
+                                  ? 'Continue'
+                                  : 'Get Started',
                               style: JemenaiTheme.fontBody(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
@@ -326,7 +345,8 @@ class SlideIconPulse extends StatefulWidget {
   State<SlideIconPulse> createState() => _SlideIconPulseState();
 }
 
-class _SlideIconPulseState extends State<SlideIconPulse> with SingleTickerProviderStateMixin {
+class _SlideIconPulseState extends State<SlideIconPulse>
+    with SingleTickerProviderStateMixin {
   late AnimationController _pulseController;
   late Animation<double> _scaleAnimation;
   late Animation<double> _opacityAnimation;
@@ -344,8 +364,14 @@ class _SlideIconPulseState extends State<SlideIconPulse> with SingleTickerProvid
     );
 
     _opacityAnimation = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween<double>(begin: 0.3, end: 0.75), weight: 50),
-      TweenSequenceItem(tween: Tween<double>(begin: 0.75, end: 0.3), weight: 50),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 0.3, end: 0.75),
+        weight: 50,
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(begin: 0.75, end: 0.3),
+        weight: 50,
+      ),
     ]).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
@@ -411,11 +437,7 @@ class _SlideIconPulseState extends State<SlideIconPulse> with SingleTickerProvid
                 ),
               ],
             ),
-            child: Icon(
-              widget.icon,
-              color: Colors.white,
-              size: 40,
-            ),
+            child: Icon(widget.icon, color: Colors.white, size: 40),
           ),
         ],
       ),
@@ -428,11 +450,7 @@ class AuthScreen extends StatefulWidget {
   final VoidCallback onComplete;
   final bool isDark;
 
-  const AuthScreen({
-    super.key,
-    required this.onComplete,
-    required this.isDark,
-  });
+  const AuthScreen({super.key, required this.onComplete, required this.isDark});
 
   @override
   State<AuthScreen> createState() => _AuthScreenState();
@@ -536,7 +554,10 @@ class _AuthScreenState extends State<AuthScreen> {
                           decoration: BoxDecoration(
                             color: _mode == 'in' ? cardBg : Colors.transparent,
                             borderRadius: BorderRadius.circular(12),
-                            boxShadow: _mode == 'in' ? JemenaiTheme.shadowCard(widget.isDark) : [],
+                            boxShadow:
+                                _mode == 'in'
+                                    ? JemenaiTheme.shadowCard(widget.isDark)
+                                    : [],
                           ),
                           alignment: Alignment.center,
                           child: Text(
@@ -559,7 +580,10 @@ class _AuthScreenState extends State<AuthScreen> {
                           decoration: BoxDecoration(
                             color: _mode == 'up' ? cardBg : Colors.transparent,
                             borderRadius: BorderRadius.circular(12),
-                            boxShadow: _mode == 'up' ? JemenaiTheme.shadowCard(widget.isDark) : [],
+                            boxShadow:
+                                _mode == 'up'
+                                    ? JemenaiTheme.shadowCard(widget.isDark)
+                                    : [],
                           ),
                           alignment: Alignment.center,
                           child: Text(
@@ -588,7 +612,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         'https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg',
                         width: 16,
                         height: 16,
-                        errorBuilder: (context, error, stackTrace) => const Icon(LucideIcons.chrome, size: 16),
+                        //errorBuilder: (context, error, stackTrace) =>  Icon(LucideIcons.chrome, size: 16),
                       ),
                     ),
                   ),
@@ -596,11 +620,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   Expanded(
                     child: _buildSocialBtn(
                       label: 'Apple',
-                      icon: Icon(
-                        Icons.apple,
-                        size: 18,
-                        color: foreground,
-                      ),
+                      icon: Icon(Icons.apple, size: 18, color: foreground),
                     ),
                   ),
                 ],
@@ -610,15 +630,22 @@ class _AuthScreenState extends State<AuthScreen> {
               // Divider
               Row(
                 children: [
-                  Expanded(child: Divider(color: JemenaiTheme.border(widget.isDark))),
+                  Expanded(
+                    child: Divider(color: JemenaiTheme.border(widget.isDark)),
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
                     child: Text(
                       'or continue with email',
-                      style: JemenaiTheme.fontBody(fontSize: 11, color: mutedFore),
+                      style: JemenaiTheme.fontBody(
+                        fontSize: 11,
+                        color: mutedFore,
+                      ),
                     ),
                   ),
-                  Expanded(child: Divider(color: JemenaiTheme.border(widget.isDark))),
+                  Expanded(
+                    child: Divider(color: JemenaiTheme.border(widget.isDark)),
+                  ),
                 ],
               ),
               const SizedBox(height: 20),
@@ -630,10 +657,16 @@ class _AuthScreenState extends State<AuthScreen> {
                 style: JemenaiTheme.fontBody(fontSize: 14, color: foreground),
                 decoration: InputDecoration(
                   hintText: 'Email address',
-                  hintStyle: JemenaiTheme.fontBody(fontSize: 14, color: mutedFore),
+                  hintStyle: JemenaiTheme.fontBody(
+                    fontSize: 14,
+                    color: mutedFore,
+                  ),
                   filled: true,
                   fillColor: inputBg,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
                     borderSide: BorderSide.none,
@@ -645,7 +678,9 @@ class _AuthScreenState extends State<AuthScreen> {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
                     borderSide: BorderSide(
-                      color: JemenaiTheme.primary(widget.isDark).withOpacity(0.25),
+                      color: JemenaiTheme.primary(
+                        widget.isDark,
+                      ).withOpacity(0.25),
                       width: 2,
                     ),
                   ),
@@ -660,10 +695,16 @@ class _AuthScreenState extends State<AuthScreen> {
                 style: JemenaiTheme.fontBody(fontSize: 14, color: foreground),
                 decoration: InputDecoration(
                   hintText: 'Password',
-                  hintStyle: JemenaiTheme.fontBody(fontSize: 14, color: mutedFore),
+                  hintStyle: JemenaiTheme.fontBody(
+                    fontSize: 14,
+                    color: mutedFore,
+                  ),
                   filled: true,
                   fillColor: inputBg,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
                   suffixIcon: IconButton(
                     onPressed: () => setState(() => _showPass = !_showPass),
                     icon: Icon(
@@ -683,7 +724,9 @@ class _AuthScreenState extends State<AuthScreen> {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
                     borderSide: BorderSide(
-                      color: JemenaiTheme.primary(widget.isDark).withOpacity(0.25),
+                      color: JemenaiTheme.primary(
+                        widget.isDark,
+                      ).withOpacity(0.25),
                       width: 2,
                     ),
                   ),
@@ -700,37 +743,39 @@ class _AuthScreenState extends State<AuthScreen> {
                   decoration: BoxDecoration(
                     gradient: JemenaiTheme.gradBrand,
                     borderRadius: BorderRadius.circular(16),
-                    boxShadow: _loading ? [] : JemenaiTheme.glowSm(widget.isDark),
+                    boxShadow:
+                        _loading ? [] : JemenaiTheme.glowSm(widget.isDark),
                   ),
                   alignment: Alignment.center,
-                  child: _loading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              _mode == 'in' ? 'Sign In' : 'Create Account',
-                              style: JemenaiTheme.fontBody(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            const Icon(
-                              LucideIcons.arrowRight,
+                  child:
+                      _loading
+                          ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
                               color: Colors.white,
-                              size: 16,
                             ),
-                          ],
-                        ),
+                          )
+                          : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                _mode == 'in' ? 'Sign In' : 'Create Account',
+                                style: JemenaiTheme.fontBody(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Icon(
+                                LucideIcons.arrowRight,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                            ],
+                          ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -739,11 +784,7 @@ class _AuthScreenState extends State<AuthScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    LucideIcons.lock,
-                    size: 12,
-                    color: mutedFore,
-                  ),
+                  Icon(LucideIcons.lock, size: 12, color: mutedFore),
                   const SizedBox(width: 6),
                   Text(
                     'End-to-end encrypted · GDPR compliant',

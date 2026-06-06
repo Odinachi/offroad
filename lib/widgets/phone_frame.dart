@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../theme.dart';
 
 class PhoneFrame extends StatelessWidget {
@@ -55,7 +55,10 @@ class PhoneFrame extends StatelessWidget {
               width: 3,
               height: 30,
               decoration: BoxDecoration(
-                color: isDark ? JemenaiTheme.hardwareButtonDark : JemenaiTheme.hardwareButtonLight,
+                color:
+                    isDark
+                        ? JemenaiTheme.hardwareButtonDark
+                        : JemenaiTheme.hardwareButtonLight,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(3),
                   bottomLeft: Radius.circular(3),
@@ -70,7 +73,10 @@ class PhoneFrame extends StatelessWidget {
               width: 3,
               height: 60,
               decoration: BoxDecoration(
-                color: isDark ? JemenaiTheme.hardwareButtonDark : JemenaiTheme.hardwareButtonLight,
+                color:
+                    isDark
+                        ? JemenaiTheme.hardwareButtonDark
+                        : JemenaiTheme.hardwareButtonLight,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(3),
                   bottomLeft: Radius.circular(3),
@@ -85,7 +91,10 @@ class PhoneFrame extends StatelessWidget {
               width: 3,
               height: 60,
               decoration: BoxDecoration(
-                color: isDark ? JemenaiTheme.hardwareButtonDark : JemenaiTheme.hardwareButtonLight,
+                color:
+                    isDark
+                        ? JemenaiTheme.hardwareButtonDark
+                        : JemenaiTheme.hardwareButtonLight,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(3),
                   bottomLeft: Radius.circular(3),
@@ -102,7 +111,10 @@ class PhoneFrame extends StatelessWidget {
               width: 3,
               height: 82,
               decoration: BoxDecoration(
-                color: isDark ? JemenaiTheme.hardwareButtonDark : JemenaiTheme.hardwareButtonLight,
+                color:
+                    isDark
+                        ? JemenaiTheme.hardwareButtonDark
+                        : JemenaiTheme.hardwareButtonLight,
                 borderRadius: const BorderRadius.only(
                   topRight: Radius.circular(3),
                   bottomRight: Radius.circular(3),
@@ -120,20 +132,23 @@ class PhoneFrame extends StatelessWidget {
               borderRadius: BorderRadius.circular(44),
               boxShadow: JemenaiTheme.shadowCard(isDark),
               border: Border.all(
-                color: isDark ? Colors.white.withOpacity(0.06) : Colors.black.withOpacity(0.08),
+                color:
+                    isDark
+                        ? Colors.white.withOpacity(0.06)
+                        : Colors.black.withOpacity(0.08),
                 width: 1,
               ),
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(43), // Slightly smaller to hide boundaries
+              borderRadius: BorderRadius.circular(
+                43,
+              ), // Slightly smaller to hide boundaries
               child: Stack(
                 children: [
                   Column(
                     children: [
                       _buildStatusBar(context),
-                      Expanded(
-                        child: child,
-                      ),
+                      Expanded(child: child),
                       _buildBottomNav(context, true),
                     ],
                   ),
@@ -203,11 +218,7 @@ class PhoneFrame extends StatelessWidget {
               const SizedBox(width: 6),
 
               // WiFi
-              Icon(
-                Icons.wifi,
-                size: 14,
-                color: fg.withOpacity(0.8),
-              ),
+              Icon(Icons.wifi, size: 14, color: fg.withOpacity(0.8)),
               const SizedBox(width: 6),
 
               // Battery
@@ -216,10 +227,7 @@ class PhoneFrame extends StatelessWidget {
                 height: 14,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(3),
-                  border: Border.all(
-                    color: fg.withOpacity(0.6),
-                    width: 1,
-                  ),
+                  border: Border.all(color: fg.withOpacity(0.6), width: 1),
                 ),
                 padding: const EdgeInsets.all(1),
                 child: Row(
@@ -263,10 +271,7 @@ class PhoneFrame extends StatelessWidget {
       decoration: BoxDecoration(
         color: JemenaiTheme.navBackground(isDark),
         border: Border(
-          top: BorderSide(
-            color: JemenaiTheme.border(isDark),
-            width: 1,
-          ),
+          top: BorderSide(color: JemenaiTheme.border(isDark), width: 1),
         ),
       ),
       child: ClipRRect(
@@ -274,71 +279,79 @@ class PhoneFrame extends StatelessWidget {
           filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: navItems.map((item) {
-              final id = item['id'] as String;
-              final icon = item['icon'] as IconData;
-              final label = item['label'] as String;
-              final isActive = normalizedActive == id;
+            children:
+                navItems.map((item) {
+                  final id = item['id'] as String;
+                  final icon = item['icon'] as IconData;
+                  final label = item['label'] as String;
+                  final isActive = normalizedActive == id;
 
-              return Expanded(
-                child: InkWell(
-                  onTap: () => onTabChanged(id),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      // Active indicator top bar
-                      if (isActive)
-                        Positioned(
-                          top: 0,
-                          child: Container(
-                            width: 40,
-                            height: 3,
-                            decoration: BoxDecoration(
-                              gradient: JemenaiTheme.gradBrand,
-                              borderRadius: BorderRadius.circular(1.5),
-                            ),
-                          ),
-                        ),
-
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                  return Expanded(
+                    child: InkWell(
+                      onTap: () => onTabChanged(id),
+                      child: Stack(
+                        alignment: Alignment.center,
                         children: [
-                          AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            width: 40,
-                            height: 28,
-                            decoration: BoxDecoration(
-                              color: isActive
-                                  ? JemenaiTheme.accent(isDark)
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(14),
+                          // Active indicator top bar
+                          if (isActive)
+                            Positioned(
+                              top: 0,
+                              child: Container(
+                                width: 40,
+                                height: 3,
+                                decoration: BoxDecoration(
+                                  gradient: JemenaiTheme.gradBrand,
+                                  borderRadius: BorderRadius.circular(1.5),
+                                ),
+                              ),
                             ),
-                            child: Icon(
-                              icon,
-                              size: 18,
-                              color: isActive
-                                  ? JemenaiTheme.primary(isDark)
-                                  : JemenaiTheme.mutedForeground(isDark),
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            label,
-                            style: JemenaiTheme.fontBody(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              color: isActive
-                                  ? JemenaiTheme.primary(isDark)
-                                  : JemenaiTheme.mutedForeground(isDark),
-                            ),
+
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                width: 40,
+                                height: 28,
+                                decoration: BoxDecoration(
+                                  color:
+                                      isActive
+                                          ? JemenaiTheme.accent(isDark)
+                                          : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                                child: Icon(
+                                  icon,
+                                  size: 18,
+                                  color:
+                                      isActive
+                                          ? JemenaiTheme.primary(isDark)
+                                          : JemenaiTheme.mutedForeground(
+                                            isDark,
+                                          ),
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                label,
+                                style: JemenaiTheme.fontBody(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color:
+                                      isActive
+                                          ? JemenaiTheme.primary(isDark)
+                                          : JemenaiTheme.mutedForeground(
+                                            isDark,
+                                          ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                ),
-              );
-            }).toList(),
+                    ),
+                  );
+                }).toList(),
           ),
         ),
       ),
