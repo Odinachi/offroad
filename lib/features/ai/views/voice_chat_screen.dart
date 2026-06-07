@@ -18,7 +18,6 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
   String _transcript = "";
   String _reply = "";
   bool _muted = false;
-  String _mode = "continuous"; // 'continuous' | 'push'
 
   final List<Map<String, String>> _history = [];
   Timer? _chatTimer;
@@ -339,33 +338,6 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
     );
   }
 
-  Widget _buildModeTab(String modeId, String label) {
-    final active = _mode == modeId;
-    return InkWell(
-      onTap: () => setState(() => _mode = modeId),
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: active ? Colors.white : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Text(
-          label,
-          style: JemenaiTheme.fontBody(
-            fontSize: 11,
-            fontWeight: FontWeight.bold,
-            color:
-                active
-                    ? const Color(0xFF0F172A)
-                    : Colors.white.withOpacity(0.5),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildTranscriptsBox() {
     return Container(
       width: 280,
@@ -462,6 +434,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
               itemBuilder: (context, index) {
                 final item = _history[index];
                 final isUser = item['who'] == 'user';
+                final isDark = Theme.of(context).brightness == Brightness.dark;
                 return Align(
                   alignment:
                       isUser ? Alignment.centerRight : Alignment.centerLeft,
@@ -479,7 +452,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color:
-                            widget.isDark
+                            isDark
                                 ? Colors.white.withOpacity(0.04)
                                 : Colors.white.withOpacity(0.08),
                       ),

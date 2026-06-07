@@ -1,17 +1,15 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:jemenai/shared/navigator/app_router.dart';
+import 'package:jemenai/shared/navigator/app_route_string.dart';
 import '../../../shared/theme.dart';
 
 class QuickActionScreen extends StatefulWidget {
-  final Function(String, [Map<String, dynamic>]) onNavigate;
-  final bool isDark;
   final String action;
   final String label;
 
   const QuickActionScreen({
     super.key,
-    required this.onNavigate,
-    required this.isDark,
     required this.action,
     required this.label,
   });
@@ -274,13 +272,16 @@ class _QuickActionScreenState extends State<QuickActionScreen> {
     final darkBg = cfg['dark'] as Color;
     final icon = _iconMap[widget.action] ?? Icons.title;
 
-    final foreColor = JemenaiTheme.foreground(widget.isDark);
-    final mutedFore = JemenaiTheme.mutedForeground(widget.isDark);
-    final cardBg = JemenaiTheme.card(widget.isDark);
-    final border = JemenaiTheme.border(widget.isDark);
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+    final isDark = theme.brightness == Brightness.dark;
+    final foreColor = theme.colorScheme.onSurface;
+    final mutedFore = jc.mutedForeground;
+    final cardBg = jc.card;
+    final border = jc.border;
 
     return Scaffold(
-      backgroundColor: JemenaiTheme.background(widget.isDark),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(56),
         child: Container(
@@ -293,14 +294,14 @@ class _QuickActionScreenState extends State<QuickActionScreen> {
             child: Row(
               children: [
                 IconButton(
-                  onPressed: () => widget.onNavigate('home', {}),
+                  onPressed: () => AppRouter.pop(),
                   icon: Icon(Icons.arrow_back_ios_new, color: foreColor),
                 ),
                 Container(
                   width: 32,
                   height: 32,
                   decoration: BoxDecoration(
-                    color: widget.isDark ? darkBg : accent.withOpacity(0.12),
+                    color: isDark ? darkBg : accent.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(icon, color: accent, size: 16),
@@ -373,6 +374,9 @@ class _QuickActionScreenState extends State<QuickActionScreen> {
     Color cardBg,
     Color border,
   ) {
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+    final isDark = theme.brightness == Brightness.dark;
     if (_loading) {
       return Container(
         padding: const EdgeInsets.symmetric(vertical: 80),
@@ -385,7 +389,7 @@ class _QuickActionScreenState extends State<QuickActionScreen> {
               decoration: BoxDecoration(
                 gradient: JemenaiTheme.gradBrand,
                 borderRadius: BorderRadius.circular(50),
-                boxShadow: JemenaiTheme.glowMd(widget.isDark),
+                boxShadow: JemenaiTheme.glowMd(isDark),
               ),
               child: const Icon(
                 Icons.auto_awesome,
@@ -478,7 +482,7 @@ class _QuickActionScreenState extends State<QuickActionScreen> {
                       bottomRight: Radius.circular(20),
                     ),
                     border: Border.all(color: border),
-                    boxShadow: JemenaiTheme.shadowCard(widget.isDark),
+                    boxShadow: JemenaiTheme.shadowCard(isDark),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -505,7 +509,7 @@ class _QuickActionScreenState extends State<QuickActionScreen> {
                   child: Container(
                     height: 44,
                     decoration: BoxDecoration(
-                      color: JemenaiTheme.secondary(widget.isDark),
+                      color: jc.secondaryFill,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     alignment: Alignment.center,
@@ -530,14 +534,14 @@ class _QuickActionScreenState extends State<QuickActionScreen> {
               const SizedBox(width: 12),
               Expanded(
                 child: InkWell(
-                  onTap: () => widget.onNavigate('chat', {'prompt': _input}),
+                  onTap: () => AppRouter.push(AppRouteString.chat, args: {'prompt': _input}),
                   borderRadius: BorderRadius.circular(12),
                   child: Container(
                     height: 44,
                     decoration: BoxDecoration(
                       gradient: JemenaiTheme.gradBrand,
                       borderRadius: BorderRadius.circular(12),
-                      boxShadow: JemenaiTheme.glowSm(widget.isDark),
+                      boxShadow: JemenaiTheme.glowSm(isDark),
                     ),
                     alignment: Alignment.center,
                     child: Row(
@@ -581,7 +585,7 @@ class _QuickActionScreenState extends State<QuickActionScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: widget.isDark ? darkBg : accent.withOpacity(0.12),
+              color: isDark ? darkBg : accent.withOpacity(0.12),
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
@@ -613,7 +617,7 @@ class _QuickActionScreenState extends State<QuickActionScreen> {
             textAlign: TextAlign.center,
             style: JemenaiTheme.fontBody(
               fontSize: 13,
-              color: JemenaiTheme.mutedForeground(widget.isDark),
+              color: jc.mutedForeground,
               lineHeight: 1.4,
             ),
           ),
@@ -649,7 +653,7 @@ class _QuickActionScreenState extends State<QuickActionScreen> {
                         color: cardBg,
                         borderRadius: BorderRadius.circular(50),
                         border: Border.all(color: border),
-                        boxShadow: JemenaiTheme.shadowCard(widget.isDark),
+                        boxShadow: JemenaiTheme.shadowCard(isDark),
                       ),
                       child: Row(
                         children: [
@@ -660,9 +664,7 @@ class _QuickActionScreenState extends State<QuickActionScreen> {
                               c,
                               style: JemenaiTheme.fontBody(
                                 fontSize: 12.5,
-                                color: JemenaiTheme.mutedForeground(
-                                  widget.isDark,
-                                ),
+                                color: jc.mutedForeground,
                               ),
                             ),
                           ),
@@ -722,7 +724,9 @@ class _QuickActionScreenState extends State<QuickActionScreen> {
     Color border,
     Color foreColor,
   ) {
-    final mutedFore = JemenaiTheme.mutedForeground(widget.isDark);
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+    final mutedFore = jc.mutedForeground;
     final hasInput = _textController.text.trim().isNotEmpty;
 
     return Container(
@@ -735,7 +739,7 @@ class _QuickActionScreenState extends State<QuickActionScreen> {
         top: false,
         child: Container(
           decoration: BoxDecoration(
-            color: JemenaiTheme.background(widget.isDark),
+            color: theme.scaffoldBackgroundColor,
             borderRadius: BorderRadius.circular(50),
             border: Border.all(color: border),
           ),
@@ -790,7 +794,7 @@ class _QuickActionScreenState extends State<QuickActionScreen> {
                     color:
                         hasInput && !_loading
                             ? null
-                            : JemenaiTheme.secondary(widget.isDark),
+                            : jc.secondaryFill,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(

@@ -1,8 +1,7 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'shared/navigator/app_route_string.dart';
 import 'shared/navigator/app_router.dart';
+import 'shared/theme.dart';
 
 void main() {
   runApp(const JemenaiApp());
@@ -21,17 +20,9 @@ class _JemenaiAppState extends State<JemenaiApp> {
     return MaterialApp(
       title: 'Jemenai AI',
       debugShowCheckedModeBanner: false,
-      themeMode: Random().nextBool() ? ThemeMode.dark : ThemeMode.light,
-      theme: ThemeData(
-        brightness: Brightness.light,
-        scaffoldBackgroundColor: const Color(0xFFFAFAFA),
-        useMaterial3: true,
-      ),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF09090B),
-        useMaterial3: true,
-      ),
+      themeMode: ThemeMode.dark,
+      theme: JemenaiTheme.lightTheme(),
+      darkTheme: JemenaiTheme.darkTheme(),
       navigatorKey: AppRouter.navKey,
       initialRoute: AppRouteString.onboarding,
       onGenerateRoute: AppRouter.generateRoute,

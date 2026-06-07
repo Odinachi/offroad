@@ -264,10 +264,13 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final foreColor = JemenaiTheme.foreground(widget.isDark);
-    final mutedFore = JemenaiTheme.mutedForeground(widget.isDark);
-    final cardBg = JemenaiTheme.card(widget.isDark);
-    final border = JemenaiTheme.border(widget.isDark);
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+    final isDark = theme.brightness == Brightness.dark;
+    final foreColor = theme.colorScheme.onSurface;
+    final mutedFore = jc.mutedForeground;
+    final cardBg = jc.card;
+    final border = jc.border;
 
     // Filter models
     final filteredModels =
@@ -293,7 +296,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
     }
 
     return Container(
-      color: JemenaiTheme.background(widget.isDark),
+      color: theme.scaffoldBackgroundColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -352,7 +355,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                         )
                         : null,
                 filled: true,
-                fillColor: JemenaiTheme.muted(widget.isDark),
+                fillColor: jc.muted,
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 12,
@@ -394,11 +397,11 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                         color:
                             isSelected
                                 ? null
-                                : JemenaiTheme.muted(widget.isDark),
+                                : jc.muted,
                         borderRadius: BorderRadius.circular(50),
                         boxShadow:
                             isSelected
-                                ? JemenaiTheme.glowSm(widget.isDark)
+                                ? JemenaiTheme.glowSm(isDark)
                                 : [],
                       ),
                       child: Text(
@@ -421,7 +424,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
           // Models List
           Expanded(
             child: ListView.builder(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 110),
               itemCount: filteredModels.length,
               itemBuilder: (context, index) {
                 final model = filteredModels[index];
@@ -439,17 +442,12 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                       color: cardBg,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color:
-                            isDling
-                                ? JemenaiTheme.jmIndigo(
-                                  widget.isDark,
-                                ).withOpacity(0.3)
-                                : border,
+                        color: isDling ? jc.jmIndigo.withOpacity(0.3) : border,
                       ),
                       boxShadow:
                           isDling
-                              ? JemenaiTheme.glowSm(widget.isDark)
-                              : JemenaiTheme.shadowCard(widget.isDark),
+                              ? JemenaiTheme.glowSm(isDark)
+                              : JemenaiTheme.shadowCard(isDark),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -469,12 +467,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                     decoration: BoxDecoration(
                                       gradient:
                                           isDl ? JemenaiTheme.gradBrand : null,
-                                      color:
-                                          isDl
-                                              ? null
-                                              : JemenaiTheme.muted(
-                                                widget.isDark,
-                                              ),
+                                      color: isDl ? null : jc.muted,
                                       borderRadius: BorderRadius.circular(16),
                                     ),
                                     child: Icon(
@@ -514,7 +507,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                                     ),
                                                 decoration: BoxDecoration(
                                                   gradient:
-                                                      widget.isDark
+                                                      isDark
                                                           ? JemenaiTheme
                                                               .gradSubtleDark
                                                           : JemenaiTheme
@@ -527,9 +520,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                                   style: JemenaiTheme.fontBody(
                                                     fontSize: 10,
                                                     fontWeight: FontWeight.bold,
-                                                    color: JemenaiTheme.primary(
-                                                      widget.isDark,
-                                                    ),
+                                                    color: theme.colorScheme.primary,
                                                   ),
                                                 ),
                                               ),
@@ -571,9 +562,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                           style: JemenaiTheme.fontBody(
                                             fontSize: 12,
                                             fontWeight: FontWeight.bold,
-                                            color: JemenaiTheme.primary(
-                                              widget.isDark,
-                                            ),
+                                            color: theme.colorScheme.primary,
                                           ),
                                         ),
                                         Text(
@@ -603,9 +592,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                 model.description,
                                 style: JemenaiTheme.fontBody(
                                   fontSize: 12,
-                                  color: JemenaiTheme.mutedForeground(
-                                    widget.isDark,
-                                  ),
+                                  color: jc.mutedForeground,
                                   lineHeight: 1.4,
                                 ),
                               ),
@@ -666,9 +653,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                       vertical: 5,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: JemenaiTheme.secondary(
-                                        widget.isDark,
-                                      ),
+                                      color: jc.secondaryFill,
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Row(
@@ -724,9 +709,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                     borderRadius: BorderRadius.circular(4),
                                     child: Container(
                                       height: 6,
-                                      color: JemenaiTheme.secondary(
-                                        widget.isDark,
-                                      ),
+                                      color: jc.secondaryFill,
                                       child: FractionallySizedBox(
                                         alignment: Alignment.centerLeft,
                                         widthFactor: model.iq / 100,
@@ -770,9 +753,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                       borderRadius: BorderRadius.circular(4),
                                       child: Container(
                                         height: 6,
-                                        color: JemenaiTheme.secondary(
-                                          widget.isDark,
-                                        ),
+                                        color: jc.secondaryFill,
                                         child: FractionallySizedBox(
                                           alignment: Alignment.centerLeft,
                                           widthFactor: prog / 100,
@@ -806,9 +787,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                               vertical: 3,
                                             ),
                                             decoration: BoxDecoration(
-                                              color: JemenaiTheme.secondary(
-                                                widget.isDark,
-                                              ),
+                                              color: jc.secondaryFill,
                                               borderRadius:
                                                   BorderRadius.circular(6),
                                             ),
@@ -862,7 +841,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                           AnimatedContainer(
                             duration: const Duration(milliseconds: 200),
                             decoration: BoxDecoration(
-                              color: JemenaiTheme.secondary(widget.isDark),
+                              color: jc.secondaryFill,
                               border: Border(top: BorderSide(color: border)),
                             ),
                             padding: const EdgeInsets.all(12),
@@ -894,9 +873,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                             device,
                                             style: JemenaiTheme.fontBody(
                                               fontSize: 11,
-                                              color: JemenaiTheme.foreground(
-                                                widget.isDark,
-                                              ),
+                                              color: theme.colorScheme.onSurface,
                                             ),
                                           ),
                                         ],
@@ -923,6 +900,9 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
     bool isDling,
     double prog,
   ) {
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+    final isDark = theme.brightness == Brightness.dark;
     if (isDl) {
       return InkWell(
         onTap: () {
@@ -935,13 +915,13 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
           width: 36,
           height: 36,
           decoration: BoxDecoration(
-            color: JemenaiTheme.destructive(widget.isDark).withOpacity(0.1),
+            color: theme.colorScheme.error.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
             Icons.delete_outline,
             size: 16,
-            color: JemenaiTheme.destructive(widget.isDark),
+            color: theme.colorScheme.error,
           ),
         ),
       );
@@ -960,13 +940,13 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
           width: 36,
           height: 36,
           decoration: BoxDecoration(
-            color: JemenaiTheme.secondary(widget.isDark),
+            color: jc.secondaryFill,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
             Icons.pause,
             size: 16,
-            color: JemenaiTheme.foreground(widget.isDark),
+            color: theme.colorScheme.onSurface,
           ),
         ),
       );
@@ -986,7 +966,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
         decoration: BoxDecoration(
           gradient: JemenaiTheme.gradBrand,
           borderRadius: BorderRadius.circular(12),
-          boxShadow: JemenaiTheme.glowSm(widget.isDark),
+          boxShadow: JemenaiTheme.glowSm(isDark),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -1008,10 +988,12 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
   }
 
   Widget _buildStatPill(IconData icon, String text, Color color) {
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: JemenaiTheme.secondary(widget.isDark),
+        color: jc.secondaryFill,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -1020,7 +1002,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
           Icon(
             icon,
             size: 12,
-            color: JemenaiTheme.mutedForeground(widget.isDark),
+            color: jc.mutedForeground,
           ),
           const SizedBox(width: 4),
           Text(

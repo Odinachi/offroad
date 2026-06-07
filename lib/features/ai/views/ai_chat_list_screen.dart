@@ -62,13 +62,16 @@ class ChatsListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final foreColor = JemenaiTheme.foreground(isDark);
-    final mutedFore = JemenaiTheme.mutedForeground(isDark);
-    final cardBg = JemenaiTheme.card(isDark);
-    final border = JemenaiTheme.border(isDark);
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+    final isDark = theme.brightness == Brightness.dark;
+    final foreColor = theme.colorScheme.onSurface;
+    final mutedFore = jc.mutedForeground;
+    final cardBg = jc.card;
+    final border = jc.border;
 
     return Container(
-      color: JemenaiTheme.background(isDark),
+      color: theme.scaffoldBackgroundColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -170,9 +173,7 @@ class ChatsListScreen extends StatelessWidget {
                             style: JemenaiTheme.fontBody(
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
-                              color: JemenaiTheme.primary(
-                                isDark,
-                              ).withOpacity(0.75),
+                              color: theme.colorScheme.primary.withOpacity(0.75),
                             ),
                           ),
                         ],

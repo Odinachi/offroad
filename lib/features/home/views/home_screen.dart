@@ -131,28 +131,32 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final foreColor = JemenaiTheme.foreground(widget.isDark);
-    final mutedFore = JemenaiTheme.mutedForeground(widget.isDark);
-    final cardBg = JemenaiTheme.card(widget.isDark);
-    final border = JemenaiTheme.border(widget.isDark);
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+    final isDark = theme.brightness == Brightness.dark;
+    final foreColor = theme.colorScheme.onSurface;
+    final mutedFore = jc.mutedForeground;
+    final cardBg = jc.card;
+    final border = jc.border;
 
     return Container(
-      color: JemenaiTheme.background(widget.isDark),
+      color: theme.scaffoldBackgroundColor,
       child: SingleChildScrollView(
+        padding: const EdgeInsets.only(bottom: 110),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Hero Header
-            _buildHeroHeader(foreColor, mutedFore),
+            _buildHeroHeader(theme, isDark, foreColor, mutedFore, cardBg, border),
 
             // Suggested Prompts
-            _buildSuggestedPrompts(foreColor, cardBg, border),
+            _buildSuggestedPrompts(theme, isDark, foreColor, cardBg, border),
 
             // Quick Actions Grid
-            _buildQuickActions(foreColor, mutedFore),
+            _buildQuickActions(isDark, foreColor, mutedFore),
 
             // Recent Chats
-            _buildRecentChats(foreColor, mutedFore, cardBg, border),
+            _buildRecentChats(theme, isDark, foreColor, mutedFore, cardBg, border),
 
             const SizedBox(height: 16),
           ],
@@ -161,7 +165,14 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildHeroHeader(Color foreColor, Color mutedFore) {
+  Widget _buildHeroHeader(
+    ThemeData theme,
+    bool isDark,
+    Color foreColor,
+    Color mutedFore,
+    Color cardBg,
+    Color border,
+  ) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
       child: Column(
@@ -205,10 +216,10 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               decoration: BoxDecoration(
-                color: JemenaiTheme.card(widget.isDark),
+                color: cardBg,
                 borderRadius: BorderRadius.circular(50),
-                border: Border.all(color: JemenaiTheme.border(widget.isDark)),
-                boxShadow: JemenaiTheme.shadowCard(widget.isDark),
+                border: Border.all(color: border),
+                boxShadow: JemenaiTheme.shadowCard(isDark),
               ),
               child: Row(
                 children: [
@@ -245,7 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           width: 28,
                           height: 28,
                           decoration: BoxDecoration(
-                            color: JemenaiTheme.secondary(widget.isDark),
+                            color: theme.jColors.secondaryFill,
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Icon(Icons.mic, color: mutedFore, size: 14),
@@ -256,7 +267,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: 28,
                         height: 28,
                         decoration: BoxDecoration(
-                          color: JemenaiTheme.secondary(widget.isDark),
+                          color: theme.jColors.secondaryFill,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Icon(Icons.search, color: mutedFore, size: 14),
@@ -272,7 +283,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildQuickActions(Color foreColor, Color mutedFore) {
+  Widget _buildQuickActions(bool isDark, Color foreColor, Color mutedFore) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -321,10 +332,10 @@ class _HomeScreenState extends State<HomeScreen> {
               borderRadius: BorderRadius.circular(50),
               child: Container(
                 decoration: BoxDecoration(
-                  color: widget.isDark ? darkBg : accent.withOpacity(0.08),
+                  color: isDark ? darkBg : accent.withOpacity(0.08),
                   borderRadius: BorderRadius.circular(50),
                   border: Border.all(
-                    color: widget.isDark ? darkBg : accent.withOpacity(0.12),
+                    color: isDark ? darkBg : accent.withOpacity(0.12),
                   ),
                 ),
                 padding: const EdgeInsets.symmetric(
@@ -352,7 +363,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                           color:
-                              widget.isDark
+                              isDark
                                   ? Colors.white.withOpacity(0.88)
                                   : foreColor,
                           lineHeight: 1.1,
@@ -369,7 +380,14 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildSuggestedPrompts(Color foreColor, Color cardBg, Color border) {
+  Widget _buildSuggestedPrompts(
+    ThemeData theme,
+    bool isDark,
+    Color foreColor,
+    Color cardBg,
+    Color border,
+  ) {
+    final jc = theme.jColors;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -380,7 +398,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Icon(
                 Icons.auto_awesome,
                 size: 16,
-                color: JemenaiTheme.primary(widget.isDark),
+                color: theme.colorScheme.primary,
               ),
               const SizedBox(width: 8),
               Text(
@@ -404,7 +422,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: InkWell(
-                      onTap: () => widget.onNavigate('chat', {'prompt': p}),
+                      onTap: () => AppRouter.push(
+                        AppRouteString.chat,
+                        args: {'prompt': p},
+                      ),
                       borderRadius: BorderRadius.circular(50),
                       child: Container(
                         padding: const EdgeInsets.symmetric(
@@ -415,7 +436,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: cardBg,
                           borderRadius: BorderRadius.circular(50),
                           border: Border.all(color: border),
-                          boxShadow: JemenaiTheme.shadowCard(widget.isDark),
+                          boxShadow: JemenaiTheme.shadowCard(isDark),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -427,16 +448,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                 overflow: TextOverflow.ellipsis,
                                 style: JemenaiTheme.fontBody(
                                   fontSize: 13,
-                                  color: JemenaiTheme.mutedForeground(
-                                    widget.isDark,
-                                  ),
+                                  color: jc.mutedForeground,
                                 ),
                               ),
                             ),
                             Icon(
                               Icons.arrow_outward,
                               size: 14,
-                              color: JemenaiTheme.primary(widget.isDark),
+                              color: theme.colorScheme.primary,
                             ),
                           ],
                         ),
@@ -451,6 +470,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildRecentChats(
+    ThemeData theme,
+    bool isDark,
     Color foreColor,
     Color mutedFore,
     Color cardBg,
@@ -479,13 +500,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               InkWell(
-                onTap: () => widget.onNavigate('chats', {}),
+                onTap: () => AppRouter.push(AppRouteString.chatsList),
                 child: Text(
                   'View all',
                   style: JemenaiTheme.fontBody(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: JemenaiTheme.primary(widget.isDark),
+                    color: theme.colorScheme.primary,
                   ),
                 ),
               ),
@@ -502,7 +523,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: InkWell(
-                      onTap: () => widget.onNavigate('chat', {}),
+                      onTap: () => AppRouter.push(AppRouteString.chat),
                       borderRadius: BorderRadius.circular(50),
                       child: Container(
                         padding: const EdgeInsets.all(12),
@@ -510,7 +531,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: cardBg,
                           borderRadius: BorderRadius.circular(50),
                           border: Border.all(color: border),
-                          boxShadow: JemenaiTheme.shadowCard(widget.isDark),
+                          boxShadow: JemenaiTheme.shadowCard(isDark),
                         ),
                         child: Row(
                           children: [
@@ -519,7 +540,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               height: 32,
                               decoration: BoxDecoration(
                                 gradient:
-                                    widget.isDark
+                                    isDark
                                         ? JemenaiTheme.gradSubtleDark
                                         : JemenaiTheme.gradSubtleLight,
                                 borderRadius: BorderRadius.circular(10),
@@ -527,7 +548,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: Icon(
                                 Icons.auto_awesome,
                                 size: 14,
-                                color: JemenaiTheme.primary(widget.isDark),
+                                color: theme.colorScheme.primary,
                               ),
                             ),
                             const SizedBox(width: 12),

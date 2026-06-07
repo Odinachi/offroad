@@ -1,62 +1,123 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class AppAssets {
-  static const String apple = 'assets/svg/apple.svg';
-  static const String attachment = 'assets/svg/attachment.svg';
-  static const String brain = 'assets/svg/brain.svg';
-  static const String camera = 'assets/svg/camera.svg';
-  static const String chat = 'assets/svg/chat.svg';
-  static const String code = 'assets/svg/code.svg';
-  static const String doc = 'assets/svg/doc.svg';
-  static const String eyeActive = 'assets/svg/eye_active.svg';
-  static const String eyeClose = 'assets/svg/eye_close.svg';
-  static const String flash = 'assets/svg/flash.svg';
-  static const String google = 'assets/svg/google.svg';
-  static const String hardDrive = 'assets/svg/hard_drive.svg';
-  static const String home = 'assets/svg/home.svg';
-  static const String light = 'assets/svg/light.svg';
-  static const String lock = 'assets/svg/lock.svg';
-  static const String mic = 'assets/svg/mic.svg';
-  static const String music = 'assets/svg/music.svg';
-  static const String offWifi = 'assets/svg/off_wifi.svg';
-  static const String photo = 'assets/svg/photo.svg';
-  static const String ramMemory = 'assets/svg/ram_memory.svg';
-  static const String search = 'assets/svg/search.svg';
-  static const String settings = 'assets/svg/settings.svg';
-  static const String shield = 'assets/svg/shield.svg';
-  static const String store = 'assets/svg/store.svg';
-  static const String text = 'assets/svg/text.svg';
-  static const String transcript = 'assets/svg/transcript.svg';
-  static const String trash = 'assets/svg/trash.svg';
-  static const String url = 'assets/svg/url.svg';
-  static const String web = 'assets/svg/web.svg';
-}
+final class SvgAsset {
+  const SvgAsset(this.path);
 
-class AppSvg extends StatelessWidget {
-  final String assetName;
-  final double? width;
-  final double? height;
-  final Color? color;
-  final BoxFit fit;
+  final String path;
 
-  const AppSvg(
-    this.assetName, {
-    super.key,
-    this.width,
-    this.height,
-    this.color,
-    this.fit = BoxFit.contain,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  /// Renders this asset via [SvgPicture.asset].
+  SvgPicture svg({
+    Key? key,
+    double? width,
+    double? height,
+    BoxFit fit = BoxFit.contain,
+    AlignmentGeometry alignment = Alignment.center,
+    Color? color,
+    BlendMode colorBlendMode = BlendMode.srcIn,
+    String? semanticsLabel,
+    bool excludeFromSemantics = false,
+    AssetBundle? bundle,
+    String? package,
+    WidgetBuilder? placeholderBuilder,
+    SvgTheme? theme,
+    ColorFilter? colorFilter,
+  }) {
     return SvgPicture.asset(
-      assetName,
+      path,
+      key: key,
       width: width,
       height: height,
-      colorFilter: color != null ? ColorFilter.mode(color!, BlendMode.srcIn) : null,
       fit: fit,
+      alignment: alignment,
+      colorFilter:
+          colorFilter ??
+          (color != null ? ColorFilter.mode(color, colorBlendMode) : null),
+      semanticsLabel: semanticsLabel,
+      excludeFromSemantics: excludeFromSemantics,
+      bundle: bundle,
+      package: package,
+      placeholderBuilder: placeholderBuilder,
+      theme: theme,
     );
   }
+}
+
+/// Bundled raster under `assets/images/` (declared in `pubspec.yaml`).
+///
+/// Add an `Assets.image` catalog (mirroring [SvgAssets]) when bitmaps ship.
+final class ImageAsset {
+  const ImageAsset(this.path);
+
+  final String path;
+}
+
+/// All SVGs under `assets/svgs/`. Example: `Assets.svg.home.svg(width: 24)`.
+final class SvgAssets {
+  final SvgAsset apple;
+  final SvgAsset attachment;
+  final SvgAsset brain;
+  final SvgAsset camera;
+  final SvgAsset chat;
+  final SvgAsset code;
+  final SvgAsset doc;
+  final SvgAsset eyeActive;
+  final SvgAsset eyeClose;
+  final SvgAsset flash;
+  final SvgAsset google;
+  final SvgAsset hardDrive;
+  final SvgAsset home;
+  final SvgAsset light;
+  final SvgAsset lock;
+  final SvgAsset mic;
+  final SvgAsset music;
+  final SvgAsset offWifi;
+  final SvgAsset photo;
+  final SvgAsset ramMemory;
+  final SvgAsset search;
+  final SvgAsset settings;
+  final SvgAsset shield;
+  final SvgAsset store;
+  final SvgAsset text;
+  final SvgAsset transcript;
+  final SvgAsset trash;
+  final SvgAsset url;
+  final SvgAsset web;
+
+  const SvgAssets({
+    this.web = const SvgAsset('assets/svg/web.svg'),
+    this.url = const SvgAsset('assets/svg/url.svg'),
+    this.attachment = const SvgAsset('assets/svg/attachment.svg'),
+    this.brain = const SvgAsset('assets/svg/brain.svg'),
+    this.camera = const SvgAsset('assets/svg/camera.svg'),
+    this.chat = const SvgAsset('assets/svg/chat.svg'),
+    this.code = const SvgAsset('assets/svg/code.svg'),
+    this.doc = const SvgAsset('assets/svg/doc.svg'),
+    this.eyeActive = const SvgAsset('assets/svg/eye_active.svg'),
+    this.eyeClose = const SvgAsset('assets/svg/eye_close.svg'),
+    this.flash = const SvgAsset('assets/svg/flash.svg'),
+    this.google = const SvgAsset('assets/svg/google.svg'),
+    this.hardDrive = const SvgAsset('assets/svg/hard_drive.svg'),
+    this.home = const SvgAsset('assets/svg/home.svg'),
+    this.light = const SvgAsset('assets/svg/light.svg'),
+    this.lock = const SvgAsset('assets/svg/lock.svg'),
+    this.mic = const SvgAsset('assets/svg/mic.svg'),
+    this.music = const SvgAsset('assets/svg/music.svg'),
+    this.offWifi = const SvgAsset('assets/svg/off_wifi.svg'),
+    this.photo = const SvgAsset('assets/svg/photo.svg'),
+    this.ramMemory = const SvgAsset('assets/svg/ram_memory.svg'),
+    this.search = const SvgAsset('assets/svg/search.svg'),
+    this.settings = const SvgAsset('assets/svg/settings.svg'),
+    this.shield = const SvgAsset('assets/svg/shield.svg'),
+    this.store = const SvgAsset('assets/svg/store.svg'),
+    this.text = const SvgAsset('assets/svg/text.svg'),
+    this.transcript = const SvgAsset('assets/svg/transcript.svg'),
+    this.trash = const SvgAsset('assets/svg/trash.svg'),
+    this.apple = const SvgAsset('assets/svg/apple.svg'),
+  });
+}
+
+/// Typed asset entry points (AGENT.md §8).
+abstract final class Assets {
+  static const svg = SvgAssets();
 }

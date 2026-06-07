@@ -28,10 +28,13 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final foreColor = JemenaiTheme.foreground(widget.isDark);
-    final mutedFore = JemenaiTheme.mutedForeground(widget.isDark);
-    final cardBg = JemenaiTheme.card(widget.isDark);
-    final border = JemenaiTheme.border(widget.isDark);
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+    final isDark = theme.brightness == Brightness.dark;
+    final foreColor = theme.colorScheme.onSurface;
+    final mutedFore = jc.mutedForeground;
+    final cardBg = jc.card;
+    final border = jc.border;
 
     // Filter active items
     final activeModels =
@@ -60,9 +63,9 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
     }
 
     return Container(
-      color: JemenaiTheme.background(widget.isDark),
+      color: theme.scaffoldBackgroundColor,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: 24),
+        padding: const EdgeInsets.only(bottom: 110),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -117,7 +120,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                   color: cardBg,
                   borderRadius: BorderRadius.circular(50),
                   border: Border.all(color: border),
-                  boxShadow: JemenaiTheme.shadowCard(widget.isDark),
+                  boxShadow: JemenaiTheme.shadowCard(isDark),
                 ),
                 child: Row(
                   children: [
@@ -132,7 +135,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                             size: const Size(100, 100),
                             painter: DonutChartPainter(
                               pct: usedPct / 100,
-                              isDark: widget.isDark,
+                              isDark: isDark,
                             ),
                           ),
                           Column(
@@ -170,7 +173,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                             valueText:
                                 '${usedGB.toStringAsFixed(1)} / ${_totalGB.toInt()} GB',
                             pct: usedPct,
-                            color: JemenaiTheme.primary(widget.isDark),
+                            color: theme.colorScheme.primary,
                             isPrimary: true,
                           ),
                           const SizedBox(height: 10),
@@ -221,6 +224,9 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
     required Color color,
     bool isPrimary = false,
   }) {
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -234,8 +240,8 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                 fontWeight: isPrimary ? FontWeight.bold : FontWeight.normal,
                 color:
                     isPrimary
-                        ? JemenaiTheme.foreground(widget.isDark)
-                        : JemenaiTheme.mutedForeground(widget.isDark),
+                        ? theme.colorScheme.onSurface
+                        : jc.mutedForeground,
               ),
             ),
             Text(
@@ -243,7 +249,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
               style: JemenaiTheme.fontBody(
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
-                color: JemenaiTheme.foreground(widget.isDark),
+                color: theme.colorScheme.onSurface,
               ),
             ),
           ],
@@ -253,7 +259,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
           borderRadius: BorderRadius.circular(4),
           child: Container(
             height: 4.5,
-            color: JemenaiTheme.secondary(widget.isDark),
+            color: jc.secondaryFill,
             child: FractionallySizedBox(
               alignment: Alignment.centerLeft,
               widthFactor: (pct / 100).clamp(0.0, 1.0),
@@ -273,6 +279,10 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
     Color foreColor,
     Color mutedFore,
   ) {
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+    final isDark = theme.brightness == Brightness.dark;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -297,7 +307,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
               color: cardBg,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(color: border),
-              boxShadow: JemenaiTheme.shadowCard(widget.isDark),
+              boxShadow: JemenaiTheme.shadowCard(isDark),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -307,7 +317,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                   borderRadius: BorderRadius.circular(8),
                   child: Container(
                     height: 12,
-                    color: JemenaiTheme.secondary(widget.isDark),
+                    color: jc.secondaryFill,
                     child:
                         activeModels.isEmpty
                             ? const SizedBox.shrink()
@@ -404,7 +414,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                         color: cardBg,
                         borderRadius: BorderRadius.circular(50),
                         border: Border.all(color: border),
-                        boxShadow: JemenaiTheme.shadowCard(widget.isDark),
+                        boxShadow: JemenaiTheme.shadowCard(isDark),
                       ),
                       child: Row(
                         children: [
@@ -449,12 +459,10 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                             icon: Icon(
                               Icons.delete_outline,
                               size: 16,
-                              color: JemenaiTheme.destructive(widget.isDark),
+                              color: theme.colorScheme.error,
                             ),
                             style: IconButton.styleFrom(
-                              backgroundColor: JemenaiTheme.destructive(
-                                widget.isDark,
-                              ).withOpacity(0.08),
+                              backgroundColor: theme.colorScheme.error.withOpacity(0.08),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -473,6 +481,10 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
   }
 
   Widget _buildTipsSection(Color foreColor, Color mutedFore) {
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+    final isDark = theme.brightness == Brightness.dark;
+
     return Column(
       children: [
         // Tip 1: Optimize Storage
@@ -481,10 +493,10 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
           child: Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: JemenaiTheme.card(widget.isDark),
+              color: jc.card,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: JemenaiTheme.border(widget.isDark)),
-              boxShadow: JemenaiTheme.shadowCard(widget.isDark),
+              border: Border.all(color: jc.border),
+              boxShadow: JemenaiTheme.shadowCard(isDark),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -520,7 +532,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                         'TinyLlama (600 MB) offers a 4x storage saving over larger models for everyday tasks.',
                         style: JemenaiTheme.fontBody(
                           fontSize: 11,
-                          color: JemenaiTheme.mutedForeground(widget.isDark),
+                          color: jc.mutedForeground,
                         ),
                       ),
                       const SizedBox(height: 6),
@@ -531,7 +543,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                           style: JemenaiTheme.fontBody(
                             fontSize: 11.5,
                             fontWeight: FontWeight.bold,
-                            color: JemenaiTheme.primary(widget.isDark),
+                            color: theme.colorScheme.primary,
                           ),
                         ),
                       ),
@@ -549,10 +561,10 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
           child: Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: JemenaiTheme.card(widget.isDark),
+              color: jc.card,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: JemenaiTheme.border(widget.isDark)),
-              boxShadow: JemenaiTheme.shadowCard(widget.isDark),
+              border: Border.all(color: jc.border),
+              boxShadow: JemenaiTheme.shadowCard(isDark),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -588,7 +600,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                         'Check storage impact before committing to a large model download.',
                         style: JemenaiTheme.fontBody(
                           fontSize: 11,
-                          color: JemenaiTheme.mutedForeground(widget.isDark),
+                          color: jc.mutedForeground,
                         ),
                       ),
                       const SizedBox(height: 6),
@@ -599,7 +611,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                           style: JemenaiTheme.fontBody(
                             fontSize: 11.5,
                             fontWeight: FontWeight.bold,
-                            color: JemenaiTheme.primary(widget.isDark),
+                            color: theme.colorScheme.primary,
                           ),
                         ),
                       ),

@@ -21,13 +21,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final foreColor = JemenaiTheme.foreground(widget.isDark);
-    final mutedFore = JemenaiTheme.mutedForeground(widget.isDark);
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+    final isDark = theme.brightness == Brightness.dark;
+    final foreColor = theme.colorScheme.onSurface;
+    final mutedFore = jc.mutedForeground;
 
     return Container(
-      color: JemenaiTheme.background(widget.isDark),
+      color: theme.scaffoldBackgroundColor,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: 24),
+        padding: const EdgeInsets.only(bottom: 110),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -42,7 +45,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     decoration: BoxDecoration(
                       gradient: JemenaiTheme.gradBrand,
                       borderRadius: BorderRadius.circular(18),
-                      boxShadow: JemenaiTheme.glowSm(widget.isDark),
+                      boxShadow: JemenaiTheme.glowSm(isDark),
                     ),
                     alignment: Alignment.center,
                     child: Text(
@@ -109,21 +112,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
               label: 'Appearance',
               children: [
                 _buildToggleRow(
-                  icon: widget.isDark ? Icons.dark_mode : Icons.light_mode,
+                  icon: isDark ? Icons.dark_mode : Icons.light_mode,
                   iBg:
-                      widget.isDark
+                      isDark
                           ? const Color(0xFF1E1B4B)
                           : const Color(0xFFFEF3C7),
                   iColor:
-                      widget.isDark
+                      isDark
                           ? const Color(0xFF818CF8)
                           : const Color(0xFFD97706),
                   title: 'Dark Mode',
                   sub:
-                      widget.isDark
+                      isDark
                           ? 'Dark theme active'
                           : 'Light theme active',
-                  value: widget.isDark,
+                  value: isDark,
                   onChanged: (val) => {},
                 ),
               ],
@@ -137,7 +140,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 _buildChipSelectorRow(
                   icon: Icons.flash_on,
                   iBg: const Color(0xFF1E1B4B),
-                  iColor: JemenaiTheme.primary(widget.isDark),
+                  iColor: theme.colorScheme.primary,
                   title: 'Response Speed',
                   sub: 'Controls streaming token rate',
                   value: _speed,
@@ -204,7 +207,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   iColor: const Color(0xFFFBBF24),
                   title: 'Storage Manager',
                   sub: '6.6 GB used by AI models',
-                  onTap: () => widget.onNavigate('storage', {}),
+                  onTap: () {
+                    // Navigate to storage — currently a tab in the PageView
+                  },
                 ),
                 _buildNavRow(
                   icon: Icons.delete_outline,
@@ -321,22 +326,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 icon: Icon(
                   Icons.logout,
                   size: 16,
-                  color: JemenaiTheme.destructive(widget.isDark),
+                  color: theme.colorScheme.error,
                 ),
                 label: Text(
                   'Sign Out',
                   style: JemenaiTheme.fontBody(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: JemenaiTheme.destructive(widget.isDark),
+                    color: theme.colorScheme.error,
                   ),
                 ),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   side: BorderSide(
-                    color: JemenaiTheme.destructive(
-                      widget.isDark,
-                    ).withOpacity(0.25),
+                    color: theme.colorScheme.error.withOpacity(0.25),
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -354,7 +357,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required String label,
     required List<Widget> children,
   }) {
-    final border = JemenaiTheme.border(widget.isDark);
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+    final isDark = theme.brightness == Brightness.dark;
+    final border = jc.border;
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
       child: Column(
@@ -367,17 +374,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
               style: JemenaiTheme.fontBody(
                 fontSize: 10,
                 fontWeight: FontWeight.bold,
-                color: JemenaiTheme.mutedForeground(widget.isDark),
+                color: jc.mutedForeground,
                 lineHeight: 1.0,
               ),
             ),
           ),
           Container(
             decoration: BoxDecoration(
-              color: JemenaiTheme.card(widget.isDark),
+              color: jc.card,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(color: border),
-              boxShadow: JemenaiTheme.shadowCard(widget.isDark),
+              boxShadow: JemenaiTheme.shadowCard(isDark),
             ),
             child: Column(
               children: List.generate(children.length, (index) {
@@ -406,6 +413,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required bool value,
     required Function(bool) onChanged,
   }) {
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
       child: Row(
@@ -429,7 +439,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   style: JemenaiTheme.fontBody(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
-                    color: JemenaiTheme.foreground(widget.isDark),
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -437,7 +447,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   sub,
                   style: JemenaiTheme.fontBody(
                     fontSize: 11,
-                    color: JemenaiTheme.mutedForeground(widget.isDark),
+                    color: jc.mutedForeground,
                   ),
                 ),
               ],
@@ -446,7 +456,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Switch.adaptive(
             value: value,
             onChanged: onChanged,
-            activeColor: JemenaiTheme.primary(widget.isDark),
+            activeColor: theme.colorScheme.primary,
           ),
         ],
       ),
@@ -463,6 +473,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     Widget? rightWidget,
     bool showChevron = true,
   }) {
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(50),
@@ -490,7 +503,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     style: JemenaiTheme.fontBody(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
-                      color: JemenaiTheme.foreground(widget.isDark),
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                   if (sub != null) ...[
@@ -499,7 +512,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       sub,
                       style: JemenaiTheme.fontBody(
                         fontSize: 11,
-                        color: JemenaiTheme.mutedForeground(widget.isDark),
+                        color: jc.mutedForeground,
                       ),
                     ),
                   ],
@@ -512,7 +525,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Icon(
                 Icons.arrow_forward_ios,
                 size: 16,
-                color: JemenaiTheme.mutedForeground(widget.isDark),
+                color: jc.mutedForeground,
               ),
             ],
           ],
@@ -532,6 +545,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     Map<String, String>? optionLabels,
     required Function(String) onChanged,
   }) {
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+    final isDark = theme.brightness == Brightness.dark;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
       child: Column(
@@ -558,7 +575,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       style: JemenaiTheme.fontBody(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
-                        color: JemenaiTheme.foreground(widget.isDark),
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -566,7 +583,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       sub,
                       style: JemenaiTheme.fontBody(
                         fontSize: 11,
-                        color: JemenaiTheme.mutedForeground(widget.isDark),
+                        color: jc.mutedForeground,
                       ),
                     ),
                   ],
@@ -598,10 +615,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             color:
                                 isSel
                                     ? null
-                                    : JemenaiTheme.secondary(widget.isDark),
+                                    : jc.secondaryFill,
                             borderRadius: BorderRadius.circular(12),
                             boxShadow:
-                                isSel ? JemenaiTheme.glowSm(widget.isDark) : [],
+                                isSel ? JemenaiTheme.glowSm(isDark) : [],
                           ),
                           child: Text(
                             label,
@@ -611,9 +628,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               color:
                                   isSel
                                       ? Colors.white
-                                      : JemenaiTheme.mutedForeground(
-                                        widget.isDark,
-                                      ),
+                                      : jc.mutedForeground,
                             ),
                           ),
                         ),

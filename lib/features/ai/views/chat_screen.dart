@@ -4,10 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jemenai/shared/navigator/app_router.dart';
+import 'package:jemenai/shared/navigator/app_route_string.dart';
 import '../../../shared/theme.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+  final String? modelName;
+  final String? initialPrompt;
+  final bool isTab;
+
+  const ChatScreen({
+    super.key,
+    this.modelName,
+    this.initialPrompt,
+    this.isTab = false,
+  });
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -179,12 +189,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final foreColor = JemenaiTheme.foreground(widget.isDark);
-    final border = JemenaiTheme.border(widget.isDark);
-    final cardBg = JemenaiTheme.card(widget.isDark);
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+    final foreColor = theme.colorScheme.onSurface;
+    final border = jc.border;
+    final cardBg = jc.card;
 
     return Scaffold(
-      backgroundColor: JemenaiTheme.background(widget.isDark),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(56),
         child: Container(
@@ -196,11 +208,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             bottom: false,
             child: Row(
               children: [
-                // Back button
-                IconButton(
-                  onPressed: () => AppRouter.pop(),
-                  icon: Icon(Icons.arrow_back_ios_new, color: foreColor),
-                ),
+                // Back button (hidden if tab)
+                if (!widget.isTab)
+                  IconButton(
+                    onPressed: () => AppRouter.pop(),
+                    icon: Icon(Icons.arrow_back_ios_new, color: foreColor),
+                  )
+                else
+                  const SizedBox(width: 16),
 
                 // Model Dropdown toggle
                 Expanded(
@@ -244,9 +259,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                   'On-device · Private',
                                   style: JemenaiTheme.fontBody(
                                     fontSize: 10,
-                                    color: JemenaiTheme.mutedForeground(
-                                      widget.isDark,
-                                    ),
+                                    color: jc.mutedForeground,
                                   ),
                                 ),
                               ],
@@ -257,7 +270,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                 ? Icons.keyboard_arrow_up
                                 : Icons.keyboard_arrow_down,
                             size: 16,
-                            color: JemenaiTheme.mutedForeground(widget.isDark),
+                            color: jc.mutedForeground,
                           ),
                           const SizedBox(width: 8),
                         ],
@@ -326,6 +339,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     Color border,
     Color foreColor,
   ) {
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+    final isDark = theme.brightness == Brightness.dark;
+
     return Positioned(
       top: 4,
       left: 16,
@@ -335,7 +352,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           color: cardBg,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: border),
-          boxShadow: JemenaiTheme.shadowFloat(widget.isDark),
+          boxShadow: JemenaiTheme.shadowFloat(isDark),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -361,7 +378,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                           height: 32,
                           decoration: BoxDecoration(
                             gradient:
-                                widget.isDark
+                                isDark
                                     ? JemenaiTheme.gradSubtleDark
                                     : JemenaiTheme.gradSubtleLight,
                             borderRadius: BorderRadius.circular(10),
@@ -369,7 +386,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                           child: Icon(
                             Icons.auto_awesome,
                             size: 14,
-                            color: JemenaiTheme.primary(widget.isDark),
+                            color: theme.colorScheme.primary,
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -389,9 +406,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                 'On-device',
                                 style: JemenaiTheme.fontBody(
                                   fontSize: 10,
-                                  color: JemenaiTheme.mutedForeground(
-                                    widget.isDark,
-                                  ),
+                                  color: jc.mutedForeground,
                                 ),
                               ),
                             ],
@@ -401,7 +416,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                           Icon(
                             Icons.done_all,
                             size: 16,
-                            color: JemenaiTheme.primary(widget.isDark),
+                            color: theme.colorScheme.primary,
                           ),
                       ],
                     ),
@@ -414,6 +429,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildMessageBubble(Message msg) {
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+    final isDark = theme.brightness == Brightness.dark;
     final isUser = msg.role == 'user';
 
     return Padding(
@@ -432,7 +450,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   Icon(
                     Icons.push_pin,
                     size: 12,
-                    color: JemenaiTheme.primary(widget.isDark),
+                    color: theme.colorScheme.primary,
                   ),
                   const SizedBox(width: 4),
                   Text(
@@ -440,7 +458,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     style: JemenaiTheme.fontBody(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
-                      color: JemenaiTheme.primary(widget.isDark),
+                      color: theme.colorScheme.primary,
                     ),
                   ),
                 ],
@@ -462,7 +480,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   decoration: BoxDecoration(
                     gradient: JemenaiTheme.gradBrand,
                     borderRadius: BorderRadius.circular(10),
-                    boxShadow: JemenaiTheme.shadowCard(widget.isDark),
+                    boxShadow: JemenaiTheme.shadowCard(isDark),
                   ),
                   child: const Icon(
                     Icons.auto_awesome,
@@ -483,7 +501,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   ),
                   decoration: BoxDecoration(
                     gradient: isUser ? JemenaiTheme.gradBrand : null,
-                    color: isUser ? null : JemenaiTheme.card(widget.isDark),
+                    color: isUser ? null : jc.card,
                     borderRadius: BorderRadius.only(
                       topLeft: const Radius.circular(20),
                       topRight: const Radius.circular(20),
@@ -500,14 +518,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                         isUser
                             ? null
                             : Border.all(
-                              color: JemenaiTheme.border(widget.isDark),
+                              color: jc.border,
                             ),
-                    boxShadow: JemenaiTheme.shadowCard(widget.isDark),
+                    boxShadow: JemenaiTheme.shadowCard(isDark),
                   ),
                   child: MarkdownBodyText(
                     content: msg.content,
                     isUser: isUser,
-                    isDark: widget.isDark,
+                    isDark: isDark,
                   ),
                 ),
               ),
@@ -528,7 +546,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   '${msg.ts.hour.toString().padLeft(2, '0')}:${msg.ts.minute.toString().padLeft(2, '0')}',
                   style: JemenaiTheme.fontBody(
                     fontSize: 10,
-                    color: JemenaiTheme.mutedForeground(widget.isDark),
+                    color: jc.mutedForeground,
                   ),
                 ),
                 if (!isUser) ...[
@@ -546,13 +564,13 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     Icons.push_pin,
                     () => setState(() => msg.pinned = !msg.pinned),
                     activeColor:
-                        msg.pinned ? JemenaiTheme.primary(widget.isDark) : null,
+                        msg.pinned ? theme.colorScheme.primary : null,
                   ),
                   _buildBubbleAction(
                     Icons.thumb_up,
                     () => setState(() => msg.liked = !msg.liked),
                     activeColor:
-                        msg.liked ? JemenaiTheme.primary(widget.isDark) : null,
+                        msg.liked ? theme.colorScheme.primary : null,
                   ),
                   _buildBubbleAction(Icons.volume_up, () {}),
                   _buildBubbleAction(Icons.delete_outline, () {
@@ -574,6 +592,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     VoidCallback onTap, {
     Color? activeColor,
   }) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.only(left: 4.0),
       child: InkWell(
@@ -584,7 +603,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           child: Icon(
             icon,
             size: 13,
-            color: activeColor ?? JemenaiTheme.mutedForeground(widget.isDark),
+            color: activeColor ?? theme.jColors.mutedForeground,
           ),
         ),
       ),
@@ -592,6 +611,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildTypingDots() {
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+    final isDark = theme.brightness == Brightness.dark;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Row(
@@ -605,7 +628,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             decoration: BoxDecoration(
               gradient: JemenaiTheme.gradBrand,
               borderRadius: BorderRadius.circular(10),
-              boxShadow: JemenaiTheme.shadowCard(widget.isDark),
+              boxShadow: JemenaiTheme.shadowCard(isDark),
             ),
             child: const Icon(
               Icons.auto_awesome,
@@ -618,20 +641,20 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             decoration: BoxDecoration(
-              color: JemenaiTheme.card(widget.isDark),
+              color: jc.card,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(20),
                 topRight: Radius.circular(20),
                 bottomLeft: Radius.circular(4),
                 bottomRight: Radius.circular(20),
               ),
-              border: Border.all(color: JemenaiTheme.border(widget.isDark)),
-              boxShadow: JemenaiTheme.shadowCard(widget.isDark),
+              border: Border.all(color: jc.border),
+              boxShadow: JemenaiTheme.shadowCard(isDark),
             ),
             child: SizedBox(
               width: 36,
               height: 12,
-              child: TypingBouncingDots(isDark: widget.isDark),
+              child: TypingBouncingDots(isDark: isDark),
             ),
           ),
         ],
@@ -640,6 +663,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildStreamingBubble() {
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+    final isDark = theme.brightness == Brightness.dark;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Row(
@@ -667,15 +694,15 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               ),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: JemenaiTheme.card(widget.isDark),
+                color: jc.card,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
                   bottomLeft: Radius.circular(4),
                   bottomRight: Radius.circular(20),
                 ),
-                border: Border.all(color: JemenaiTheme.border(widget.isDark)),
-                boxShadow: JemenaiTheme.shadowCard(widget.isDark),
+                border: Border.all(color: jc.border),
+                boxShadow: JemenaiTheme.shadowCard(isDark),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -685,7 +712,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     child: MarkdownBodyText(
                       content: _streamText,
                       isUser: false,
-                      isDark: widget.isDark,
+                      isDark: isDark,
                     ),
                   ),
                   const SizedBox(width: 2),
@@ -701,11 +728,15 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildInputBar(Color cardBg, Color border, Color foreColor) {
-    final mutedFore = JemenaiTheme.mutedForeground(widget.isDark);
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+    final mutedFore = jc.mutedForeground;
+    final keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
+    final extraPadding = (widget.isTab && !keyboardOpen) ? 80.0 : 0.0;
     final hasInput = _inputController.text.trim().isNotEmpty;
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+      padding: EdgeInsets.fromLTRB(16, 8, 16, 16 + extraPadding),
       decoration: BoxDecoration(
         color: cardBg,
         border: Border(top: BorderSide(color: border)),
@@ -716,7 +747,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           children: [
             Container(
               decoration: BoxDecoration(
-                color: JemenaiTheme.background(widget.isDark),
+                color: theme.scaffoldBackgroundColor,
                 borderRadius: BorderRadius.circular(50),
                 border: Border.all(color: border),
               ),
@@ -769,7 +800,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                         Icons.mic,
                         mutedFore,
                         onTap: () {
-                          widget.onNavigate('voice', {});
+                          AppRouter.push(AppRouteString.voice);
                         },
                       ),
                       const SizedBox(width: 4),
@@ -786,12 +817,12 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                           decoration: BoxDecoration(
                             gradient:
                                 hasInput && !_typing && !_streaming
-                                    ? JemenaiTheme.gradBrand
-                                    : null,
+                                      ? JemenaiTheme.gradBrand
+                                      : null,
                             color:
                                 hasInput && !_typing && !_streaming
                                     ? null
-                                    : JemenaiTheme.secondary(widget.isDark),
+                                    : jc.secondaryFill,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Icon(
@@ -902,7 +933,7 @@ class _TypingBouncingDotsState extends State<TypingBouncingDots>
                 height: 7,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: JemenaiTheme.primary(widget.isDark),
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             );
@@ -971,8 +1002,10 @@ class MarkdownBodyText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
     final textStyleColor =
-        isUser ? Colors.white : JemenaiTheme.foreground(isDark);
+        isUser ? Colors.white : theme.colorScheme.onSurface;
 
     // Basic Tokenizer mimicking the React splitter
     // regex splits: code blocks ```...```, bold **...**, italics *...*, and dividers ---...---
@@ -1034,15 +1067,15 @@ class MarkdownBodyText extends StatelessWidget {
             margin: const EdgeInsets.symmetric(vertical: 8),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: JemenaiTheme.secondary(isDark),
+              color: jc.secondaryFill,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: JemenaiTheme.border(isDark)),
+              border: Border.all(color: jc.border),
             ),
             child: Text(
               text,
               style: GoogleFonts.firaCode(
                 fontSize: 12,
-                color: JemenaiTheme.foreground(isDark),
+                color: theme.colorScheme.onSurface,
               ),
             ),
           ),
@@ -1073,7 +1106,7 @@ class MarkdownBodyText extends StatelessWidget {
                         color:
                             isUser
                                 ? Colors.white70
-                                : JemenaiTheme.primary(isDark),
+                                : theme.colorScheme.primary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

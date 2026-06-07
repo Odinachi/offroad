@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:jemenai/shared/assets.dart';
+import 'package:jemenai/shared/navigator/app_route_string.dart';
+import 'package:jemenai/shared/navigator/app_router.dart';
 import '../../../shared/theme.dart';
 
 class OnboardingScreen extends StatefulWidget {
-  
-
-  const OnboardingScreen({
-    super.key,
-    
-  });
+  const OnboardingScreen({super.key});
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -71,12 +69,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     if (_phase == 'auth') {
-      return AuthScreen(onComplete: widget.onComplete, isDark: widget.isDark);
+      return const AuthScreen();
     }
 
     final slide = _slides[_idx];
     final List<Color> colors = slide['colors'] as List<Color>;
     final accent = slide['accent'] as Color;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
       body: Stack(
@@ -110,7 +110,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         ),
                         decoration: BoxDecoration(
                           color:
-                              widget.isDark
+                              isDark
                                   ? Colors.white.withOpacity(0.06)
                                   : Colors.black.withOpacity(0.04),
                           borderRadius: BorderRadius.circular(12),
@@ -120,7 +120,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           style: JemenaiTheme.fontBody(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: JemenaiTheme.mutedForeground(widget.isDark),
+                            color: theme.jColors.mutedForeground,
                           ),
                         ),
                       ),
@@ -180,7 +180,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             style: JemenaiTheme.fontDisplay(
                               fontSize: 32,
                               fontWeight: FontWeight.w800,
-                              color: JemenaiTheme.foreground(widget.isDark),
+                              color: theme.colorScheme.onSurface,
                               lineHeight: 1.15,
                             ),
                           ),
@@ -195,9 +195,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             key: ValueKey<int>(_idx),
                             style: JemenaiTheme.fontBody(
                               fontSize: 14,
-                              color: JemenaiTheme.mutedForeground(
-                                widget.isDark,
-                              ),
+                              color: theme.jColors.mutedForeground,
                               lineHeight: 1.45,
                             ),
                           ),
@@ -228,9 +226,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               color:
                                   isActive
                                       ? accent
-                                      : JemenaiTheme.mutedForeground(
-                                        widget.isDark,
-                                      ).withOpacity(0.3),
+                                      : theme.jColors.mutedForeground
+                                          .withOpacity(0.3),
                               borderRadius: BorderRadius.circular(4),
                             ),
                           );
@@ -336,11 +333,8 @@ class SlideIconPulse extends StatefulWidget {
   final IconData icon;
   final List<Color> gradientColors;
 
-  const SlideIconPulse({
-    super.key,
-    required this.icon,
-    required this.gradientColors,
-  });
+  const SlideIconPulse({key, required this.icon, required this.gradientColors})
+    : super(key: key);
 
   @override
   State<SlideIconPulse> createState() => _SlideIconPulseState();
@@ -448,9 +442,7 @@ class _SlideIconPulseState extends State<SlideIconPulse>
 
 // Authentication Screen Widget
 class AuthScreen extends StatefulWidget {
-
-
-  const AuthScreen({super.key, });
+  const AuthScreen({super.key});
 
   @override
   State<AuthScreen> createState() => _AuthScreenState();
@@ -472,20 +464,23 @@ class _AuthScreenState extends State<AuthScreen> {
         setState(() {
           _loading = false;
         });
-        widget.onComplete();
+        AppRouter.pushReplacement(AppRouteString.dashboard);
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final cardBg = JemenaiTheme.card(widget.isDark);
-    final inputBg = JemenaiTheme.muted(widget.isDark);
-    final foreground = JemenaiTheme.foreground(widget.isDark);
-    final mutedFore = JemenaiTheme.mutedForeground(widget.isDark);
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+    final isDark = theme.brightness == Brightness.dark;
+    final cardBg = jc.card;
+    final inputBg = jc.muted;
+    final foreground = theme.colorScheme.onSurface;
+    final mutedFore = jc.mutedForeground;
 
     return Scaffold(
-      backgroundColor: JemenaiTheme.background(widget.isDark),
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -502,7 +497,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   decoration: BoxDecoration(
                     gradient: JemenaiTheme.gradBrand,
                     borderRadius: BorderRadius.circular(18),
-                    boxShadow: JemenaiTheme.glowMd(widget.isDark),
+                    boxShadow: JemenaiTheme.glowMd(isDark),
                   ),
                   child: const Icon(
                     Icons.auto_awesome,
@@ -539,7 +534,7 @@ class _AuthScreenState extends State<AuthScreen> {
               Container(
                 height: 48,
                 decoration: BoxDecoration(
-                  color: JemenaiTheme.secondary(widget.isDark),
+                  color: jc.secondaryFill,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 padding: const EdgeInsets.all(4),
@@ -556,7 +551,7 @@ class _AuthScreenState extends State<AuthScreen> {
                             borderRadius: BorderRadius.circular(12),
                             boxShadow:
                                 _mode == 'in'
-                                    ? JemenaiTheme.shadowCard(widget.isDark)
+                                    ? JemenaiTheme.shadowCard(isDark)
                                     : [],
                           ),
                           alignment: Alignment.center,
@@ -582,7 +577,7 @@ class _AuthScreenState extends State<AuthScreen> {
                             borderRadius: BorderRadius.circular(12),
                             boxShadow:
                                 _mode == 'up'
-                                    ? JemenaiTheme.shadowCard(widget.isDark)
+                                    ? JemenaiTheme.shadowCard(isDark)
                                     : [],
                           ),
                           alignment: Alignment.center,
@@ -608,19 +603,18 @@ class _AuthScreenState extends State<AuthScreen> {
                   Expanded(
                     child: _buildSocialBtn(
                       label: 'Google',
-                      icon: Image.network(
-                        'https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg',
-                        width: 16,
-                        height: 16,
-                        //errorBuilder: (context, error, stackTrace) =>  Icon(Icons.web, size: 16),
-                      ),
+                      icon: Assets.svg.google.svg(height: 18, width: 18),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: _buildSocialBtn(
                       label: 'Apple',
-                      icon: Icon(Icons.apple, size: 18, color: foreground),
+                      icon: Assets.svg.apple.svg(
+                        height: 18,
+                        width: 18,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ],
@@ -630,9 +624,7 @@ class _AuthScreenState extends State<AuthScreen> {
               // Divider
               Row(
                 children: [
-                  Expanded(
-                    child: Divider(color: JemenaiTheme.border(widget.isDark)),
-                  ),
+                  Expanded(child: Divider(color: jc.border)),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
                     child: Text(
@@ -643,9 +635,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                     ),
                   ),
-                  Expanded(
-                    child: Divider(color: JemenaiTheme.border(widget.isDark)),
-                  ),
+                  Expanded(child: Divider(color: jc.border)),
                 ],
               ),
               const SizedBox(height: 20),
@@ -678,9 +668,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
                     borderSide: BorderSide(
-                      color: JemenaiTheme.primary(
-                        widget.isDark,
-                      ).withOpacity(0.25),
+                      color: theme.colorScheme.primary.withOpacity(0.25),
                       width: 2,
                     ),
                   ),
@@ -724,9 +712,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
                     borderSide: BorderSide(
-                      color: JemenaiTheme.primary(
-                        widget.isDark,
-                      ).withOpacity(0.25),
+                      color: theme.colorScheme.primary.withOpacity(0.25),
                       width: 2,
                     ),
                   ),
@@ -743,8 +729,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   decoration: BoxDecoration(
                     gradient: JemenaiTheme.gradBrand,
                     borderRadius: BorderRadius.circular(16),
-                    boxShadow:
-                        _loading ? [] : JemenaiTheme.glowSm(widget.isDark),
+                    boxShadow: _loading ? [] : JemenaiTheme.glowSm(isDark),
                   ),
                   alignment: Alignment.center,
                   child:
@@ -804,16 +789,22 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Widget _buildSocialBtn({required String label, required Widget icon}) {
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+    final isDark = theme.brightness == Brightness.dark;
+
     return InkWell(
-      onTap: widget.onComplete,
+      onTap: () {
+        AppRouter.pushReplacement(AppRouteString.dashboard);
+      },
       borderRadius: BorderRadius.circular(16),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: JemenaiTheme.card(widget.isDark),
+          color: jc.card,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: JemenaiTheme.border(widget.isDark)),
-          boxShadow: JemenaiTheme.shadowCard(widget.isDark),
+          border: Border.all(color: jc.border),
+          boxShadow: JemenaiTheme.shadowCard(isDark),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -825,7 +816,7 @@ class _AuthScreenState extends State<AuthScreen> {
               style: JemenaiTheme.fontBody(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: JemenaiTheme.foreground(widget.isDark),
+                color: theme.colorScheme.onSurface,
               ),
             ),
           ],
