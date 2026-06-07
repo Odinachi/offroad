@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../shared/theme.dart';
 
 class VoiceChatScreen extends StatefulWidget {
@@ -292,7 +291,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
         children: [
           IconButton(
             onPressed: () => widget.onNavigate('home', {}),
-            icon: const Icon(LucideIcons.chevronLeft, color: Colors.white),
+            icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
             style: IconButton.styleFrom(
               backgroundColor: Colors.white.withOpacity(0.08),
               shape: RoundedRectangleBorder(
@@ -326,7 +325,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
           IconButton(
             onPressed: () => setState(() => _muted = !_muted),
             icon: Icon(
-              _muted ? LucideIcons.volumeX : LucideIcons.volume2,
+              _muted ? Icons.volume_off : Icons.volume_up,
               color: _muted ? const Color(0xFFF87171) : Colors.white,
             ),
             style: IconButton.styleFrom(
@@ -642,9 +641,9 @@ class AIOrbWidget extends StatelessWidget {
 
     final IconData iconData;
     if (state == "speaking") {
-      iconData = LucideIcons.volume2;
+      iconData = Icons.volume_up;
     } else {
-      iconData = LucideIcons.mic;
+      iconData = Icons.mic;
     }
 
     return Icon(iconData, color: Colors.white, size: 36);

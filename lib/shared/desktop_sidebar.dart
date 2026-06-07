@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'theme.dart';
 
 class DesktopSidebar extends StatelessWidget {
@@ -42,7 +41,7 @@ class DesktopSidebar extends StatelessWidget {
                   ],
                 ),
                 child: const Icon(
-                  LucideIcons.sparkles,
+                  Icons.auto_awesome,
                   color: Colors.white,
                   size: 28,
                 ),
@@ -113,7 +112,7 @@ class DesktopSidebar extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
-                    isDark ? LucideIcons.sun : LucideIcons.moon,
+                    isDark ? Icons.light_mode : Icons.dark_mode,
                     size: 16,
                     color:
                         isDark

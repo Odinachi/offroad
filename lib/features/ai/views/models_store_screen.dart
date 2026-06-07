@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../shared/theme.dart';
 
 class ModelsStoreScreen extends StatefulWidget {
@@ -342,14 +341,14 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                   color: mutedFore,
                 ),
                 prefixIcon: Icon(
-                  LucideIcons.search,
+                  Icons.search,
                   size: 16,
                   color: mutedFore,
                 ),
                 suffixIcon:
                     _searchQuery.isNotEmpty
                         ? IconButton(
-                          icon: Icon(LucideIcons.x, size: 16, color: mutedFore),
+                          icon: Icon(Icons.close, size: 16, color: mutedFore),
                           onPressed: () {
                             _searchController.clear();
                             setState(() => _searchQuery = "");
@@ -484,8 +483,8 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                     ),
                                     child: Icon(
                                       isDl
-                                          ? LucideIcons.sparkles
-                                          : LucideIcons.brain,
+                                          ? Icons.auto_awesome
+                                          : Icons.psychology,
                                       color: isDl ? Colors.white : mutedFore,
                                       size: 20,
                                     ),
@@ -622,12 +621,12 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                 runSpacing: 6,
                                 children: [
                                   _buildStatPill(
-                                    LucideIcons.hardDrive,
+                                    Icons.storage,
                                     '${model.sizeGB} GB',
                                     foreColor,
                                   ),
                                   _buildStatPill(
-                                    LucideIcons.cpu,
+                                    Icons.memory,
                                     '${model.ramGB} GB RAM',
                                     foreColor,
                                   ),
@@ -648,7 +647,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Icon(
-                                          LucideIcons.zap,
+                                          Icons.flash_on,
                                           size: 12,
                                           color: speedStyle['text'] as Color,
                                         ),
@@ -680,7 +679,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         const Icon(
-                                          LucideIcons.wifiOff,
+                                          Icons.wifi_off,
                                           size: 12,
                                           color: Color(0xFF4ADE80),
                                         ),
@@ -848,8 +847,8 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                         ),
                                         Icon(
                                           isExpanded
-                                              ? LucideIcons.chevronUp
-                                              : LucideIcons.chevronDown,
+                                              ? Icons.keyboard_arrow_up
+                                              : Icons.keyboard_arrow_down,
                                           size: 12,
                                           color: mutedFore,
                                         ),
@@ -890,7 +889,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           const Icon(
-                                            LucideIcons.checkCircle2,
+                                            Icons.check_circle_outline,
                                             size: 12,
                                             color: Color(0xFF4ADE80),
                                           ),
@@ -944,7 +943,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
-            LucideIcons.trash2,
+            Icons.delete_outline,
             size: 16,
             color: JemenaiTheme.destructive(widget.isDark),
           ),
@@ -969,7 +968,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
-            LucideIcons.pause,
+            Icons.pause,
             size: 16,
             color: JemenaiTheme.foreground(widget.isDark),
           ),
@@ -996,7 +995,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(LucideIcons.download, size: 13, color: Colors.white),
+            const Icon(Icons.download, size: 13, color: Colors.white),
             const SizedBox(width: 4),
             Text(
               text,

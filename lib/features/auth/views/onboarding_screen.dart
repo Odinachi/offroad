@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../shared/theme.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -22,7 +21,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   final List<Map<String, dynamic>> _slides = [
     {
-      'icon': LucideIcons.shield,
+      'icon': Icons.shield,
       'label': 'Privacy First',
       'title': 'Your AI.\nYour Device.\nYour Data.',
       'sub':
@@ -31,7 +30,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       'accent': const Color(0xFF818CF8),
     },
     {
-      'icon': LucideIcons.wifiOff,
+      'icon': Icons.wifi_off,
       'label': 'Offline Ready',
       'title': 'Works Without\nInternet.\nAlways.',
       'sub':
@@ -40,7 +39,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       'accent': const Color(0xFF38BDF8),
     },
     {
-      'icon': LucideIcons.zap,
+      'icon': Icons.flash_on,
       'label': 'Instant Speed',
       'title': 'On-Device\nMeans Zero\nLatency.',
       'sub':
@@ -49,7 +48,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       'accent': const Color(0xFFC084FC),
     },
     {
-      'icon': LucideIcons.cpu,
+      'icon': Icons.memory,
       'label': 'Powerful Models',
       'title': 'State-of-Art AI\nFits in Your\nPocket.',
       'sub':
@@ -276,7 +275,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             ),
                             const SizedBox(width: 8),
                             const Icon(
-                              LucideIcons.arrowRight,
+                              Icons.arrow_forward,
                               color: Colors.white,
                               size: 16,
                             ),
@@ -505,7 +504,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     boxShadow: JemenaiTheme.glowMd(widget.isDark),
                   ),
                   child: const Icon(
-                    LucideIcons.sparkles,
+                    Icons.auto_awesome,
                     color: Colors.white,
                     size: 32,
                   ),
@@ -612,7 +611,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         'https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg',
                         width: 16,
                         height: 16,
-                        //errorBuilder: (context, error, stackTrace) =>  Icon(LucideIcons.chrome, size: 16),
+                        //errorBuilder: (context, error, stackTrace) =>  Icon(Icons.web, size: 16),
                       ),
                     ),
                   ),
@@ -708,7 +707,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   suffixIcon: IconButton(
                     onPressed: () => setState(() => _showPass = !_showPass),
                     icon: Icon(
-                      _showPass ? LucideIcons.eyeOff : LucideIcons.eye,
+                      _showPass ? Icons.visibility_off : Icons.visibility,
                       size: 18,
                       color: mutedFore,
                     ),
@@ -770,7 +769,7 @@ class _AuthScreenState extends State<AuthScreen> {
                               ),
                               const SizedBox(width: 8),
                               const Icon(
-                                LucideIcons.arrowRight,
+                                Icons.arrow_forward,
                                 color: Colors.white,
                                 size: 16,
                               ),
@@ -784,7 +783,7 @@ class _AuthScreenState extends State<AuthScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(LucideIcons.lock, size: 12, color: mutedFore),
+                  Icon(Icons.lock, size: 12, color: mutedFore),
                   const SizedBox(width: 6),
                   Text(
                     'End-to-end encrypted · GDPR compliant',

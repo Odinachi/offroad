@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../shared/theme.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -109,7 +108,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ],
                     ),
                   ),
-                  Icon(LucideIcons.chevronRight, size: 18, color: mutedFore),
+                  Icon(Icons.arrow_forward_ios, size: 18, color: mutedFore),
                 ],
               ),
             ),
@@ -119,7 +118,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               label: 'Appearance',
               children: [
                 _buildToggleRow(
-                  icon: widget.isDark ? LucideIcons.moon : LucideIcons.sun,
+                  icon: widget.isDark ? Icons.dark_mode : Icons.light_mode,
                   iBg:
                       widget.isDark
                           ? const Color(0xFF1E1B4B)
@@ -145,7 +144,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 // Response Speed Chip Group
                 _buildChipSelectorRow(
-                  icon: LucideIcons.zap,
+                  icon: Icons.flash_on,
                   iBg: const Color(0xFF1E1B4B),
                   iColor: JemenaiTheme.primary(widget.isDark),
                   title: 'Response Speed',
@@ -155,7 +154,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onChanged: (val) => setState(() => _speed = val),
                 ),
                 _buildToggleRow(
-                  icon: LucideIcons.wifiOff,
+                  icon: Icons.wifi_off,
                   iBg: const Color(0xFF022016),
                   iColor: const Color(0xFF4ADE80),
                   title: 'Offline Mode',
@@ -172,7 +171,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               label: 'Voice',
               children: [
                 _buildToggleRow(
-                  icon: LucideIcons.volume2,
+                  icon: Icons.volume_up,
                   iBg: const Color(0xFF1E1B4B),
                   iColor: const Color(0xFF818CF8),
                   title: 'Voice Responses',
@@ -181,7 +180,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onChanged: (val) => setState(() => _voiceResponses = val),
                 ),
                 _buildChipSelectorRow(
-                  icon: LucideIcons.volume2,
+                  icon: Icons.volume_up,
                   iBg: const Color(0xFF2E1065),
                   iColor: const Color(0xFFA78BFA),
                   title: 'Voice Personality',
@@ -198,7 +197,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               label: 'Storage & Downloads',
               children: [
                 _buildChipSelectorRow(
-                  icon: LucideIcons.download,
+                  icon: Icons.download,
                   iBg: const Color(0xFF0A1E2E),
                   iColor: const Color(0xFF38BDF8),
                   title: 'Download Quality',
@@ -209,7 +208,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onChanged: (val) => setState(() => _downloadQuality = val),
                 ),
                 _buildNavRow(
-                  icon: LucideIcons.hardDrive,
+                  icon: Icons.storage,
                   iBg: const Color(0xFF1C1400),
                   iColor: const Color(0xFFFBBF24),
                   title: 'Storage Manager',
@@ -217,7 +216,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onTap: () => widget.onNavigate('storage', {}),
                 ),
                 _buildNavRow(
-                  icon: LucideIcons.trash2,
+                  icon: Icons.delete_outline,
                   iBg: const Color(0xFF200000),
                   iColor: const Color(0xFFF87171),
                   title: 'Clear Cache',
@@ -232,7 +231,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               label: 'Privacy & Security',
               children: [
                 _buildNavRow(
-                  icon: LucideIcons.shield,
+                  icon: Icons.shield,
                   iBg: const Color(0xFF022016),
                   iColor: const Color(0xFF4ADE80),
                   title: 'Privacy Controls',
@@ -240,7 +239,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   showChevron: false,
                 ),
                 _buildNavRow(
-                  icon: LucideIcons.lock,
+                  icon: Icons.lock,
                   iBg: const Color(0xFF1E1B4B),
                   iColor: const Color(0xFF818CF8),
                   title: 'Local Encryption',
@@ -256,7 +255,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   showChevron: false,
                 ),
                 _buildToggleRow(
-                  icon: LucideIcons.globe,
+                  icon: Icons.public,
                   iBg: const Color(0xFF0A1E2E),
                   iColor: const Color(0xFF38BDF8),
                   title: 'Usage Analytics',
@@ -272,7 +271,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               label: 'Notifications',
               children: [
                 _buildToggleRow(
-                  icon: LucideIcons.bell,
+                  icon: Icons.notifications_active,
                   iBg: const Color(0xFF1E1400),
                   iColor: const Color(0xFFFBBF24),
                   title: 'Download Alerts',
@@ -288,7 +287,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               label: 'About',
               children: [
                 _buildNavRow(
-                  icon: LucideIcons.sparkles,
+                  icon: Icons.auto_awesome,
                   iBg: const Color(0xFF1E1B4B),
                   iColor: const Color(0xFF818CF8),
                   title: 'Jemenai AI',
@@ -303,7 +302,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   showChevron: false,
                 ),
                 _buildNavRow(
-                  icon: LucideIcons.smartphone,
+                  icon: Icons.smartphone,
                   iBg: const Color(0xFF1A1A2E),
                   iColor: const Color(0xFF6366F1),
                   title: 'Device',
@@ -311,7 +310,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   showChevron: false,
                 ),
                 _buildNavRow(
-                  icon: LucideIcons.info,
+                  icon: Icons.info_outline,
                   iBg: const Color(0xFF1A1A2E),
                   iColor: const Color(0xFF6366F1),
                   title: 'Terms & Privacy Policy',
@@ -329,7 +328,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: OutlinedButton.icon(
                 onPressed: () {},
                 icon: Icon(
-                  LucideIcons.logOut,
+                  Icons.logout,
                   size: 16,
                   color: JemenaiTheme.destructive(widget.isDark),
                 ),
@@ -520,7 +519,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             if (showChevron && onTap != null) ...[
               const SizedBox(width: 6),
               Icon(
-                LucideIcons.chevronRight,
+                Icons.arrow_forward_ios,
                 size: 16,
                 color: JemenaiTheme.mutedForeground(widget.isDark),
               ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../shared/theme.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -20,112 +19,112 @@ class _HomeScreenState extends State<HomeScreen>
   final List<Map<String, dynamic>> _quickActions = [
     {
       'id': 'text-assistant',
-      'icon': LucideIcons.type,
+      'icon': Icons.title,
       'label': 'AI Text Assistant',
       'accent': const Color(0xFF818CF8),
       'darkBg': const Color(0xFF12123A),
     },
     {
       'id': 'pic-to-text',
-      'icon': LucideIcons.camera,
+      'icon': Icons.camera_alt,
       'label': 'Pic-to-Text',
       'accent': const Color(0xFFA78BFA),
       'darkBg': const Color(0xFF16103A),
     },
     {
       'id': 'web-search',
-      'icon': LucideIcons.globe,
+      'icon': Icons.public,
       'label': 'Web Search',
       'accent': const Color(0xFF38BDF8),
       'darkBg': const Color(0xFF051C2C),
     },
     {
       'id': 'ai-image',
-      'icon': LucideIcons.image,
+      'icon': Icons.image,
       'label': 'AI Image',
       'accent': const Color(0xFFF472B6),
       'darkBg': const Color(0xFF2D0A20),
     },
     {
       'id': 'voice-to-text',
-      'icon': LucideIcons.mic,
+      'icon': Icons.mic,
       'label': 'Voice-to-Text',
       'accent': const Color(0xFF34D399),
       'darkBg': const Color(0xFF022016),
     },
     {
       'id': 'doc-analysis',
-      'icon': LucideIcons.fileText,
+      'icon': Icons.description,
       'label': 'Doc Analysis',
       'accent': const Color(0xFFFBBF24),
       'darkBg': const Color(0xFF201800),
     },
     {
       'id': 'url-summary',
-      'icon': LucideIcons.link2,
+      'icon': Icons.link,
       'label': 'URL Summary',
       'accent': const Color(0xFFC084FC),
       'darkBg': const Color(0xFF180A32),
     },
     {
       'id': 'write-song',
-      'icon': LucideIcons.music,
+      'icon': Icons.music_note,
       'label': 'Write Song',
       'accent': const Color(0xFFFB923C),
       'darkBg': const Color(0xFF1E0A00),
     },
     {
       'id': 'translate',
-      'icon': LucideIcons.languages,
+      'icon': Icons.translate,
       'label': 'Translate',
       'accent': const Color(0xFF60A5FA),
       'darkBg': const Color(0xFF061428),
     },
     {
       'id': 'explain-code',
-      'icon': LucideIcons.code2,
+      'icon': Icons.code,
       'label': 'Explain Code',
       'accent': const Color(0xFF4ADE80),
       'darkBg': const Color(0xFF021808),
     },
     {
       'id': 'pdf-summarizer',
-      'icon': LucideIcons.fileSearch,
+      'icon': Icons.find_in_page,
       'label': 'PDF Summarizer',
       'accent': const Color(0xFFE879F9),
       'darkBg': const Color(0xFF220A2C),
     },
     {
       'id': 'brainstorm',
-      'icon': LucideIcons.lightbulb,
+      'icon': Icons.lightbulb_outline,
       'label': 'Brainstorm Ideas',
       'accent': const Color(0xFFF97316),
       'darkBg': const Color(0xFF1E0800),
     },
     {
       'id': 'email-writer',
-      'icon': LucideIcons.mail,
+      'icon': Icons.mail_outline,
       'label': 'Email Writer',
       'accent': const Color(0xFF38BDF8),
       'darkBg': const Color(0xFF04141E),
     },
     {
       'id': 'coding-assistant',
-      'icon': LucideIcons.terminal,
+      'icon': Icons.terminal,
       'label': 'AI Coding Assistant',
       'accent': const Color(0xFF818CF8),
       'darkBg': const Color(0xFF0C0C2A),
     },
     {
       'id': 'ai-notes',
-      'icon': LucideIcons.stickyNote,
+      'icon': Icons.note,
       'label': 'AI Notes',
       'accent': const Color(0xFFFCD34D),
       'darkBg': const Color(0xFF1C1400),
     },
     {
       'id': 'resume-analyzer',
-      'icon': LucideIcons.fileCheck,
+      'icon': Icons.assignment_turned_in,
       'label': 'Resume Analyzer',
       'accent': const Color(0xFFA78BFA),
       'darkBg': const Color(0xFF14063C),
@@ -153,19 +152,19 @@ class _HomeScreenState extends State<HomeScreen>
   final List<Map<String, dynamic>> _trending = [
     {
       'label': 'Code Debugger',
-      'icon': LucideIcons.code2,
+      'icon': Icons.code,
       'uses': '2.1M',
       'accent': const Color(0xFF818CF8),
     },
     {
       'label': 'Essay Writer',
-      'icon': LucideIcons.type,
+      'icon': Icons.title,
       'uses': '1.8M',
       'accent': const Color(0xFFA78BFA),
     },
     {
       'label': 'Image Creator',
-      'icon': LucideIcons.image,
+      'icon': Icons.image,
       'uses': '1.5M',
       'accent': const Color(0xFFF472B6),
     },
@@ -295,7 +294,7 @@ class _HomeScreenState extends State<HomeScreen>
                     boxShadow: JemenaiTheme.glowSm(widget.isDark),
                   ),
                   child: const Icon(
-                    LucideIcons.plus,
+                    Icons.add,
                     color: Colors.white,
                     size: 20,
                   ),
@@ -327,7 +326,7 @@ class _HomeScreenState extends State<HomeScreen>
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: const Icon(
-                      LucideIcons.sparkles,
+                      Icons.auto_awesome,
                       color: Colors.white,
                       size: 14,
                     ),
@@ -354,7 +353,7 @@ class _HomeScreenState extends State<HomeScreen>
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Icon(
-                            LucideIcons.mic,
+                            Icons.mic,
                             color: mutedFore,
                             size: 14,
                           ),
@@ -369,7 +368,7 @@ class _HomeScreenState extends State<HomeScreen>
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Icon(
-                          LucideIcons.search,
+                          Icons.search,
                           color: mutedFore,
                           size: 14,
                         ),
@@ -517,7 +516,7 @@ class _HomeScreenState extends State<HomeScreen>
                       ),
                     ),
                     Icon(
-                      LucideIcons.chevronRight,
+                      Icons.arrow_forward_ios,
                       size: 14,
                       color: JemenaiTheme.primary(widget.isDark),
                     ),
@@ -582,7 +581,7 @@ class _HomeScreenState extends State<HomeScreen>
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Icon(
-                                  LucideIcons.zap,
+                                  Icons.flash_on,
                                   size: 14,
                                   color: active ? Colors.white : mutedFore,
                                 ),
@@ -644,7 +643,7 @@ class _HomeScreenState extends State<HomeScreen>
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Icon(LucideIcons.download, size: 18, color: mutedFore),
+                      Icon(Icons.download, size: 18, color: mutedFore),
                       const SizedBox(height: 6),
                       Text(
                         'More models',
@@ -777,7 +776,7 @@ class _HomeScreenState extends State<HomeScreen>
           child: Row(
             children: [
               Icon(
-                LucideIcons.sparkles,
+                Icons.auto_awesome,
                 size: 16,
                 color: JemenaiTheme.primary(widget.isDark),
               ),
@@ -833,7 +832,7 @@ class _HomeScreenState extends State<HomeScreen>
                               ),
                             ),
                             Icon(
-                              LucideIcons.arrowUpRight,
+                              Icons.arrow_outward,
                               size: 14,
                               color: JemenaiTheme.primary(widget.isDark),
                             ),
@@ -863,7 +862,7 @@ class _HomeScreenState extends State<HomeScreen>
           child: Row(
             children: [
               Icon(
-                LucideIcons.trendingUp,
+                Icons.trending_up,
                 size: 16,
                 color: JemenaiTheme.primary(widget.isDark),
               ),
@@ -968,7 +967,7 @@ class _HomeScreenState extends State<HomeScreen>
             children: [
               Row(
                 children: [
-                  Icon(LucideIcons.clock, size: 16, color: mutedFore),
+                  Icon(Icons.access_time, size: 16, color: mutedFore),
                   const SizedBox(width: 8),
                   Text(
                     'Recent Chats',
@@ -1027,7 +1026,7 @@ class _HomeScreenState extends State<HomeScreen>
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Icon(
-                                LucideIcons.sparkles,
+                                Icons.auto_awesome,
                                 size: 14,
                                 color: JemenaiTheme.primary(widget.isDark),
                               ),
@@ -1058,7 +1057,7 @@ class _HomeScreenState extends State<HomeScreen>
                               ),
                             ),
                             Icon(
-                              LucideIcons.chevronRight,
+                              Icons.arrow_forward_ios,
                               size: 16,
                               color: mutedFore,
                             ),

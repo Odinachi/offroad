@@ -1,6 +1,5 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'theme.dart';
 
 class PhoneFrame extends StatelessWidget {
@@ -251,11 +250,11 @@ class PhoneFrame extends StatelessWidget {
 
   Widget _buildBottomNav(BuildContext context, bool isMock) {
     final navItems = [
-      {'id': 'home', 'icon': LucideIcons.home, 'label': 'Home'},
-      {'id': 'models', 'icon': LucideIcons.store, 'label': 'Models'},
-      {'id': 'chat', 'icon': LucideIcons.messageSquare, 'label': 'Chat'},
-      {'id': 'storage', 'icon': LucideIcons.hardDrive, 'label': 'Storage'},
-      {'id': 'settings', 'icon': LucideIcons.settings, 'label': 'Settings'},
+      {'id': 'home', 'icon': Icons.home, 'label': 'Home'},
+      {'id': 'models', 'icon': Icons.store, 'label': 'Models'},
+      {'id': 'chat', 'icon': Icons.chat_bubble_outline, 'label': 'Chat'},
+      {'id': 'storage', 'icon': Icons.storage, 'label': 'Storage'},
+      {'id': 'settings', 'icon': Icons.settings, 'label': 'Settings'},
     ];
 
     // Determine normalized active tab (for items mapping to a parent tab)

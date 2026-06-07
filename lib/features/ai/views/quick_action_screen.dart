@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../shared/theme.dart';
 
 class QuickActionScreen extends StatefulWidget {
@@ -31,22 +30,22 @@ class _QuickActionScreenState extends State<QuickActionScreen> {
   final _textController = TextEditingController();
 
   final Map<String, IconData> _iconMap = {
-    "text-assistant": LucideIcons.type,
-    "pic-to-text": LucideIcons.camera,
-    "web-search": LucideIcons.globe,
-    "ai-image": LucideIcons.image,
-    "voice-to-text": LucideIcons.mic,
-    "doc-analysis": LucideIcons.fileText,
-    "url-summary": LucideIcons.link2,
-    "write-song": LucideIcons.music,
-    "translate": LucideIcons.languages,
-    "explain-code": LucideIcons.code2,
-    "pdf-summarizer": LucideIcons.fileSearch,
-    "brainstorm": LucideIcons.lightbulb,
-    "email-writer": LucideIcons.mail,
-    "coding-assistant": LucideIcons.terminal,
-    "ai-notes": LucideIcons.stickyNote,
-    "resume-analyzer": LucideIcons.fileCheck,
+    "text-assistant": Icons.title,
+    "pic-to-text": Icons.camera_alt,
+    "web-search": Icons.public,
+    "ai-image": Icons.image,
+    "voice-to-text": Icons.mic,
+    "doc-analysis": Icons.description,
+    "url-summary": Icons.link,
+    "write-song": Icons.music_note,
+    "translate": Icons.translate,
+    "explain-code": Icons.code,
+    "pdf-summarizer": Icons.find_in_page,
+    "brainstorm": Icons.lightbulb_outline,
+    "email-writer": Icons.mail_outline,
+    "coding-assistant": Icons.terminal,
+    "ai-notes": Icons.note,
+    "resume-analyzer": Icons.assignment_turned_in,
   };
 
   final Map<String, Map<String, dynamic>> _configs = {
@@ -273,7 +272,7 @@ class _QuickActionScreenState extends State<QuickActionScreen> {
     final cfg = _configs[widget.action] ?? _configs["text-assistant"]!;
     final accent = cfg['accent'] as Color;
     final darkBg = cfg['dark'] as Color;
-    final icon = _iconMap[widget.action] ?? LucideIcons.type;
+    final icon = _iconMap[widget.action] ?? Icons.title;
 
     final foreColor = JemenaiTheme.foreground(widget.isDark);
     final mutedFore = JemenaiTheme.mutedForeground(widget.isDark);
@@ -295,7 +294,7 @@ class _QuickActionScreenState extends State<QuickActionScreen> {
               children: [
                 IconButton(
                   onPressed: () => widget.onNavigate('home', {}),
-                  icon: Icon(LucideIcons.chevronLeft, color: foreColor),
+                  icon: Icon(Icons.arrow_back_ios_new, color: foreColor),
                 ),
                 Container(
                   width: 32,
@@ -389,7 +388,7 @@ class _QuickActionScreenState extends State<QuickActionScreen> {
                 boxShadow: JemenaiTheme.glowMd(widget.isDark),
               ),
               child: const Icon(
-                LucideIcons.sparkles,
+                Icons.auto_awesome,
                 color: Colors.white,
                 size: 28,
               ),
@@ -459,7 +458,7 @@ class _QuickActionScreenState extends State<QuickActionScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Icon(
-                  LucideIcons.sparkles,
+                  Icons.auto_awesome,
                   color: Colors.white,
                   size: 14,
                 ),
@@ -513,7 +512,7 @@ class _QuickActionScreenState extends State<QuickActionScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(LucideIcons.rotateCcw, size: 14, color: mutedFore),
+                        Icon(Icons.replay, size: 14, color: mutedFore),
                         const SizedBox(width: 6),
                         Text(
                           'Try another',
@@ -554,7 +553,7 @@ class _QuickActionScreenState extends State<QuickActionScreen> {
                         ),
                         const SizedBox(width: 6),
                         const Icon(
-                          LucideIcons.share2,
+                          Icons.share,
                           size: 14,
                           color: Colors.white,
                         ),
@@ -654,7 +653,7 @@ class _QuickActionScreenState extends State<QuickActionScreen> {
                       ),
                       child: Row(
                         children: [
-                          Icon(LucideIcons.sparkles, size: 14, color: accent),
+                          Icon(Icons.auto_awesome, size: 14, color: accent),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
@@ -746,7 +745,7 @@ class _QuickActionScreenState extends State<QuickActionScreen> {
             children: [
               IconButton(
                 onPressed: () {},
-                icon: Icon(LucideIcons.paperclip, size: 16, color: mutedFore),
+                icon: Icon(Icons.attach_file, size: 16, color: mutedFore),
                 style: IconButton.styleFrom(padding: EdgeInsets.zero),
               ),
               Expanded(
@@ -775,7 +774,7 @@ class _QuickActionScreenState extends State<QuickActionScreen> {
               ),
               IconButton(
                 onPressed: () {},
-                icon: Icon(LucideIcons.mic, size: 16, color: mutedFore),
+                icon: Icon(Icons.mic, size: 16, color: mutedFore),
                 style: IconButton.styleFrom(padding: EdgeInsets.zero),
               ),
               InkWell(
@@ -795,7 +794,7 @@ class _QuickActionScreenState extends State<QuickActionScreen> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
-                    LucideIcons.arrowUp,
+                    Icons.arrow_upward,
                     size: 16,
                     color: hasInput && !_loading ? Colors.white : mutedFore,
                   ),

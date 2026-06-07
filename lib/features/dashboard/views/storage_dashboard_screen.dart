@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../shared/theme.dart';
 
 class StorageDashboardScreen extends StatefulWidget {
@@ -424,7 +423,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Icon(
-                              LucideIcons.zap,
+                              Icons.flash_on,
                               color: color,
                               size: 16,
                             ),
@@ -459,7 +458,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                               });
                             },
                             icon: Icon(
-                              LucideIcons.trash2,
+                              Icons.delete_outline,
                               size: 16,
                               color: JemenaiTheme.destructive(widget.isDark),
                             ),
@@ -509,7 +508,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
-                    LucideIcons.trendingDown,
+                    Icons.trending_down,
                     color: Colors.amber,
                     size: 18,
                   ),
@@ -577,7 +576,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
-                    LucideIcons.download,
+                    Icons.download,
                     color: Colors.blue,
                     size: 18,
                   ),

@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../shared/theme.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -210,7 +209,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 // Back button
                 IconButton(
                   onPressed: () => widget.onNavigate('home', {}),
-                  icon: Icon(LucideIcons.chevronLeft, color: foreColor),
+                  icon: Icon(Icons.arrow_back_ios_new, color: foreColor),
                 ),
 
                 // Model Dropdown toggle
@@ -232,7 +231,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: const Icon(
-                              LucideIcons.sparkles,
+                              Icons.auto_awesome,
                               color: Colors.white,
                               size: 16,
                             ),
@@ -265,8 +264,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                           ),
                           Icon(
                             _showModels
-                                ? LucideIcons.chevronUp
-                                : LucideIcons.chevronDown,
+                                ? Icons.keyboard_arrow_up
+                                : Icons.keyboard_arrow_down,
                             size: 16,
                             color: JemenaiTheme.mutedForeground(widget.isDark),
                           ),
@@ -280,12 +279,12 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 // Top right actions
                 IconButton(
                   onPressed: () {},
-                  icon: Icon(LucideIcons.search, size: 18, color: foreColor),
+                  icon: Icon(Icons.search, size: 18, color: foreColor),
                 ),
                 IconButton(
                   onPressed: () {},
                   icon: Icon(
-                    LucideIcons.moreHorizontal,
+                    Icons.more_horiz,
                     size: 18,
                     color: foreColor,
                   ),
@@ -382,7 +381,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Icon(
-                            LucideIcons.sparkles,
+                            Icons.auto_awesome,
                             size: 14,
                             color: JemenaiTheme.primary(widget.isDark),
                           ),
@@ -414,7 +413,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                         ),
                         if (isSelected)
                           Icon(
-                            LucideIcons.checkCheck,
+                            Icons.done_all,
                             size: 16,
                             color: JemenaiTheme.primary(widget.isDark),
                           ),
@@ -445,7 +444,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
-                    LucideIcons.pin,
+                    Icons.push_pin,
                     size: 12,
                     color: JemenaiTheme.primary(widget.isDark),
                   ),
@@ -480,7 +479,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     boxShadow: JemenaiTheme.shadowCard(widget.isDark),
                   ),
                   child: const Icon(
-                    LucideIcons.sparkles,
+                    Icons.auto_awesome,
                     color: Colors.white,
                     size: 14,
                   ),
@@ -548,7 +547,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 ),
                 if (!isUser) ...[
                   const SizedBox(width: 8),
-                  _buildBubbleAction(LucideIcons.copy, () {
+                  _buildBubbleAction(Icons.content_copy, () {
                     Clipboard.setData(ClipboardData(text: msg.content));
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -558,19 +557,19 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     );
                   }),
                   _buildBubbleAction(
-                    LucideIcons.pin,
+                    Icons.push_pin,
                     () => setState(() => msg.pinned = !msg.pinned),
                     activeColor:
                         msg.pinned ? JemenaiTheme.primary(widget.isDark) : null,
                   ),
                   _buildBubbleAction(
-                    LucideIcons.thumbsUp,
+                    Icons.thumb_up,
                     () => setState(() => msg.liked = !msg.liked),
                     activeColor:
                         msg.liked ? JemenaiTheme.primary(widget.isDark) : null,
                   ),
-                  _buildBubbleAction(LucideIcons.volume2, () {}),
-                  _buildBubbleAction(LucideIcons.trash2, () {
+                  _buildBubbleAction(Icons.volume_up, () {}),
+                  _buildBubbleAction(Icons.delete_outline, () {
                     setState(() {
                       _messages.removeWhere((element) => element.id == msg.id);
                     });
@@ -623,7 +622,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               boxShadow: JemenaiTheme.shadowCard(widget.isDark),
             ),
             child: const Icon(
-              LucideIcons.sparkles,
+              Icons.auto_awesome,
               color: Colors.white,
               size: 14,
             ),
@@ -669,7 +668,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               borderRadius: BorderRadius.circular(10),
             ),
             child: const Icon(
-              LucideIcons.sparkles,
+              Icons.auto_awesome,
               color: Colors.white,
               size: 14,
             ),
@@ -742,9 +741,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   // Attachments row
                   Row(
                     children: [
-                      _buildInputMediaBtn(LucideIcons.image, mutedFore),
-                      _buildInputMediaBtn(LucideIcons.paperclip, mutedFore),
-                      _buildInputMediaBtn(LucideIcons.camera, mutedFore),
+                      _buildInputMediaBtn(Icons.image, mutedFore),
+                      _buildInputMediaBtn(Icons.attach_file, mutedFore),
+                      _buildInputMediaBtn(Icons.camera_alt, mutedFore),
                     ],
                   ),
 
@@ -781,7 +780,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   Row(
                     children: [
                       _buildInputMediaBtn(
-                        LucideIcons.mic,
+                        Icons.mic,
                         mutedFore,
                         onTap: () {
                           widget.onNavigate('voice', {});
@@ -810,7 +809,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Icon(
-                            LucideIcons.arrowUp,
+                            Icons.arrow_upward,
                             size: 16,
                             color:
                                 hasInput && !_typing && !_streaming
@@ -1186,7 +1185,7 @@ class MarkdownBodyText extends StatelessWidget {
                       child: Row(
                         children: [
                           Icon(
-                            copied ? LucideIcons.checkCheck : LucideIcons.copy,
+                            copied ? Icons.done_all : Icons.content_copy,
                             size: 13,
                             color:
                                 copied
