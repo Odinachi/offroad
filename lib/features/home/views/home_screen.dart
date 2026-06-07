@@ -31,13 +31,7 @@ class _HomeScreenState extends State<HomeScreen>
       'accent': const Color(0xFFA78BFA),
       'darkBg': const Color(0xFF16103A),
     },
-    {
-      'id': 'web-search',
-      'icon': Icons.public,
-      'label': 'Web Search',
-      'accent': const Color(0xFF38BDF8),
-      'darkBg': const Color(0xFF051C2C),
-    },
+
     {
       'id': 'ai-image',
       'icon': Icons.image,
@@ -59,13 +53,7 @@ class _HomeScreenState extends State<HomeScreen>
       'accent': const Color(0xFFFBBF24),
       'darkBg': const Color(0xFF201800),
     },
-    {
-      'id': 'url-summary',
-      'icon': Icons.link,
-      'label': 'URL Summary',
-      'accent': const Color(0xFFC084FC),
-      'darkBg': const Color(0xFF180A32),
-    },
+
     {
       'id': 'write-song',
       'icon': Icons.music_note,
@@ -108,20 +96,7 @@ class _HomeScreenState extends State<HomeScreen>
       'accent': const Color(0xFF38BDF8),
       'darkBg': const Color(0xFF04141E),
     },
-    {
-      'id': 'coding-assistant',
-      'icon': Icons.terminal,
-      'label': 'AI Coding Assistant',
-      'accent': const Color(0xFF818CF8),
-      'darkBg': const Color(0xFF0C0C2A),
-    },
-    {
-      'id': 'ai-notes',
-      'icon': Icons.note,
-      'label': 'AI Notes',
-      'accent': const Color(0xFFFCD34D),
-      'darkBg': const Color(0xFF1C1400),
-    },
+
     {
       'id': 'resume-analyzer',
       'icon': Icons.assignment_turned_in,
@@ -145,29 +120,8 @@ class _HomeScreenState extends State<HomeScreen>
   final List<String> _prompts = [
     'Explain quantum computing simply',
     'Write a professional cold email',
-    'Debug my Python script',
-    'Summarize this research paper',
-  ];
 
-  final List<Map<String, dynamic>> _trending = [
-    {
-      'label': 'Code Debugger',
-      'icon': Icons.code,
-      'uses': '2.1M',
-      'accent': const Color(0xFF818CF8),
-    },
-    {
-      'label': 'Essay Writer',
-      'icon': Icons.title,
-      'uses': '1.8M',
-      'accent': const Color(0xFFA78BFA),
-    },
-    {
-      'label': 'Image Creator',
-      'icon': Icons.image,
-      'uses': '1.5M',
-      'accent': const Color(0xFFF472B6),
-    },
+    'Summarize this research paper',
   ];
 
   final List<Map<String, dynamic>> _recentChats = [
@@ -226,20 +180,11 @@ class _HomeScreenState extends State<HomeScreen>
             // Hero Header
             _buildHeroHeader(foreColor, mutedFore),
 
-            // Download Progress Strip
-            _buildDownloadProgress(cardBg, border, foreColor, mutedFore),
-
-            // Active Models
-            _buildActiveModels(foreColor, mutedFore, cardBg, border),
-
-            // Quick Actions Grid
-            _buildQuickActions(foreColor, mutedFore),
-
             // Suggested Prompts
             _buildSuggestedPrompts(foreColor, cardBg, border),
 
-            // Trending
-            _buildTrending(foreColor, mutedFore, cardBg, border),
+            // Quick Actions Grid
+            _buildQuickActions(foreColor, mutedFore),
 
             // Recent Chats
             _buildRecentChats(foreColor, mutedFore, cardBg, border),
@@ -281,24 +226,6 @@ class _HomeScreenState extends State<HomeScreen>
                     ),
                   ),
                 ],
-              ),
-              InkWell(
-                onTap: () => widget.onNavigate('chat', {}),
-                borderRadius: BorderRadius.circular(16),
-                child: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    gradient: JemenaiTheme.gradBrand,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: JemenaiTheme.glowSm(widget.isDark),
-                  ),
-                  child: const Icon(
-                    Icons.add,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                ),
               ),
             ],
           ),
@@ -352,11 +279,7 @@ class _HomeScreenState extends State<HomeScreen>
                             color: JemenaiTheme.secondary(widget.isDark),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Icon(
-                            Icons.mic,
-                            color: mutedFore,
-                            size: 14,
-                          ),
+                          child: Icon(Icons.mic, color: mutedFore, size: 14),
                         ),
                       ),
                       const SizedBox(width: 6),
@@ -367,11 +290,7 @@ class _HomeScreenState extends State<HomeScreen>
                           color: JemenaiTheme.secondary(widget.isDark),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Icon(
-                          Icons.search,
-                          color: mutedFore,
-                          size: 14,
-                        ),
+                        child: Icon(Icons.search, color: mutedFore, size: 14),
                       ),
                     ],
                   ),
@@ -381,288 +300,6 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildDownloadProgress(
-    Color cardBg,
-    Color border,
-    Color foreColor,
-    Color mutedFore,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 4.0),
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: cardBg,
-          borderRadius: BorderRadius.circular(50),
-          border: Border.all(color: border),
-          boxShadow: JemenaiTheme.shadowCard(widget.isDark),
-        ),
-        child: Row(
-          children: [
-            // Pulsing Green dot
-            Container(
-              width: 8,
-              height: 8,
-              decoration: const BoxDecoration(
-                color: Color(0xFF4ADE80),
-                shape: BoxShape.circle,
-              ),
-            ),
-            const SizedBox(width: 12),
-
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Mistral 7B',
-                        style: JemenaiTheme.fontBody(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: foreColor,
-                        ),
-                      ),
-                      AnimatedBuilder(
-                        animation: _downloadProgress,
-                        builder: (context, child) {
-                          final p = _downloadProgress.value * 100;
-                          return Text(
-                            '${p.toStringAsFixed(0)}% · 12.4 MB/s',
-                            style: JemenaiTheme.fontBody(
-                              fontSize: 11,
-                              color: mutedFore,
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-
-                  // Progress Bar
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(3),
-                    child: Container(
-                      height: 6,
-                      color: JemenaiTheme.secondary(widget.isDark),
-                      child: AnimatedBuilder(
-                        animation: _downloadProgress,
-                        builder: (context, child) {
-                          return FractionallySizedBox(
-                            alignment: Alignment.centerLeft,
-                            widthFactor: _downloadProgress.value,
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                gradient: JemenaiTheme.gradBrand,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              '4m left',
-              style: JemenaiTheme.fontBody(fontSize: 11, color: mutedFore),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActiveModels(
-    Color foreColor,
-    Color mutedFore,
-    Color cardBg,
-    Color border,
-  ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Active Models',
-                style: JemenaiTheme.fontDisplay(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: foreColor,
-                ),
-              ),
-              InkWell(
-                onTap: () => widget.onNavigate('models', {}),
-                child: Row(
-                  children: [
-                    Text(
-                      'All models',
-                      style: JemenaiTheme.fontBody(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: JemenaiTheme.primary(widget.isDark),
-                      ),
-                    ),
-                    Icon(
-                      Icons.arrow_forward_ios,
-                      size: 14,
-                      color: JemenaiTheme.primary(widget.isDark),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        // Horizontal List
-        SizedBox(
-          height: 104,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            children: [
-              ..._models.map((model) {
-                final active = model['active'] as bool;
-                return Padding(
-                  padding: const EdgeInsets.only(right: 10.0),
-                  child: InkWell(
-                    onTap:
-                        () =>
-                            widget.onNavigate('chat', {'model': model['name']}),
-                    borderRadius: BorderRadius.circular(20),
-                    child: Container(
-                      width: 128,
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: cardBg,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color:
-                              active
-                                  ? JemenaiTheme.jmIndigo(widget.isDark)
-                                  : border,
-                        ),
-                        boxShadow:
-                            active
-                                ? JemenaiTheme.glowSm(widget.isDark)
-                                : JemenaiTheme.shadowCard(widget.isDark),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                width: 28,
-                                height: 28,
-                                decoration: BoxDecoration(
-                                  gradient:
-                                      active ? JemenaiTheme.gradBrand : null,
-                                  color:
-                                      active
-                                          ? null
-                                          : JemenaiTheme.secondary(
-                                            widget.isDark,
-                                          ),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Icon(
-                                  Icons.flash_on,
-                                  size: 14,
-                                  color: active ? Colors.white : mutedFore,
-                                ),
-                              ),
-                              if (active)
-                                Container(
-                                  width: 6,
-                                  height: 6,
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFF4ADE80),
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                            ],
-                          ),
-                          const Spacer(),
-                          Text(
-                            model['name'] as String,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: JemenaiTheme.fontBody(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: foreColor,
-                            ),
-                          ),
-                          Text(
-                            model['size'] as String,
-                            style: JemenaiTheme.fontBody(
-                              fontSize: 11,
-                              color: mutedFore,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              }),
-
-              // More Models Card
-              InkWell(
-                onTap: () => widget.onNavigate('models', {}),
-                borderRadius: BorderRadius.circular(50),
-                child: Container(
-                  width: 100,
-                  decoration: BoxDecoration(
-                    color: JemenaiTheme.secondary(widget.isDark),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: border,
-                      style:
-                          BorderStyle
-                              .none, // simulates React border dashed or borderless bg
-                    ),
-                  ),
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(Icons.download, size: 18, color: mutedFore),
-                      const SizedBox(height: 6),
-                      Text(
-                        'More models',
-                        textAlign: TextAlign.center,
-                        style: JemenaiTheme.fontBody(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: mutedFore,
-                          lineHeight: 1.1,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 
@@ -842,109 +479,6 @@ class _HomeScreenState extends State<HomeScreen>
                     ),
                   );
                 }).toList(),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTrending(
-    Color foreColor,
-    Color mutedFore,
-    Color cardBg,
-    Color border,
-  ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
-          child: Row(
-            children: [
-              Icon(
-                Icons.trending_up,
-                size: 16,
-                color: JemenaiTheme.primary(widget.isDark),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'Trending',
-                style: JemenaiTheme.fontDisplay(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: foreColor,
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        // Horizontal List
-        SizedBox(
-          height: 60,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            itemCount: _trending.length,
-            itemBuilder: (context, index) {
-              final trend = _trending[index];
-              final icon = trend['icon'] as IconData;
-
-              return Padding(
-                padding: const EdgeInsets.only(right: 10.0),
-                child: InkWell(
-                  onTap: () => widget.onNavigate('chat', {}),
-                  borderRadius: BorderRadius.circular(50),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 10,
-                    ),
-                    decoration: BoxDecoration(
-                      color: cardBg,
-                      borderRadius: BorderRadius.circular(50),
-                      border: Border.all(color: border),
-                      boxShadow: JemenaiTheme.shadowCard(widget.isDark),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 28,
-                          height: 28,
-                          decoration: BoxDecoration(
-                            gradient: JemenaiTheme.gradBrand,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Icon(icon, size: 14, color: Colors.white),
-                        ),
-                        const SizedBox(width: 10),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              trend['label'] as String,
-                              style: JemenaiTheme.fontBody(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                                color: foreColor,
-                              ),
-                            ),
-                            Text(
-                              '${trend['uses'] as String} uses',
-                              style: JemenaiTheme.fontBody(
-                                fontSize: 10,
-                                color: mutedFore,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            },
           ),
         ),
       ],

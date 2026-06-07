@@ -109,7 +109,7 @@ class ChatsListScreen extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 10.0),
                   child: InkWell(
                     onTap: () => onNavigate('chat', {}),
-                    borderRadius: BorderRadius.circular(50),
+                    borderRadius: BorderRadius.circular(20),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
@@ -117,7 +117,7 @@ class ChatsListScreen extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         color: cardBg,
-                        borderRadius: BorderRadius.circular(50),
+                        borderRadius: BorderRadius.circular(20),
                         border: Border.all(color: border),
                         boxShadow: JemenaiTheme.shadowCard(isDark),
                       ),

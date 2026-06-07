@@ -27,15 +27,26 @@ class PhoneFrame extends StatelessWidget {
       // Full screen mobile rendering
       return Scaffold(
         backgroundColor: JemenaiTheme.background(isDark),
-        body: Column(
+        body: Stack(
           children: [
-            // Safe area simulation or native status bar padding
-            Container(
-              height: MediaQuery.of(context).padding.top,
-              color: JemenaiTheme.card(isDark),
+            Positioned.fill(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).padding.top,
+                  bottom: 84,
+                ),
+                child: child,
+              ),
             ),
-            Expanded(child: child),
-            _buildBottomNav(context, false),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: SafeArea(
+                top: false,
+                child: _buildBottomNav(context, false),
+              ),
+            ),
           ],
         ),
       );
@@ -144,12 +155,26 @@ class PhoneFrame extends StatelessWidget {
               ), // Slightly smaller to hide boundaries
               child: Stack(
                 children: [
-                  Column(
-                    children: [
-                      _buildStatusBar(context),
-                      Expanded(child: child),
-                      _buildBottomNav(context, true),
-                    ],
+                  Positioned.fill(
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        top: 48,
+                        bottom: 80,
+                      ),
+                      child: child,
+                    ),
+                  ),
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: _buildStatusBar(context),
+                  ),
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: _buildBottomNav(context, true),
                   ),
 
                   // Notch overlay
@@ -266,91 +291,105 @@ class PhoneFrame extends StatelessWidget {
     }
 
     return Container(
-      height: 68,
+      margin: EdgeInsets.fromLTRB(16, 0, 16, isMock ? 16 : 10),
+      height: 64,
       decoration: BoxDecoration(
-        color: JemenaiTheme.navBackground(isDark),
-        border: Border(
-          top: BorderSide(color: JemenaiTheme.border(isDark), width: 1),
+        color: JemenaiTheme.navBackground(isDark).withOpacity(0.85),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withOpacity(0.08)
+              : Colors.black.withOpacity(0.06),
+          width: 1,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withOpacity(0.4)
+                : const Color(0xFF4F46E5).withOpacity(0.06),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children:
-                navItems.map((item) {
-                  final id = item['id'] as String;
-                  final icon = item['icon'] as IconData;
-                  final label = item['label'] as String;
-                  final isActive = normalizedActive == id;
-
-                  return Expanded(
-                    child: InkWell(
-                      onTap: () => onTabChanged(id),
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          // Active indicator top bar
-                          if (isActive)
-                            Positioned(
-                              top: 0,
-                              child: Container(
-                                width: 40,
-                                height: 3,
-                                decoration: BoxDecoration(
-                                  gradient: JemenaiTheme.gradBrand,
-                                  borderRadius: BorderRadius.circular(1.5),
-                                ),
-                              ),
-                            ),
-
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              AnimatedContainer(
-                                duration: const Duration(milliseconds: 200),
-                                width: 40,
-                                height: 28,
-                                decoration: BoxDecoration(
-                                  color:
-                                      isActive
-                                          ? JemenaiTheme.accent(isDark)
-                                          : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(14),
-                                ),
-                                child: Icon(
-                                  icon,
-                                  size: 18,
-                                  color:
-                                      isActive
-                                          ? JemenaiTheme.primary(isDark)
-                                          : JemenaiTheme.mutedForeground(
-                                            isDark,
-                                          ),
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                label,
-                                style: JemenaiTheme.fontBody(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color:
-                                      isActive
-                                          ? JemenaiTheme.primary(isDark)
-                                          : JemenaiTheme.mutedForeground(
-                                            isDark,
-                                          ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          child: Stack(
+            children: [
+              // Sliding active background capsule
+              AnimatedAlign(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeInOutCubic,
+                alignment: Alignment(
+                  -1.0 + (navItems.indexWhere((item) => item['id'] == normalizedActive) * (2.0 / (navItems.length - 1))),
+                  0.0,
+                ),
+                child: FractionallySizedBox(
+                  widthFactor: 1.0 / navItems.length,
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: JemenaiTheme.primary(isDark).withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                  );
-                }).toList(),
+                  ),
+                ),
+              ),
+              // Navbar items
+              Positioned.fill(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children:
+                      navItems.map((item) {
+                        final id = item['id'] as String;
+                        final icon = item['icon'] as IconData;
+                        final label = item['label'] as String;
+                        final isActive = normalizedActive == id;
+
+                        return Expanded(
+                          child: InkWell(
+                            onTap: () => onTabChanged(id),
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                AnimatedScale(
+                                  duration: const Duration(milliseconds: 200),
+                                  scale: isActive ? 1.18 : 1.0,
+                                  curve: Curves.easeOutBack,
+                                  child: Icon(
+                                    icon,
+                                    size: 18,
+                                    color:
+                                        isActive
+                                            ? JemenaiTheme.primary(isDark)
+                                            : JemenaiTheme.mutedForeground(isDark),
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  label,
+                                  style: JemenaiTheme.fontBody(
+                                    fontSize: 9,
+                                    fontWeight:
+                                        isActive ? FontWeight.bold : FontWeight.w500,
+                                    color:
+                                        isActive
+                                            ? JemenaiTheme.primary(isDark)
+                                            : JemenaiTheme.mutedForeground(isDark),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                ),
+              ),
+            ],
           ),
         ),
       ),
