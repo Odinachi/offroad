@@ -3,13 +3,9 @@ import 'package:flutter/material.dart';
 import '../../../shared/theme.dart';
 
 class ModelsStoreScreen extends StatefulWidget {
-  final Function(String, [Map<String, dynamic>]) onNavigate;
-  final bool isDark;
 
   const ModelsStoreScreen({
     super.key,
-    required this.onNavigate,
-    required this.isDark,
   });
 
   @override

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:jemenai/shared/navigator/app_route_string.dart';
+import 'package:jemenai/shared/navigator/app_router.dart';
 import '../../../shared/theme.dart';
 
 class ChatsListScreen extends StatelessWidget {
-  final Function(String, [Map<String, dynamic>]) onNavigate;
-  final bool isDark;
-
-  ChatsListScreen({super.key, required this.onNavigate, required this.isDark});
+  ChatsListScreen({super.key});
 
   final List<Map<String, dynamic>> _chats = [
     {
@@ -108,7 +107,7 @@ class ChatsListScreen extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 10.0),
                   child: InkWell(
-                    onTap: () => onNavigate('chat', {}),
+                    onTap: () => AppRouter.push(AppRouteString.chat),
                     borderRadius: BorderRadius.circular(20),
                     child: Container(
                       padding: const EdgeInsets.symmetric(

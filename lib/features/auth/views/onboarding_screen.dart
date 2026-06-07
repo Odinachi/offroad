@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import '../../../shared/theme.dart';
 
 class OnboardingScreen extends StatefulWidget {
-  final VoidCallback onComplete;
-  final bool isDark;
+  
 
   const OnboardingScreen({
     super.key,
-    required this.onComplete,
-    required this.isDark,
+    
   });
 
   @override
@@ -80,216 +78,220 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final List<Color> colors = slide['colors'] as List<Color>;
     final accent = slide['accent'] as Color;
 
-    return Stack(
-      children: [
-        // Background Orbs
-        _buildBgOrbs(colors),
+    return Scaffold(
+      body: Stack(
+        children: [
+          // Background Orbs
+          _buildBgOrbs(colors),
 
-        SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Top Bar (Skip Button)
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24.0,
-                  vertical: 8.0,
-                ),
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: InkWell(
-                    onTap: () {
-                      setState(() {
-                        _phase = 'auth';
-                      });
-                    },
-                    borderRadius: BorderRadius.circular(12),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color:
-                            widget.isDark
-                                ? Colors.white.withOpacity(0.06)
-                                : Colors.black.withOpacity(0.04),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'Skip',
-                        style: JemenaiTheme.fontBody(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: JemenaiTheme.mutedForeground(widget.isDark),
+          SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Top Bar (Skip Button)
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0,
+                    vertical: 8.0,
+                  ),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          _phase = 'auth';
+                        });
+                      },
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color:
+                              widget.isDark
+                                  ? Colors.white.withOpacity(0.06)
+                                  : Colors.black.withOpacity(0.04),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          'Skip',
+                          style: JemenaiTheme.fontBody(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: JemenaiTheme.mutedForeground(widget.isDark),
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
 
-              // Content Area
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Label Badge
-                      AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 300),
-                        child: Container(
-                          key: ValueKey<int>(_idx),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: colors[0].withOpacity(0.12),
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          child: Text(
-                            slide['label'] as String,
-                            style: JemenaiTheme.fontBody(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w800,
-                              color: accent,
-                              lineHeight: 1.0,
+                // Content Area
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Label Badge
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 300),
+                          child: Container(
+                            key: ValueKey<int>(_idx),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: colors[0].withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            child: Text(
+                              slide['label'] as String,
+                              style: JemenaiTheme.fontBody(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w800,
+                                color: accent,
+                                lineHeight: 1.0,
+                              ),
                             ),
                           ),
                         ),
+                        const SizedBox(height: 24),
+
+                        // Animated Icon Block
+                        Center(
+                          child: SlideIconPulse(
+                            icon: slide['icon'] as IconData,
+                            gradientColors: colors,
+                          ),
+                        ),
+                        const SizedBox(height: 36),
+
+                        // Title
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 350),
+                          child: Text(
+                            slide['title'] as String,
+                            key: ValueKey<int>(_idx),
+                            style: JemenaiTheme.fontDisplay(
+                              fontSize: 32,
+                              fontWeight: FontWeight.w800,
+                              color: JemenaiTheme.foreground(widget.isDark),
+                              lineHeight: 1.15,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Subtitle
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 350),
+                          child: Text(
+                            slide['sub'] as String,
+                            key: ValueKey<int>(_idx),
+                            style: JemenaiTheme.fontBody(
+                              fontSize: 14,
+                              color: JemenaiTheme.mutedForeground(
+                                widget.isDark,
+                              ),
+                              lineHeight: 1.45,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Bottom control bar
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32.0,
+                    vertical: 32.0,
+                  ),
+                  child: Column(
+                    children: [
+                      // Slide Indicators
+                      Row(
+                        children: List.generate(_slides.length, (index) {
+                          final isActive = index == _idx;
+                          return AnimatedContainer(
+                            duration: const Duration(milliseconds: 250),
+                            width: isActive ? 24 : 8,
+                            height: 8,
+                            margin: const EdgeInsets.only(right: 6),
+                            decoration: BoxDecoration(
+                              color:
+                                  isActive
+                                      ? accent
+                                      : JemenaiTheme.mutedForeground(
+                                        widget.isDark,
+                                      ).withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          );
+                        }),
                       ),
                       const SizedBox(height: 24),
 
-                      // Animated Icon Block
-                      Center(
-                        child: SlideIconPulse(
-                          icon: slide['icon'] as IconData,
-                          gradientColors: colors,
-                        ),
-                      ),
-                      const SizedBox(height: 36),
-
-                      // Title
-                      AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 350),
-                        child: Text(
-                          slide['title'] as String,
-                          key: ValueKey<int>(_idx),
-                          style: JemenaiTheme.fontDisplay(
-                            fontSize: 32,
-                            fontWeight: FontWeight.w800,
-                            color: JemenaiTheme.foreground(widget.isDark),
-                            lineHeight: 1.15,
+                      // Navigation Action button
+                      InkWell(
+                        onTap: _next,
+                        borderRadius: BorderRadius.circular(50),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 250),
+                          height: 56,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: colors,
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(50),
+                            boxShadow: [
+                              BoxShadow(
+                                color: colors[0].withOpacity(0.3),
+                                blurRadius: 20,
+                                offset: const Offset(0, 10),
+                              ),
+                            ],
                           ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Subtitle
-                      AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 350),
-                        child: Text(
-                          slide['sub'] as String,
-                          key: ValueKey<int>(_idx),
-                          style: JemenaiTheme.fontBody(
-                            fontSize: 14,
-                            color: JemenaiTheme.mutedForeground(widget.isDark),
-                            lineHeight: 1.45,
+                          alignment: Alignment.center,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                _idx < _slides.length - 1
+                                    ? 'Continue'
+                                    : 'Get Started',
+                                style: JemenaiTheme.fontBody(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Icon(
+                                Icons.arrow_forward,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                            ],
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
-
-              // Bottom control bar
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 32.0,
-                  vertical: 32.0,
-                ),
-                child: Column(
-                  children: [
-                    // Slide Indicators
-                    Row(
-                      children: List.generate(_slides.length, (index) {
-                        final isActive = index == _idx;
-                        return AnimatedContainer(
-                          duration: const Duration(milliseconds: 250),
-                          width: isActive ? 24 : 8,
-                          height: 8,
-                          margin: const EdgeInsets.only(right: 6),
-                          decoration: BoxDecoration(
-                            color:
-                                isActive
-                                    ? accent
-                                    : JemenaiTheme.mutedForeground(
-                                      widget.isDark,
-                                    ).withOpacity(0.3),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        );
-                      }),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Navigation Action button
-                    InkWell(
-                      onTap: _next,
-                      borderRadius: BorderRadius.circular(50),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 250),
-                        height: 56,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: colors,
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(50),
-                          boxShadow: [
-                            BoxShadow(
-                              color: colors[0].withOpacity(0.3),
-                              blurRadius: 20,
-                              offset: const Offset(0, 10),
-                            ),
-                          ],
-                        ),
-                        alignment: Alignment.center,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              _idx < _slides.length - 1
-                                  ? 'Continue'
-                                  : 'Get Started',
-                              style: JemenaiTheme.fontBody(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            const Icon(
-                              Icons.arrow_forward,
-                              color: Colors.white,
-                              size: 16,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -446,10 +448,9 @@ class _SlideIconPulseState extends State<SlideIconPulse>
 
 // Authentication Screen Widget
 class AuthScreen extends StatefulWidget {
-  final VoidCallback onComplete;
-  final bool isDark;
 
-  const AuthScreen({super.key, required this.onComplete, required this.isDark});
+
+  const AuthScreen({super.key, });
 
   @override
   State<AuthScreen> createState() => _AuthScreenState();

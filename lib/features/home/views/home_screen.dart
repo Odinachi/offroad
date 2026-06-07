@@ -1,21 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:jemenai/shared/navigator/app_route_string.dart';
+import 'package:jemenai/shared/navigator/app_router.dart';
 import '../../../shared/theme.dart';
 
 class HomeScreen extends StatefulWidget {
-  final Function(String, [Map<String, dynamic>]) onNavigate;
-  final bool isDark;
-
-  const HomeScreen({super.key, required this.onNavigate, required this.isDark});
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _downloadController;
-  late Animation<double> _downloadProgress;
-
+class _HomeScreenState extends State<HomeScreen> {
   final List<Map<String, dynamic>> _quickActions = [
     {
       'id': 'text-assistant',
@@ -106,17 +101,6 @@ class _HomeScreenState extends State<HomeScreen>
     },
   ];
 
-  final List<Map<String, dynamic>> _models = [
-    {
-      'name': 'Llama 3.2 3B',
-      'tag': 'General',
-      'size': '2.0 GB',
-      'active': true,
-    },
-    {'name': 'Phi-3 Mini', 'tag': 'Coding', 'size': '1.8 GB', 'active': false},
-    {'name': 'Gemma 2B', 'tag': 'Creative', 'size': '1.4 GB', 'active': false},
-  ];
-
   final List<String> _prompts = [
     'Explain quantum computing simply',
     'Write a professional cold email',
@@ -137,25 +121,6 @@ class _HomeScreenState extends State<HomeScreen>
       'when': '3h ago',
     },
   ];
-
-  @override
-  void initState() {
-    super.initState();
-    _downloadController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 4),
-    )..repeat();
-
-    _downloadProgress = Tween<double>(begin: 0.64, end: 0.72).animate(
-      CurvedAnimation(parent: _downloadController, curve: Curves.linear),
-    );
-  }
-
-  @override
-  void dispose() {
-    _downloadController.dispose();
-    super.dispose();
-  }
 
   String _getGreeting() {
     final hour = DateTime.now().hour;
@@ -233,7 +198,9 @@ class _HomeScreenState extends State<HomeScreen>
 
           // Ask Anything search bar
           InkWell(
-            onTap: () => widget.onNavigate('chat', {}),
+            onTap: () {
+              AppRouter.push(AppRouteString.chat);
+            },
             borderRadius: BorderRadius.circular(50),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -271,7 +238,9 @@ class _HomeScreenState extends State<HomeScreen>
                   Row(
                     children: [
                       InkWell(
-                        onTap: () => widget.onNavigate('voice', {}),
+                        onTap: () {
+                          AppRouter.push(AppRouteString.voice);
+                        },
                         child: Container(
                           width: 28,
                           height: 28,
@@ -348,11 +317,7 @@ class _HomeScreenState extends State<HomeScreen>
             final label = action['label'] as String;
 
             return InkWell(
-              onTap:
-                  () => widget.onNavigate('quickaction', {
-                    'action': action['id'],
-                    'label': label,
-                  }),
+              onTap: () {},
               borderRadius: BorderRadius.circular(50),
               child: Container(
                 decoration: BoxDecoration(

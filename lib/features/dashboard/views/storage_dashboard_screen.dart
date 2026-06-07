@@ -3,14 +3,7 @@ import 'dart:math' as math;
 import '../../../shared/theme.dart';
 
 class StorageDashboardScreen extends StatefulWidget {
-  final Function(String, [Map<String, dynamic>]) onNavigate;
-  final bool isDark;
-
-  const StorageDashboardScreen({
-    super.key,
-    required this.onNavigate,
-    required this.isDark,
-  });
+  const StorageDashboardScreen({super.key});
 
   @override
   State<StorageDashboardScreen> createState() => _StorageDashboardScreenState();
@@ -422,11 +415,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                               color: color.withOpacity(0.12),
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Icon(
-                              Icons.flash_on,
-                              color: color,
-                              size: 16,
-                            ),
+                            child: Icon(Icons.flash_on, color: color, size: 16),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -536,7 +525,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                       ),
                       const SizedBox(height: 6),
                       InkWell(
-                        onTap: () => widget.onNavigate('models', {}),
+                        onTap: () {},
                         child: Text(
                           'Explore lightweight models →',
                           style: JemenaiTheme.fontBody(
@@ -604,7 +593,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                       ),
                       const SizedBox(height: 6),
                       InkWell(
-                        onTap: () => widget.onNavigate('models', {}),
+                        onTap: () {},
                         child: Text(
                           'Browse models →',
                           style: JemenaiTheme.fontBody(

@@ -2,16 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../shared/theme.dart';
 
 class SettingsScreen extends StatefulWidget {
-  final Function(String, [Map<String, dynamic>]) onNavigate;
-  final bool isDark;
-  final VoidCallback onToggleDark;
-
-  const SettingsScreen({
-    super.key,
-    required this.onNavigate,
-    required this.isDark,
-    required this.onToggleDark,
-  });
+  const SettingsScreen({super.key});
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -133,7 +124,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ? 'Dark theme active'
                           : 'Light theme active',
                   value: widget.isDark,
-                  onChanged: (val) => widget.onToggleDark(),
+                  onChanged: (val) => {},
                 ),
               ],
             ),

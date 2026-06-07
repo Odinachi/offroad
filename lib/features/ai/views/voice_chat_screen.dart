@@ -1,17 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:jemenai/shared/navigator/app_route_string.dart';
+import 'package:jemenai/shared/navigator/app_router.dart';
 import 'dart:math' as math;
 import '../../../shared/theme.dart';
 
 class VoiceChatScreen extends StatefulWidget {
-  final Function(String, [Map<String, dynamic>]) onNavigate;
-  final bool isDark;
-
-  const VoiceChatScreen({
-    super.key,
-    required this.onNavigate,
-    required this.isDark,
-  });
+  const VoiceChatScreen({super.key});
 
   @override
   State<VoiceChatScreen> createState() => _VoiceChatScreenState();
@@ -220,7 +215,9 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
                       vertical: 16,
                     ),
                     child: InkWell(
-                      onTap: () => widget.onNavigate('home', {}),
+                      onTap: () {
+                        AppRouter.pushAndRemoveUntil(AppRouteString.dashboard);
+                      },
                       borderRadius: BorderRadius.circular(50),
                       child: Container(
                         height: 56,
@@ -290,7 +287,8 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
-            onPressed: () => widget.onNavigate('home', {}),
+            onPressed:
+                () => AppRouter.pushAndRemoveUntil(AppRouteString.dashboard),
             icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
             style: IconButton.styleFrom(
               backgroundColor: Colors.white.withOpacity(0.08),

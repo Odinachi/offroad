@@ -3,21 +3,11 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:jemenai/shared/navigator/app_router.dart';
 import '../../../shared/theme.dart';
 
 class ChatScreen extends StatefulWidget {
-  final Function(String, [Map<String, dynamic>]) onNavigate;
-  final bool isDark;
-  final String? initialPrompt;
-  final String? modelName;
-
-  const ChatScreen({
-    super.key,
-    required this.onNavigate,
-    required this.isDark,
-    this.initialPrompt,
-    this.modelName,
-  });
+  const ChatScreen({super.key});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -208,7 +198,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               children: [
                 // Back button
                 IconButton(
-                  onPressed: () => widget.onNavigate('home', {}),
+                  onPressed: () => AppRouter.pop(),
                   icon: Icon(Icons.arrow_back_ios_new, color: foreColor),
                 ),
 
@@ -283,11 +273,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 ),
                 IconButton(
                   onPressed: () {},
-                  icon: Icon(
-                    Icons.more_horiz,
-                    size: 18,
-                    color: foreColor,
-                  ),
+                  icon: Icon(Icons.more_horiz, size: 18, color: foreColor),
                 ),
                 const SizedBox(width: 8),
               ],
