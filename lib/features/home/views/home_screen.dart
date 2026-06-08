@@ -435,9 +435,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 InkWell(
                   onTap: () {
                     Navigator.pop(context);
-                    context
-                        .findAncestorStateOfType<DashboardState>()
-                        ?.switchTab(1);
                   },
                   borderRadius: BorderRadius.circular(16),
                   child: Container(
@@ -863,12 +860,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: InkWell(
                       onTap: () => AppRouter.push(AppRouteString.chat),
-                      borderRadius: BorderRadius.circular(50),
+                      borderRadius: BorderRadius.circular(20),
                       child: Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: cardBg,
-                          borderRadius: BorderRadius.circular(50),
+                          borderRadius: BorderRadius.circular(20),
                           border: Border.all(color: border),
                           boxShadow: JemenaiTheme.shadowCard(isDark),
                         ),

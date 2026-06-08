@@ -1,10 +1,9 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:jemenai/features/ai/views/chat_screen.dart';
 import 'package:jemenai/features/ai/views/models_store_screen.dart';
 import 'package:jemenai/features/dashboard/views/storage_dashboard_screen.dart';
 import 'package:jemenai/features/home/views/home_screen.dart';
 import 'package:jemenai/features/settings/views/settings_screen.dart';
+import 'package:jemenai/shared/assets.dart';
 import 'package:jemenai/shared/theme.dart';
 
 class Dashboard extends StatefulWidget {
@@ -14,189 +13,107 @@ class Dashboard extends StatefulWidget {
   State<Dashboard> createState() => DashboardState();
 }
 
-class DashboardState extends State<Dashboard> {
-  late final PageController _pageController;
-  int _currentIndex = 0;
-
-  void switchTab(int index) {
-    _pageController.jumpToPage(index);
-  }
+class DashboardState extends State<Dashboard>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(initialPage: _currentIndex);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
   void dispose() {
-    _pageController.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final jc = theme.jColors;
-    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       extendBody: true,
       resizeToAvoidBottomInset: false,
+
       body: SafeArea(
-        child: PageView(
-          controller: _pageController,
-          onPageChanged: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-          },
-          children: const [
-            HomeScreen(),
-            ModelsStoreScreen(),
-            ChatScreen(isTab: true),
-            StorageDashboardScreen(),
-            SettingsScreen(),
-          ],
-        ),
-      ),
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-          child: Container(
-            height: 68,
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: JemenaiTheme.shadowFloat(isDark),
-              border: Border.all(color: jc.border, width: 1),
+        bottom: false,
+        child: Stack(
+          children: [
+            TabBarView(
+              controller: _tabController,
+              children: const [
+                HomeScreen(),
+                ModelsStoreScreen(),
+                StorageDashboardScreen(),
+                SettingsScreen(),
+              ],
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(24),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: SafeArea(
                 child: Container(
-                  color: jc.navBackground,
-                  child: Stack(
-                    children: [
-                      // Sliding Active Pill Background
-                      Positioned.fill(
-                        child: AnimatedAlign(
-                          duration: const Duration(milliseconds: 250),
-                          curve: Curves.easeInOutCubic,
-                          alignment: Alignment(
-                            -1.0 + (_currentIndex * 0.5),
-                            0.0,
-                          ),
-                          child: FractionallySizedBox(
-                            widthFactor: 0.2,
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                color: jc.accent,
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                            ),
-                          ),
-                        ),
+                  padding: EdgeInsets.all(5),
+                  margin: const EdgeInsets.fromLTRB(15, 0, 15, 15),
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.jmIndigo.withValues(alpha: .2),
+                        blurRadius: 5,
                       ),
-                      // Tab Interactive Items
-                      Positioned.fill(
-                        child: Row(
-                          children: List.generate(5, (index) {
-                            final isSelected = _currentIndex == index;
-                            return Expanded(
-                              child: GestureDetector(
-                                behavior: HitTestBehavior.opaque,
-                                onTap: () {
-                                  _pageController.jumpToPage(index);
-                                },
-                                child: _buildNavItem(index, isSelected, jc),
-                              ),
-                            );
-                          }),
-                        ),
+                    ],
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  height: 60,
+                  child: TabBar(
+                    splashFactory: NoSplash.splashFactory,
+                    overlayColor: WidgetStateProperty.all(Colors.transparent),
+                    dividerColor: Colors.transparent,
+                    indicator: BoxDecoration(
+                      color: AppColors.jmIndigo.withAlpha(20),
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    controller: _tabController,
+                    unselectedLabelStyle: JemenaiTheme.fontBody(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.grey,
+                    ),
+                    labelStyle: JemenaiTheme.fontBody(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.jmIndigo,
+                    ),
+                    tabs: [
+                      Tab(
+                        icon: Assets.svg.home.svg(width: 23, height: 23),
+                        text: "Home",
+                      ),
+                      Tab(
+                        icon: Assets.svg.store.svg(width: 23, height: 23),
+                        text: "Models",
+                      ),
+                      Tab(
+                        icon: Assets.svg.hardDrive.svg(width: 23, height: 23),
+                        text: "Storage",
+                      ),
+                      Tab(
+                        icon: Assets.svg.settings.svg(width: 23, height: 23),
+                        text: "Settings",
                       ),
                     ],
                   ),
                 ),
               ),
             ),
-          ),
+          ],
         ),
       ),
-    );
-  }
-
-  Widget _buildNavItem(int index, bool isSelected, JemenaiColors jc) {
-    final IconData activeIcon;
-    final IconData inactiveIcon;
-    final String label;
-
-    switch (index) {
-      case 0:
-        activeIcon = Icons.home_rounded;
-        inactiveIcon = Icons.home_outlined;
-        label = 'Home';
-        break;
-      case 1:
-        activeIcon = Icons.explore_rounded;
-        inactiveIcon = Icons.explore_outlined;
-        label = 'Store';
-        break;
-      case 2:
-        activeIcon = Icons.chat_bubble_rounded;
-        inactiveIcon = Icons.chat_bubble_outline_rounded;
-        label = 'AI Chat';
-        break;
-      case 3:
-        activeIcon = Icons.folder_rounded;
-        inactiveIcon = Icons.folder_outlined;
-        label = 'Storage';
-        break;
-      case 4:
-        activeIcon = Icons.settings_rounded;
-        inactiveIcon = Icons.settings_outlined;
-        label = 'Settings';
-        break;
-      default:
-        activeIcon = Icons.home_rounded;
-        inactiveIcon = Icons.home_outlined;
-        label = '';
-    }
-
-    final iconColor = isSelected ? jc.accentForeground : jc.mutedForeground;
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        AnimatedScale(
-          scale: isSelected ? 1.15 : 1.0,
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOutBack,
-          child: Icon(
-            isSelected ? activeIcon : inactiveIcon,
-            color: iconColor,
-            size: 24,
-          ),
-        ),
-        const SizedBox(height: 4),
-        AnimatedDefaultTextStyle(
-          duration: const Duration(milliseconds: 200),
-          style: JemenaiTheme.fontBody(
-            fontSize: 10,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-            color: iconColor,
-          ),
-          child: Text(label),
-        ),
-      ],
     );
   }
 }
