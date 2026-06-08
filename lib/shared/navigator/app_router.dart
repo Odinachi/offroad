@@ -16,22 +16,23 @@ class AppRouter {
     final Widget page = switch (settings.name) {
       AppRouteString.onboarding => const OnboardingScreen(),
       AppRouteString.chat => () {
-          final map = args as Map<String, dynamic>? ?? {};
-          return ChatScreen(
-            modelName: map['modelName'] as String?,
-            initialPrompt: map['prompt'] as String?,
-          );
-        }(),
+        final map = args as Map<String, dynamic>? ?? {};
+        return ChatScreen(
+          modelName: map['modelName'] as String?,
+          initialPrompt: map['prompt'] as String?,
+        );
+      }(),
       AppRouteString.chatsList => ChatsListScreen(),
       AppRouteString.voice => const VoiceChatScreen(),
+      AppRouteString.auth => const AuthScreen(),
       AppRouteString.dashboard => const Dashboard(),
       AppRouteString.quickAction => () {
-          final map = args as Map<String, dynamic>? ?? {};
-          return QuickActionScreen(
-            action: map['action'] as String? ?? 'text-assistant',
-            label: map['label'] as String? ?? 'AI Text Assistant',
-          );
-        }(),
+        final map = args as Map<String, dynamic>? ?? {};
+        return QuickActionScreen(
+          action: map['action'] as String? ?? 'text-assistant',
+          label: map['label'] as String? ?? 'AI Text Assistant',
+        );
+      }(),
       _ => const OnboardingScreen(),
     };
     return CupertinoPageRoute<void>(builder: (_) => page, settings: settings);
