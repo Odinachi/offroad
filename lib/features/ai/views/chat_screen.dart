@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:jemenai/shared/navigator/app_router.dart';
 import 'package:jemenai/shared/navigator/app_route_string.dart';
 import '../../../shared/theme.dart';
@@ -514,12 +513,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                               ? const Radius.circular(4)
                               : const Radius.circular(20),
                     ),
-                    border:
-                        isUser
-                            ? null
-                            : Border.all(
-                              color: jc.border,
-                            ),
+                    border: isUser ? null : Border.all(color: jc.border),
                     boxShadow: JemenaiTheme.shadowCard(isDark),
                   ),
                   child: MarkdownBodyText(
@@ -563,14 +557,12 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   _buildBubbleAction(
                     Icons.push_pin,
                     () => setState(() => msg.pinned = !msg.pinned),
-                    activeColor:
-                        msg.pinned ? theme.colorScheme.primary : null,
+                    activeColor: msg.pinned ? theme.colorScheme.primary : null,
                   ),
                   _buildBubbleAction(
                     Icons.thumb_up,
                     () => setState(() => msg.liked = !msg.liked),
-                    activeColor:
-                        msg.liked ? theme.colorScheme.primary : null,
+                    activeColor: msg.liked ? theme.colorScheme.primary : null,
                   ),
                   _buildBubbleAction(Icons.volume_up, () {}),
                   _buildBubbleAction(Icons.delete_outline, () {
@@ -817,8 +809,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                           decoration: BoxDecoration(
                             gradient:
                                 hasInput && !_typing && !_streaming
-                                      ? JemenaiTheme.gradBrand
-                                      : null,
+                                    ? JemenaiTheme.gradBrand
+                                    : null,
                             color:
                                 hasInput && !_typing && !_streaming
                                     ? null
@@ -1004,8 +996,7 @@ class MarkdownBodyText extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final jc = theme.jColors;
-    final textStyleColor =
-        isUser ? Colors.white : theme.colorScheme.onSurface;
+    final textStyleColor = isUser ? Colors.white : theme.colorScheme.onSurface;
 
     // Basic Tokenizer mimicking the React splitter
     // regex splits: code blocks ```...```, bold **...**, italics *...*, and dividers ---...---
@@ -1073,8 +1064,9 @@ class MarkdownBodyText extends StatelessWidget {
             ),
             child: Text(
               text,
-              style: GoogleFonts.firaCode(
+              style: JemenaiTheme.fontBody(
                 fontSize: 12,
+                fontWeight: FontWeight.normal,
                 color: theme.colorScheme.onSurface,
               ),
             ),
@@ -1104,9 +1096,7 @@ class MarkdownBodyText extends StatelessWidget {
                       '• ',
                       style: TextStyle(
                         color:
-                            isUser
-                                ? Colors.white70
-                                : theme.colorScheme.primary,
+                            isUser ? Colors.white70 : theme.colorScheme.primary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -1185,7 +1175,7 @@ class MarkdownBodyText extends StatelessWidget {
                   children: [
                     Text(
                       lang,
-                      style: GoogleFonts.firaCode(
+                      style: JemenaiTheme.fontBody(
                         fontSize: 11,
                         color: const Color(0xFF4ADE80),
                         fontWeight: FontWeight.bold,
@@ -1240,10 +1230,10 @@ class MarkdownBodyText extends StatelessWidget {
                   scrollDirection: Axis.horizontal,
                   child: Text(
                     code,
-                    style: GoogleFonts.firaCode(
+                    style: JemenaiTheme.fontBody(
                       fontSize: 11.5,
+                      fontWeight: FontWeight.normal,
                       color: const Color(0xFFE6EDF3),
-                      height: 1.45,
                     ),
                   ),
                 ),

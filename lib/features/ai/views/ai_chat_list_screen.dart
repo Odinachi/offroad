@@ -70,121 +70,135 @@ class ChatsListScreen extends StatelessWidget {
     final cardBg = jc.card;
     final border = jc.border;
 
-    return Container(
-      color: theme.scaffoldBackgroundColor,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Header
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Conversations',
-                  style: JemenaiTheme.fontDisplay(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w800,
-                    color: foreColor,
+    return Scaffold(
+      body: SafeArea(
+        child: Container(
+          color: theme.scaffoldBackgroundColor,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Header
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Conversations',
+                      style: JemenaiTheme.fontDisplay(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w800,
+                        color: foreColor,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${_chats.length} conversations',
+                      style: JemenaiTheme.fontBody(
+                        fontSize: 12,
+                        color: mutedFore,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Chats List
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 4,
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${_chats.length} conversations',
-                  style: JemenaiTheme.fontBody(fontSize: 12, color: mutedFore),
-                ),
-              ],
-            ),
-          ),
+                  itemCount: _chats.length,
+                  itemBuilder: (context, index) {
+                    final chat = _chats[index];
+                    final pinned = chat['pinned'] as bool;
 
-          // Chats List
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-              itemCount: _chats.length,
-              itemBuilder: (context, index) {
-                final chat = _chats[index];
-                final pinned = chat['pinned'] as bool;
-
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 10.0),
-                  child: InkWell(
-                    onTap: () => AppRouter.push(AppRouteString.chat),
-                    borderRadius: BorderRadius.circular(20),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 14,
-                      ),
-                      decoration: BoxDecoration(
-                        color: cardBg,
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 10.0),
+                      child: InkWell(
+                        onTap: () => AppRouter.push(AppRouteString.chat),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: border),
-                        boxShadow: JemenaiTheme.shadowCard(isDark),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                          decoration: BoxDecoration(
+                            color: cardBg,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: border),
+                            boxShadow: JemenaiTheme.shadowCard(isDark),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              if (pinned) ...[
-                                Text(
-                                  '📌',
-                                  style: JemenaiTheme.fontBody(fontSize: 12),
-                                ),
-                                const SizedBox(width: 6),
-                              ],
-                              Expanded(
-                                child: Text(
-                                  chat['t'] as String,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: JemenaiTheme.fontBody(
-                                    fontSize: 13.5,
-                                    fontWeight: FontWeight.w600,
-                                    color: foreColor,
+                              Row(
+                                children: [
+                                  if (pinned) ...[
+                                    Text(
+                                      '📌',
+                                      style: JemenaiTheme.fontBody(
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 6),
+                                  ],
+                                  Expanded(
+                                    child: Text(
+                                      chat['t'] as String,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: JemenaiTheme.fontBody(
+                                        fontSize: 13.5,
+                                        fontWeight: FontWeight.w600,
+                                        color: foreColor,
+                                      ),
+                                    ),
                                   ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    chat['when'] as String,
+                                    style: JemenaiTheme.fontBody(
+                                      fontSize: 11,
+                                      color: mutedFore,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                chat['preview'] as String,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: JemenaiTheme.fontBody(
+                                  fontSize: 12,
+                                  color: mutedFore,
                                 ),
                               ),
-                              const SizedBox(width: 8),
+                              const SizedBox(height: 8),
                               Text(
-                                chat['when'] as String,
+                                chat['model'] as String,
                                 style: JemenaiTheme.fontBody(
                                   fontSize: 11,
-                                  color: mutedFore,
+                                  fontWeight: FontWeight.bold,
+                                  color: theme.colorScheme.primary.withOpacity(
+                                    0.75,
+                                  ),
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 6),
-                          Text(
-                            chat['preview'] as String,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: JemenaiTheme.fontBody(
-                              fontSize: 12,
-                              color: mutedFore,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            chat['model'] as String,
-                            style: JemenaiTheme.fontBody(
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                              color: theme.colorScheme.primary.withOpacity(0.75),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
-                );
-              },
-            ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
