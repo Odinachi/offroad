@@ -11,6 +11,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final _askController = TextEditingController();
+
+  @override
+  void dispose() {
+    _askController.dispose();
+    super.dispose();
+  }
+
   final List<Map<String, dynamic>> _quickActions = [
     {
       'id': 'text-assistant',
@@ -147,7 +155,14 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Hero Header
-            _buildHeroHeader(theme, isDark, foreColor, mutedFore, cardBg, border),
+            _buildHeroHeader(
+              theme,
+              isDark,
+              foreColor,
+              mutedFore,
+              cardBg,
+              border,
+            ),
 
             // Suggested Prompts
             _buildSuggestedPrompts(theme, isDark, foreColor, cardBg, border),
@@ -156,7 +171,14 @@ class _HomeScreenState extends State<HomeScreen> {
             _buildQuickActions(isDark, foreColor, mutedFore),
 
             // Recent Chats
-            _buildRecentChats(theme, isDark, foreColor, mutedFore, cardBg, border),
+            _buildRecentChats(
+              theme,
+              isDark,
+              foreColor,
+              mutedFore,
+              cardBg,
+              border,
+            ),
 
             const SizedBox(height: 16),
           ],
@@ -208,62 +230,96 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 20),
 
           // Ask Anything search bar
-          InkWell(
-            onTap: () {
-              AppRouter.push(AppRouteString.chat);
-            },
-            borderRadius: BorderRadius.circular(50),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              decoration: BoxDecoration(
-                color: cardBg,
-                borderRadius: BorderRadius.circular(50),
-                border: Border.all(color: border),
-                boxShadow: JemenaiTheme.shadowCard(isDark),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 28,
-                    height: 28,
-                    decoration: BoxDecoration(
-                      gradient: JemenaiTheme.gradBrand,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Icon(
-                      Icons.auto_awesome,
-                      color: Colors.white,
-                      size: 14,
-                    ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            decoration: BoxDecoration(
+              color: cardBg,
+              borderRadius: BorderRadius.circular(50),
+              border: Border.all(color: border),
+              boxShadow: JemenaiTheme.shadowCard(isDark),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    gradient: JemenaiTheme.gradBrand,
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'Ask anything...',
-                      style: JemenaiTheme.fontBody(
+                  child: const Icon(
+                    Icons.auto_awesome,
+                    color: Colors.white,
+                    size: 14,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextFormField(
+                    controller: _askController,
+                    decoration: InputDecoration(
+                      filled: false,
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50),
+                        borderSide: BorderSide.none,
+                      ),
+                      disabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50),
+                        borderSide: BorderSide.none,
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50),
+                        borderSide: BorderSide.none,
+                      ),
+                      hintText: 'Ask anything...',
+                      hintStyle: JemenaiTheme.fontBody(
                         fontSize: 14,
                         color: mutedFore,
                       ),
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 10),
                     ),
+                    style: JemenaiTheme.fontBody(
+                      fontSize: 14,
+                      color: foreColor,
+                    ),
+                    onFieldSubmitted: (value) {
+                      if (value.trim().isNotEmpty) {
+                        _showModelSelectionModal(context, value.trim());
+                      }
+                    },
                   ),
-                  Row(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          AppRouter.push(AppRouteString.voice);
-                        },
-                        child: Container(
-                          width: 28,
-                          height: 28,
-                          decoration: BoxDecoration(
-                            color: theme.jColors.secondaryFill,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(Icons.mic, color: mutedFore, size: 14),
+                ),
+                Row(
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        AppRouter.push(AppRouteString.voice);
+                      },
+                      child: Container(
+                        width: 28,
+                        height: 28,
+                        decoration: BoxDecoration(
+                          color: theme.jColors.secondaryFill,
+                          borderRadius: BorderRadius.circular(8),
                         ),
+                        child: Icon(Icons.mic, color: mutedFore, size: 14),
                       ),
-                      const SizedBox(width: 6),
-                      Container(
+                    ),
+                    const SizedBox(width: 6),
+                    InkWell(
+                      onTap: () {
+                        final value = _askController.text.trim();
+                        if (value.isNotEmpty) {
+                          _showModelSelectionModal(context, value);
+                        }
+                      },
+                      child: Container(
                         width: 28,
                         height: 28,
                         decoration: BoxDecoration(
@@ -272,13 +328,248 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         child: Icon(Icons.search, color: mutedFore, size: 14),
                       ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showModelSelectionModal(BuildContext context, String query) {
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+    final foreColor = theme.colorScheme.onSurface;
+    final mutedFore = jc.mutedForeground;
+    final cardBg = jc.card;
+    final border = jc.border;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: cardBg,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: border,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Select AI Model',
+                style: JemenaiTheme.fontDisplay(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: foreColor,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Choose a model to process your request',
+                style: JemenaiTheme.fontBody(fontSize: 12, color: mutedFore),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              _buildModelOption(
+                context,
+                name: 'Llama 3.2 3B',
+                specialty: 'General Assistant',
+                description: 'Versatile and perfect for everyday tasks.',
+                maker: 'Meta',
+                size: '2.0 GB',
+                speed: 'Fast',
+                icon: Icons.auto_awesome,
+                query: query,
+              ),
+              const SizedBox(height: 10),
+              _buildModelOption(
+                context,
+                name: 'Phi-3 Mini',
+                specialty: 'Coding & Reasoning',
+                description: 'Exceptional for logic and math tasks.',
+                maker: 'Microsoft',
+                size: '1.8 GB',
+                speed: 'Fast',
+                icon: Icons.code,
+                query: query,
+                customColor: theme.colorScheme.tertiary,
+              ),
+              const SizedBox(height: 10),
+              _buildModelOption(
+                context,
+                name: 'Mistral 7B',
+                specialty: 'Advanced Reasoning',
+                description: 'Superior multilingual capabilities.',
+                maker: 'Mistral',
+                size: '4.1 GB',
+                speed: 'Medium',
+                icon: Icons.psychology,
+                query: query,
+                customColor: Colors.pinkAccent,
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildModelOption(
+    BuildContext context, {
+    required String name,
+    required String specialty,
+    required String description,
+    required String maker,
+    required String size,
+    required String speed,
+    required IconData icon,
+    required String query,
+    Color? customColor,
+  }) {
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+    final foreColor = theme.colorScheme.onSurface;
+    final mutedFore = jc.mutedForeground;
+
+    return InkWell(
+      onTap: () {
+        Navigator.pop(context);
+        _askController.clear();
+        AppRouter.push(
+          AppRouteString.chat,
+          args: {'modelName': name, 'prompt': query},
+        );
+      },
+      borderRadius: BorderRadius.circular(18),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: jc.muted,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: jc.border),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                gradient: customColor == null ? JemenaiTheme.gradBrand : null,
+                color: customColor?.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: customColor ?? Colors.white, size: 20),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        name,
+                        style: JemenaiTheme.fontBody(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: foreColor,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        '· $maker',
+                        style: JemenaiTheme.fontBody(
+                          fontSize: 11,
+                          color: mutedFore,
+                        ),
+                      ),
                     ],
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    description,
+                    style: JemenaiTheme.fontBody(
+                      fontSize: 11,
+                      color: jc.mutedForeground,
+                    ),
                   ),
                 ],
               ),
             ),
-          ),
-        ],
+            const SizedBox(width: 8),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: jc.secondaryFill,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    size,
+                    style: JemenaiTheme.fontBody(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: mutedFore,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color:
+                        speed == 'Fast'
+                            ? const Color(0xFF022016)
+                            : const Color(0xFF1C1400),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      color:
+                          speed == 'Fast'
+                              ? const Color(0xFF4ADE80).withOpacity(0.18)
+                              : const Color(0xFFFBBF24).withOpacity(0.18),
+                    ),
+                  ),
+                  child: Text(
+                    speed,
+                    style: JemenaiTheme.fontBody(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color:
+                          speed == 'Fast'
+                              ? const Color(0xFF4ADE80)
+                              : const Color(0xFFFBBF24),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -422,10 +713,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: InkWell(
-                      onTap: () => AppRouter.push(
-                        AppRouteString.chat,
-                        args: {'prompt': p},
-                      ),
+                      onTap:
+                          () => AppRouter.push(
+                            AppRouteString.chat,
+                            args: {'prompt': p},
+                          ),
                       borderRadius: BorderRadius.circular(50),
                       child: Container(
                         padding: const EdgeInsets.symmetric(
