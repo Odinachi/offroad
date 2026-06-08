@@ -434,6 +434,7 @@ class JemenaiTheme {
 class AppColors {
   static const Color white = Colors.white;
   static const Color black = Colors.black;
+  static const Color grey = Colors.grey;
   static const Color jmIndigo = Color(0xFF4F46E5);
   static const Color jmViolet = Color(0xFF7C3AED);
   static const Color jmPurple = Color(0xFF8B5CF6);

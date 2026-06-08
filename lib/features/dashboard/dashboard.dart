@@ -11,12 +11,16 @@ class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
 
   @override
-  State<Dashboard> createState() => _DashboardState();
+  State<Dashboard> createState() => DashboardState();
 }
 
-class _DashboardState extends State<Dashboard> {
+class DashboardState extends State<Dashboard> {
   late final PageController _pageController;
   int _currentIndex = 0;
+
+  void switchTab(int index) {
+    _pageController.jumpToPage(index);
+  }
 
   @override
   void initState() {
