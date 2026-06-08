@@ -71,9 +71,11 @@ class JemenaiColors extends ThemeExtension<JemenaiColors> {
       mutedForeground: Color.lerp(mutedForeground, other.mutedForeground, t)!,
       secondaryFill: Color.lerp(secondaryFill, other.secondaryFill, t)!,
       accent: Color.lerp(accent, other.accent, t)!,
-      accentForeground: Color.lerp(accentForeground, other.accentForeground, t)!,
+      accentForeground:
+          Color.lerp(accentForeground, other.accentForeground, t)!,
       navBackground: Color.lerp(navBackground, other.navBackground, t)!,
-      switchBackground: Color.lerp(switchBackground, other.switchBackground, t)!,
+      switchBackground:
+          Color.lerp(switchBackground, other.switchBackground, t)!,
       jmIndigo: Color.lerp(jmIndigo, other.jmIndigo, t)!,
       jmViolet: Color.lerp(jmViolet, other.jmViolet, t)!,
     );
@@ -88,7 +90,7 @@ class JemenaiColors extends ThemeExtension<JemenaiColors> {
     secondaryFill: Color(0xFFF4F4F5),
     accent: Color(0xFFEDE9FE),
     accentForeground: Color(0xFF4F46E5),
-    navBackground: Color(0xE0FAFAFA), // ~88% opacity
+    navBackground: Color(0xFFFAFAFA),
     switchBackground: Color(0xFFD4D4D8),
     jmIndigo: Color(0xFF4F46E5),
     jmViolet: Color(0xFF7C3AED),
@@ -103,7 +105,7 @@ class JemenaiColors extends ThemeExtension<JemenaiColors> {
     secondaryFill: Color(0xFF1C1C25),
     accent: Color(0xFF1E1B4B),
     accentForeground: Color(0xFFA5B4FC),
-    navBackground: Color(0xE009090B), // ~88% opacity
+    navBackground: Color(0xFF09090B),
     switchBackground: Color(0xFF3F3F46),
     jmIndigo: Color(0xFF818CF8),
     jmViolet: Color(0xFFA78BFA),
@@ -277,9 +279,10 @@ class JemenaiTheme {
   // ── TextTheme builder ──
 
   static TextTheme _buildTextTheme(Brightness brightness) {
-    final color = brightness == Brightness.dark
-        ? const Color(0xFFFAFAFA)
-        : const Color(0xFF09090B);
+    final color =
+        brightness == Brightness.dark
+            ? const Color(0xFFFAFAFA)
+            : const Color(0xFF09090B);
 
     return TextTheme(
       displayLarge: TextStyle(color: color, fontFamily: 'PlusJakartaSans'),

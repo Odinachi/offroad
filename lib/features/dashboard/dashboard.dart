@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:jemenai/features/ai/views/models_store_screen.dart';
 import 'package:jemenai/features/dashboard/views/storage_dashboard_screen.dart';
@@ -33,6 +34,8 @@ class DashboardState extends State<Dashboard>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final jc = theme.jColors;
+    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -60,17 +63,21 @@ class DashboardState extends State<Dashboard>
                   valueListenable: navValue,
                   builder: (context, value, child) {
                     return Container(
-                      padding: EdgeInsets.all(5),
                       margin: const EdgeInsets.fromLTRB(15, 0, 15, 15),
+                      padding: EdgeInsets.all(5),
                       decoration: BoxDecoration(
+                        color: jc.navBackground,
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.jmIndigo.withValues(alpha: .2),
-                            blurRadius: 5,
+                            color: AppColors.jmIndigo.withValues(
+                              alpha: isDark ? .08 : .15,
+                            ),
+                            blurRadius: 16,
+                            offset: const Offset(0, 4),
                           ),
                         ],
-                        color: Colors.white,
                         borderRadius: BorderRadius.circular(25),
+                        border: Border.all(color: jc.border),
                       ),
                       height: 60,
                       child: TabBar(
@@ -88,7 +95,7 @@ class DashboardState extends State<Dashboard>
                         controller: _tabController,
                         unselectedLabelStyle: JemenaiTheme.fontBody(
                           fontSize: 12,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w400,
                           color: AppColors.grey,
                         ),
                         labelStyle: JemenaiTheme.fontBody(
@@ -98,6 +105,7 @@ class DashboardState extends State<Dashboard>
                         ),
                         tabs: [
                           Tab(
+                            iconMargin: EdgeInsets.only(top: 2),
                             icon: Assets.svg.home.svg(
                               width: 23,
                               height: 23,
@@ -109,6 +117,7 @@ class DashboardState extends State<Dashboard>
                             text: "Home",
                           ),
                           Tab(
+                            iconMargin: EdgeInsets.only(top: 2),
                             icon: Assets.svg.store.svg(
                               width: 23,
                               height: 23,
@@ -120,6 +129,7 @@ class DashboardState extends State<Dashboard>
                             text: "Models",
                           ),
                           Tab(
+                            iconMargin: EdgeInsets.only(top: 2),
                             icon: Assets.svg.hardDrive.svg(
                               width: 23,
                               height: 23,
@@ -131,6 +141,7 @@ class DashboardState extends State<Dashboard>
                             text: "Storage",
                           ),
                           Tab(
+                            iconMargin: EdgeInsets.only(top: 2),
                             icon: Assets.svg.settings.svg(
                               width: 23,
                               height: 23,
