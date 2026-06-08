@@ -17,6 +17,7 @@ class DashboardState extends State<Dashboard>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
 
+  final navValue = ValueNotifier(0);
   @override
   void initState() {
     super.initState();
@@ -55,59 +56,95 @@ class DashboardState extends State<Dashboard>
             Align(
               alignment: Alignment.bottomCenter,
               child: SafeArea(
-                child: Container(
-                  padding: EdgeInsets.all(5),
-                  margin: const EdgeInsets.fromLTRB(15, 0, 15, 15),
-                  decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.jmIndigo.withValues(alpha: .2),
-                        blurRadius: 5,
+                child: ValueListenableBuilder(
+                  valueListenable: navValue,
+                  builder: (context, value, child) {
+                    return Container(
+                      padding: EdgeInsets.all(5),
+                      margin: const EdgeInsets.fromLTRB(15, 0, 15, 15),
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.jmIndigo.withValues(alpha: .2),
+                            blurRadius: 5,
+                          ),
+                        ],
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(25),
                       ),
-                    ],
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  height: 60,
-                  child: TabBar(
-                    splashFactory: NoSplash.splashFactory,
-                    overlayColor: WidgetStateProperty.all(Colors.transparent),
-                    dividerColor: Colors.transparent,
-                    indicator: BoxDecoration(
-                      color: AppColors.jmIndigo.withAlpha(20),
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    controller: _tabController,
-                    unselectedLabelStyle: JemenaiTheme.fontBody(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.grey,
-                    ),
-                    labelStyle: JemenaiTheme.fontBody(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.jmIndigo,
-                    ),
-                    tabs: [
-                      Tab(
-                        icon: Assets.svg.home.svg(width: 23, height: 23),
-                        text: "Home",
+                      height: 60,
+                      child: TabBar(
+                        onTap: (a) => navValue.value = a,
+                        splashFactory: NoSplash.splashFactory,
+                        overlayColor: WidgetStateProperty.all(
+                          Colors.transparent,
+                        ),
+                        dividerColor: Colors.transparent,
+                        indicator: BoxDecoration(
+                          color: AppColors.jmIndigo.withAlpha(20),
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        indicatorSize: TabBarIndicatorSize.tab,
+                        controller: _tabController,
+                        unselectedLabelStyle: JemenaiTheme.fontBody(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.grey,
+                        ),
+                        labelStyle: JemenaiTheme.fontBody(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.jmIndigo,
+                        ),
+                        tabs: [
+                          Tab(
+                            icon: Assets.svg.home.svg(
+                              width: 23,
+                              height: 23,
+                              color:
+                                  value == 0
+                                      ? AppColors.jmIndigo
+                                      : AppColors.grey,
+                            ),
+                            text: "Home",
+                          ),
+                          Tab(
+                            icon: Assets.svg.store.svg(
+                              width: 23,
+                              height: 23,
+                              color:
+                                  value == 1
+                                      ? AppColors.jmIndigo
+                                      : AppColors.grey,
+                            ),
+                            text: "Models",
+                          ),
+                          Tab(
+                            icon: Assets.svg.hardDrive.svg(
+                              width: 23,
+                              height: 23,
+                              color:
+                                  value == 2
+                                      ? AppColors.jmIndigo
+                                      : AppColors.grey,
+                            ),
+                            text: "Storage",
+                          ),
+                          Tab(
+                            icon: Assets.svg.settings.svg(
+                              width: 23,
+                              height: 23,
+                              color:
+                                  value == 3
+                                      ? AppColors.jmIndigo
+                                      : AppColors.grey,
+                            ),
+                            text: "Settings",
+                          ),
+                        ],
                       ),
-                      Tab(
-                        icon: Assets.svg.store.svg(width: 23, height: 23),
-                        text: "Models",
-                      ),
-                      Tab(
-                        icon: Assets.svg.hardDrive.svg(width: 23, height: 23),
-                        text: "Storage",
-                      ),
-                      Tab(
-                        icon: Assets.svg.settings.svg(width: 23, height: 23),
-                        text: "Settings",
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
               ),
             ),
