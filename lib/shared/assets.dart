@@ -83,6 +83,7 @@ final class SvgAssets {
   final SvgAsset trash;
   final SvgAsset url;
   final SvgAsset web;
+  final SvgAsset appLogo;
 
   const SvgAssets({
     this.web = const SvgAsset('assets/svg/web.svg'),
@@ -114,6 +115,7 @@ final class SvgAssets {
     this.transcript = const SvgAsset('assets/svg/transcript.svg'),
     this.trash = const SvgAsset('assets/svg/trash.svg'),
     this.apple = const SvgAsset('assets/svg/apple.svg'),
+    this.appLogo = const SvgAsset('assets/svg/app_logo.svg'),
   });
 }
 

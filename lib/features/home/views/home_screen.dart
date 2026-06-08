@@ -312,24 +312,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Icon(Icons.mic, color: mutedFore, size: 14),
                       ),
                     ),
-                    const SizedBox(width: 6),
-                    InkWell(
-                      onTap: () {
-                        final value = _askController.text.trim();
-                        if (value.isNotEmpty) {
-                          _showModelSelectionModal(context, value);
-                        }
-                      },
-                      child: Container(
-                        width: 28,
-                        height: 28,
-                        decoration: BoxDecoration(
-                          color: theme.jColors.secondaryFill,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Icon(Icons.search, color: mutedFore, size: 14),
-                      ),
-                    ),
                   ],
                 ),
               ],

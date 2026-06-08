@@ -122,102 +122,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ? const Color(0xFF818CF8)
                           : const Color(0xFFD97706),
                   title: 'Dark Mode',
-                  sub:
-                      isDark
-                          ? 'Dark theme active'
-                          : 'Light theme active',
+                  sub: isDark ? 'Dark theme active' : 'Light theme active',
                   value: isDark,
                   onChanged: (val) => {},
-                ),
-              ],
-            ),
-
-            // AI & Performance Section
-            _buildSection(
-              label: 'AI & Performance',
-              children: [
-                // Response Speed Chip Group
-                _buildChipSelectorRow(
-                  icon: Icons.flash_on,
-                  iBg: const Color(0xFF1E1B4B),
-                  iColor: theme.colorScheme.primary,
-                  title: 'Response Speed',
-                  sub: 'Controls streaming token rate',
-                  value: _speed,
-                  options: ['fast', 'balanced', 'slow'],
-                  onChanged: (val) => setState(() => _speed = val),
-                ),
-                _buildToggleRow(
-                  icon: Icons.wifi_off,
-                  iBg: const Color(0xFF022016),
-                  iColor: const Color(0xFF4ADE80),
-                  title: 'Offline Mode',
-                  sub:
-                      _offline ? 'Only downloaded models' : 'Smart hybrid mode',
-                  value: _offline,
-                  onChanged: (val) => setState(() => _offline = val),
-                ),
-              ],
-            ),
-
-            // Voice Section
-            _buildSection(
-              label: 'Voice',
-              children: [
-                _buildToggleRow(
-                  icon: Icons.volume_up,
-                  iBg: const Color(0xFF1E1B4B),
-                  iColor: const Color(0xFF818CF8),
-                  title: 'Voice Responses',
-                  sub: 'AI speaks answers aloud',
-                  value: _voiceResponses,
-                  onChanged: (val) => setState(() => _voiceResponses = val),
-                ),
-                _buildChipSelectorRow(
-                  icon: Icons.volume_up,
-                  iBg: const Color(0xFF2E1065),
-                  iColor: const Color(0xFFA78BFA),
-                  title: 'Voice Personality',
-                  sub: 'How Jemenai sounds',
-                  value: _voicePersonality,
-                  options: ['nova', 'alloy', 'echo'],
-                  onChanged: (val) => setState(() => _voicePersonality = val),
-                ),
-              ],
-            ),
-
-            // Storage & Downloads Section
-            _buildSection(
-              label: 'Storage & Downloads',
-              children: [
-                _buildChipSelectorRow(
-                  icon: Icons.download,
-                  iBg: const Color(0xFF0A1E2E),
-                  iColor: const Color(0xFF38BDF8),
-                  title: 'Download Quality',
-                  sub: 'Higher quality = larger file size',
-                  value: _downloadQuality,
-                  options: ['q4', 'q8'],
-                  optionLabels: {'q4': 'Standard (Q4)', 'q8': 'High (Q8)'},
-                  onChanged: (val) => setState(() => _downloadQuality = val),
-                ),
-                _buildNavRow(
-                  icon: Icons.storage,
-                  iBg: const Color(0xFF1C1400),
-                  iColor: const Color(0xFFFBBF24),
-                  title: 'Storage Manager',
-                  sub: '6.6 GB used by AI models',
-                  onTap: () {
-                    // Navigate to storage — currently a tab in the PageView
-                  },
-                ),
-                _buildNavRow(
-                  icon: Icons.delete_outline,
-                  iBg: const Color(0xFF200000),
-                  iColor: const Color(0xFFF87171),
-                  title: 'Clear Cache',
-                  sub: 'Remove temporary conversation data',
-                  onTap: () {},
                 ),
               ],
             ),
@@ -612,23 +519,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             gradient: isSel ? JemenaiTheme.gradBrand : null,
-                            color:
-                                isSel
-                                    ? null
-                                    : jc.secondaryFill,
+                            color: isSel ? null : jc.secondaryFill,
                             borderRadius: BorderRadius.circular(12),
-                            boxShadow:
-                                isSel ? JemenaiTheme.glowSm(isDark) : [],
+                            boxShadow: isSel ? JemenaiTheme.glowSm(isDark) : [],
                           ),
                           child: Text(
                             label,
                             style: JemenaiTheme.fontBody(
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
-                              color:
-                                  isSel
-                                      ? Colors.white
-                                      : jc.mutedForeground,
+                              color: isSel ? Colors.white : jc.mutedForeground,
                             ),
                           ),
                         ),

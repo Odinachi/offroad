@@ -482,306 +482,295 @@ class _AuthScreenState extends State<AuthScreen> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 72),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 72),
 
-              // Sparkles App Logo
-              Center(
-                child: Container(
-                  width: 64,
-                  height: 64,
+                // Sparkles App Logo
+                Assets.svg.appLogo.svg(width: 64, height: 64),
+                const SizedBox(height: 16),
+
+                Text(
+                  'Jemenai AI',
+                  textAlign: TextAlign.center,
+                  style: JemenaiTheme.fontDisplay(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w800,
+                    color: foreground,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'PRIVATE AI · ANYWHERE · ANYTIME',
+                  textAlign: TextAlign.center,
+                  style: JemenaiTheme.fontBody(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: mutedFore,
+                    lineHeight: 1.0,
+                  ),
+                ),
+                const SizedBox(height: 36),
+
+                // Custom Switch Toggle (Sign in / Create Account)
+                Container(
+                  height: 48,
                   decoration: BoxDecoration(
-                    gradient: JemenaiTheme.gradBrand,
-                    borderRadius: BorderRadius.circular(18),
-                    boxShadow: JemenaiTheme.glowMd(isDark),
+                    color: jc.secondaryFill,
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  child: const Icon(
-                    Icons.auto_awesome,
-                    color: Colors.white,
-                    size: 32,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              Text(
-                'Jemenai AI',
-                textAlign: TextAlign.center,
-                style: JemenaiTheme.fontDisplay(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w800,
-                  color: foreground,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'PRIVATE AI · ANYWHERE · ANYTIME',
-                textAlign: TextAlign.center,
-                style: JemenaiTheme.fontBody(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
-                  color: mutedFore,
-                  lineHeight: 1.0,
-                ),
-              ),
-              const SizedBox(height: 36),
-
-              // Custom Switch Toggle (Sign in / Create Account)
-              Container(
-                height: 48,
-                decoration: BoxDecoration(
-                  color: jc.secondaryFill,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                padding: const EdgeInsets.all(4),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: InkWell(
-                        onTap: () => setState(() => _mode = 'in'),
-                        borderRadius: BorderRadius.circular(12),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          decoration: BoxDecoration(
-                            color: _mode == 'in' ? cardBg : Colors.transparent,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow:
-                                _mode == 'in'
-                                    ? JemenaiTheme.shadowCard(isDark)
-                                    : [],
-                          ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            'Sign In',
-                            style: JemenaiTheme.fontBody(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: _mode == 'in' ? foreground : mutedFore,
+                  padding: const EdgeInsets.all(4),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: InkWell(
+                          onTap: () => setState(() => _mode = 'in'),
+                          borderRadius: BorderRadius.circular(12),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            decoration: BoxDecoration(
+                              color:
+                                  _mode == 'in' ? cardBg : Colors.transparent,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow:
+                                  _mode == 'in'
+                                      ? JemenaiTheme.shadowCard(isDark)
+                                      : [],
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              'Sign In',
+                              style: JemenaiTheme.fontBody(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: _mode == 'in' ? foreground : mutedFore,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    Expanded(
-                      child: InkWell(
-                        onTap: () => setState(() => _mode = 'up'),
-                        borderRadius: BorderRadius.circular(12),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          decoration: BoxDecoration(
-                            color: _mode == 'up' ? cardBg : Colors.transparent,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow:
-                                _mode == 'up'
-                                    ? JemenaiTheme.shadowCard(isDark)
-                                    : [],
-                          ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            'Create Account',
-                            style: JemenaiTheme.fontBody(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: _mode == 'up' ? foreground : mutedFore,
+                      Expanded(
+                        child: InkWell(
+                          onTap: () => setState(() => _mode = 'up'),
+                          borderRadius: BorderRadius.circular(12),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            decoration: BoxDecoration(
+                              color:
+                                  _mode == 'up' ? cardBg : Colors.transparent,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow:
+                                  _mode == 'up'
+                                      ? JemenaiTheme.shadowCard(isDark)
+                                      : [],
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              'Create Account',
+                              style: JemenaiTheme.fontBody(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: _mode == 'up' ? foreground : mutedFore,
+                              ),
                             ),
                           ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Social logins
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildSocialBtn(
+                        label: 'Google',
+                        icon: Assets.svg.google.svg(height: 18, width: 18),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildSocialBtn(
+                        label: 'Apple',
+                        icon: Assets.svg.apple.svg(
+                          height: 18,
+                          width: 18,
+                          color: Colors.white,
                         ),
                       ),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-              // Social logins
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildSocialBtn(
-                      label: 'Google',
-                      icon: Assets.svg.google.svg(height: 18, width: 18),
+                // Divider
+                Row(
+                  children: [
+                    Expanded(child: Divider(color: jc.border)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                      child: Text(
+                        'or continue with email',
+                        style: JemenaiTheme.fontBody(
+                          fontSize: 11,
+                          color: mutedFore,
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildSocialBtn(
-                      label: 'Apple',
-                      icon: Assets.svg.apple.svg(
-                        height: 18,
-                        width: 18,
-                        color: Colors.white,
+                    Expanded(child: Divider(color: jc.border)),
+                  ],
+                ),
+                const SizedBox(height: 20),
+
+                // Email Input
+                TextField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  style: JemenaiTheme.fontBody(fontSize: 14, color: foreground),
+                  decoration: InputDecoration(
+                    hintText: 'Email address',
+                    hintStyle: JemenaiTheme.fontBody(
+                      fontSize: 14,
+                      color: mutedFore,
+                    ),
+                    filled: true,
+                    fillColor: inputBg,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 16,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide(
+                        color: theme.colorScheme.primary.withOpacity(0.25),
+                        width: 2,
                       ),
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 20),
+                ),
+                const SizedBox(height: 12),
 
-              // Divider
-              Row(
-                children: [
-                  Expanded(child: Divider(color: jc.border)),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: Text(
-                      'or continue with email',
-                      style: JemenaiTheme.fontBody(
-                        fontSize: 11,
+                // Password Input
+                TextField(
+                  controller: _passController,
+                  obscureText: !_showPass,
+                  style: JemenaiTheme.fontBody(fontSize: 14, color: foreground),
+                  decoration: InputDecoration(
+                    hintText: 'Password',
+                    hintStyle: JemenaiTheme.fontBody(
+                      fontSize: 14,
+                      color: mutedFore,
+                    ),
+                    filled: true,
+                    fillColor: inputBg,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 16,
+                    ),
+                    suffixIcon: IconButton(
+                      onPressed: () => setState(() => _showPass = !_showPass),
+                      icon: Icon(
+                        _showPass ? Icons.visibility_off : Icons.visibility,
+                        size: 18,
                         color: mutedFore,
                       ),
                     ),
-                  ),
-                  Expanded(child: Divider(color: jc.border)),
-                ],
-              ),
-              const SizedBox(height: 20),
-
-              // Email Input
-              TextField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                style: JemenaiTheme.fontBody(fontSize: 14, color: foreground),
-                decoration: InputDecoration(
-                  hintText: 'Email address',
-                  hintStyle: JemenaiTheme.fontBody(
-                    fontSize: 14,
-                    color: mutedFore,
-                  ),
-                  filled: true,
-                  fillColor: inputBg,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 16,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide.none,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide(
-                      color: theme.colorScheme.primary.withOpacity(0.25),
-                      width: 2,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide(
+                        color: theme.colorScheme.primary.withOpacity(0.25),
+                        width: 2,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 12),
+                const SizedBox(height: 20),
 
-              // Password Input
-              TextField(
-                controller: _passController,
-                obscureText: !_showPass,
-                style: JemenaiTheme.fontBody(fontSize: 14, color: foreground),
-                decoration: InputDecoration(
-                  hintText: 'Password',
-                  hintStyle: JemenaiTheme.fontBody(
-                    fontSize: 14,
-                    color: mutedFore,
-                  ),
-                  filled: true,
-                  fillColor: inputBg,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 16,
-                  ),
-                  suffixIcon: IconButton(
-                    onPressed: () => setState(() => _showPass = !_showPass),
-                    icon: Icon(
-                      _showPass ? Icons.visibility_off : Icons.visibility,
-                      size: 18,
-                      color: mutedFore,
+                // Submit Action
+                InkWell(
+                  onTap: _loading ? null : _submit,
+                  borderRadius: BorderRadius.circular(16),
+                  child: Container(
+                    height: 56,
+                    decoration: BoxDecoration(
+                      gradient: JemenaiTheme.gradBrand,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: _loading ? [] : JemenaiTheme.glowSm(isDark),
                     ),
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide.none,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide(
-                      color: theme.colorScheme.primary.withOpacity(0.25),
-                      width: 2,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Submit Action
-              InkWell(
-                onTap: _loading ? null : _submit,
-                borderRadius: BorderRadius.circular(16),
-                child: Container(
-                  height: 56,
-                  decoration: BoxDecoration(
-                    gradient: JemenaiTheme.gradBrand,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: _loading ? [] : JemenaiTheme.glowSm(isDark),
-                  ),
-                  alignment: Alignment.center,
-                  child:
-                      _loading
-                          ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                          : Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                _mode == 'in' ? 'Sign In' : 'Create Account',
-                                style: JemenaiTheme.fontBody(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              const Icon(
-                                Icons.arrow_forward,
+                    alignment: Alignment.center,
+                    child:
+                        _loading
+                            ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
                                 color: Colors.white,
-                                size: 16,
                               ),
-                            ],
-                          ),
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // Footer notes
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.lock, size: 12, color: mutedFore),
-                  const SizedBox(width: 6),
-                  Text(
-                    'End-to-end encrypted · GDPR compliant',
-                    style: JemenaiTheme.fontBody(
-                      fontSize: 10,
-                      color: mutedFore,
-                    ),
+                            )
+                            : Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  _mode == 'in' ? 'Sign In' : 'Create Account',
+                                  style: JemenaiTheme.fontBody(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                const Icon(
+                                  Icons.arrow_forward,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
+                              ],
+                            ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 32),
-            ],
+                ),
+                const SizedBox(height: 24),
+
+                // Footer notes
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.lock, size: 12, color: mutedFore),
+                    const SizedBox(width: 6),
+                    Text(
+                      'End-to-end encrypted · GDPR compliant',
+                      style: JemenaiTheme.fontBody(
+                        fontSize: 10,
+                        color: mutedFore,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 32),
+              ],
+            ),
           ),
         ),
       ),
