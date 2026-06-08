@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 // ──────────────────────────────────────────────────
 // ThemeExtension — custom semantic tokens that have
@@ -158,14 +157,15 @@ class JemenaiTheme {
       cardTheme: CardThemeData(
         color: const Color(0xFFFFFFFF),
         elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: const Color(0xFFF4F4F5),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
@@ -176,10 +176,7 @@ class JemenaiTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(
-            color: Color(0x404F46E5),
-            width: 2,
-          ),
+          borderSide: const BorderSide(color: Color(0x404F46E5), width: 2),
         ),
       ),
       switchTheme: SwitchThemeData(
@@ -232,14 +229,15 @@ class JemenaiTheme {
       cardTheme: CardThemeData(
         color: const Color(0xFF111113),
         elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: const Color(0xFF18181B),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
@@ -283,32 +281,23 @@ class JemenaiTheme {
         ? const Color(0xFFFAFAFA)
         : const Color(0xFF09090B);
 
-    final display = GoogleFonts.plusJakartaSansTextTheme(
-      TextTheme(
-        displayLarge: TextStyle(color: color),
-        displayMedium: TextStyle(color: color),
-        displaySmall: TextStyle(color: color),
-        headlineLarge: TextStyle(color: color),
-        headlineMedium: TextStyle(color: color),
-        headlineSmall: TextStyle(color: color),
-        titleLarge: TextStyle(color: color),
-        titleMedium: TextStyle(color: color),
-        titleSmall: TextStyle(color: color),
-      ),
+    return TextTheme(
+      displayLarge: TextStyle(color: color, fontFamily: 'PlusJakartaSans'),
+      displayMedium: TextStyle(color: color, fontFamily: 'PlusJakartaSans'),
+      displaySmall: TextStyle(color: color, fontFamily: 'PlusJakartaSans'),
+      headlineLarge: TextStyle(color: color, fontFamily: 'PlusJakartaSans'),
+      headlineMedium: TextStyle(color: color, fontFamily: 'PlusJakartaSans'),
+      headlineSmall: TextStyle(color: color, fontFamily: 'PlusJakartaSans'),
+      titleLarge: TextStyle(color: color, fontFamily: 'PlusJakartaSans'),
+      titleMedium: TextStyle(color: color, fontFamily: 'PlusJakartaSans'),
+      titleSmall: TextStyle(color: color, fontFamily: 'PlusJakartaSans'),
+      bodyLarge: TextStyle(color: color, fontFamily: 'Inter'),
+      bodyMedium: TextStyle(color: color, fontFamily: 'Inter'),
+      bodySmall: TextStyle(color: color, fontFamily: 'Inter'),
+      labelLarge: TextStyle(color: color, fontFamily: 'Inter'),
+      labelMedium: TextStyle(color: color, fontFamily: 'Inter'),
+      labelSmall: TextStyle(color: color, fontFamily: 'Inter'),
     );
-
-    final body = GoogleFonts.interTextTheme(
-      TextTheme(
-        bodyLarge: TextStyle(color: color),
-        bodyMedium: TextStyle(color: color),
-        bodySmall: TextStyle(color: color),
-        labelLarge: TextStyle(color: color),
-        labelMedium: TextStyle(color: color),
-        labelSmall: TextStyle(color: color),
-      ),
-    );
-
-    return display.merge(body);
   }
 
   // ──────────────────────────────────────────────────
@@ -417,11 +406,12 @@ class JemenaiTheme {
     Color? color,
     double? lineHeight,
   }) {
-    return GoogleFonts.plusJakartaSans(
+    return TextStyle(
       fontSize: fontSize,
       fontWeight: fontWeight,
       color: color,
       height: lineHeight,
+      fontFamily: 'PlusJakartaSans',
     );
   }
 
@@ -431,11 +421,26 @@ class JemenaiTheme {
     Color? color,
     double? lineHeight,
   }) {
-    return GoogleFonts.inter(
+    return TextStyle(
       fontSize: fontSize,
       fontWeight: fontWeight,
       color: color,
       height: lineHeight,
+      fontFamily: 'Inter',
     );
   }
+}
+
+class AppColors {
+  static const Color white = Colors.white;
+  static const Color black = Colors.black;
+  static const Color jmIndigo = Color(0xFF4F46E5);
+  static const Color jmViolet = Color(0xFF7C3AED);
+  static const Color jmPurple = Color(0xFF8B5CF6);
+  static const Color jmPink = Color(0xFFFF006E);
+  static const Color jmTeal = Color(0xFF14B8A6);
+  static const Color jmGreen = Color(0xFF22C55E);
+  static const Color jmYellow = Color(0xFFFFC107);
+  static const Color jmOrange = Color(0xFFFF9800);
+  static const Color jmRed = Color(0xFFFF5252);
 }

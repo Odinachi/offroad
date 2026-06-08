@@ -40,20 +40,22 @@ class _DashboardState extends State<Dashboard> {
       backgroundColor: theme.scaffoldBackgroundColor,
       extendBody: true,
       resizeToAvoidBottomInset: false,
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        children: const [
-          HomeScreen(),
-          ModelsStoreScreen(),
-          ChatScreen(isTab: true),
-          StorageDashboardScreen(),
-          SettingsScreen(),
-        ],
+      body: SafeArea(
+        child: PageView(
+          controller: _pageController,
+          onPageChanged: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          children: const [
+            HomeScreen(),
+            ModelsStoreScreen(),
+            ChatScreen(isTab: true),
+            StorageDashboardScreen(),
+            SettingsScreen(),
+          ],
+        ),
       ),
       bottomNavigationBar: SafeArea(
         top: false,
@@ -62,12 +64,10 @@ class _DashboardState extends State<Dashboard> {
           child: Container(
             height: 68,
             decoration: BoxDecoration(
+              color: Colors.transparent,
               borderRadius: BorderRadius.circular(24),
               boxShadow: JemenaiTheme.shadowFloat(isDark),
-              border: Border.all(
-                color: jc.border,
-                width: 1,
-              ),
+              border: Border.all(color: jc.border, width: 1),
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(24),
@@ -82,11 +82,17 @@ class _DashboardState extends State<Dashboard> {
                         child: AnimatedAlign(
                           duration: const Duration(milliseconds: 250),
                           curve: Curves.easeInOutCubic,
-                          alignment: Alignment(-1.0 + (_currentIndex * 0.5), 0.0),
+                          alignment: Alignment(
+                            -1.0 + (_currentIndex * 0.5),
+                            0.0,
+                          ),
                           child: FractionallySizedBox(
                             widthFactor: 0.2,
                             child: Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 8,
+                              ),
                               decoration: BoxDecoration(
                                 color: jc.accent,
                                 borderRadius: BorderRadius.circular(16),

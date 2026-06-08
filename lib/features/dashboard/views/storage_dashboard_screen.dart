@@ -128,37 +128,44 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                     SizedBox(
                       width: 108,
                       height: 108,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          CustomPaint(
-                            size: const Size(100, 100),
-                            painter: DonutChartPainter(
-                              pct: usedPct / 100,
-                              isDark: isDark,
-                            ),
-                          ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                      child: TweenAnimationBuilder<double>(
+                        tween: Tween<double>(begin: 0.0, end: usedPct),
+                        duration: const Duration(milliseconds: 1200),
+                        curve: Curves.easeOutCubic,
+                        builder: (context, val, child) {
+                          return Stack(
+                            alignment: Alignment.center,
                             children: [
-                              Text(
-                                '${usedPct.toStringAsFixed(0)}%',
-                                style: JemenaiTheme.fontDisplay(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: foreColor,
+                              CustomPaint(
+                                size: const Size(100, 100),
+                                painter: DonutChartPainter(
+                                  pct: val / 100,
+                                  isDark: isDark,
                                 ),
                               ),
-                              Text(
-                                'used',
-                                style: JemenaiTheme.fontBody(
-                                  fontSize: 10,
-                                  color: mutedFore,
-                                ),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    '${val.toStringAsFixed(0)}%',
+                                    style: JemenaiTheme.fontDisplay(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: foreColor,
+                                    ),
+                                  ),
+                                  Text(
+                                    'used',
+                                    style: JemenaiTheme.fontBody(
+                                      fontSize: 10,
+                                      color: mutedFore,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
-                          ),
-                        ],
+                          );
+                        },
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -260,10 +267,17 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
           child: Container(
             height: 4.5,
             color: jc.secondaryFill,
-            child: FractionallySizedBox(
-              alignment: Alignment.centerLeft,
-              widthFactor: (pct / 100).clamp(0.0, 1.0),
-              child: Container(color: color),
+            child: TweenAnimationBuilder<double>(
+              tween: Tween<double>(begin: 0.0, end: (pct / 100).clamp(0.0, 1.0)),
+              duration: const Duration(milliseconds: 1000),
+              curve: Curves.easeOutCubic,
+              builder: (context, val, child) {
+                return FractionallySizedBox(
+                  alignment: Alignment.centerLeft,
+                  widthFactor: val,
+                  child: Container(color: color),
+                );
+              },
             ),
           ),
         ),
@@ -318,31 +332,39 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                   child: Container(
                     height: 12,
                     color: jc.secondaryFill,
-                    child:
-                        activeModels.isEmpty
-                            ? const SizedBox.shrink()
-                            : Row(
-                              children:
-                                  activeModels.map((m) {
-                                    final ratio =
-                                        totalModelsGB > 0
-                                            ? (m['gb'] as double) /
-                                                totalModelsGB
-                                            : 0;
-                                    return Expanded(
-                                      flex: (ratio * 1000).toInt().clamp(
+                    child: activeModels.isEmpty
+                        ? const SizedBox.shrink()
+                        : TweenAnimationBuilder<double>(
+                            tween: Tween<double>(begin: 0.0, end: 1.0),
+                            duration: const Duration(milliseconds: 1000),
+                            curve: Curves.easeOutCubic,
+                            builder: (context, val, child) {
+                              return FractionallySizedBox(
+                                alignment: Alignment.centerLeft,
+                                widthFactor: val,
+                                child: child,
+                              );
+                            },
+                            child: Row(
+                              children: activeModels.map((m) {
+                                final ratio = totalModelsGB > 0
+                                    ? (m['gb'] as double) / totalModelsGB
+                                    : 0;
+                                return Expanded(
+                                  flex: (ratio * 1000).toInt().clamp(
                                         1,
                                         1000,
                                       ),
-                                      child: Container(
-                                        margin: const EdgeInsets.only(
-                                          right: 1.5,
-                                        ),
-                                        color: m['color'] as Color,
-                                      ),
-                                    );
-                                  }).toList(),
+                                  child: Container(
+                                    margin: const EdgeInsets.only(
+                                      right: 1.5,
+                                    ),
+                                    color: m['color'] as Color,
+                                  ),
+                                );
+                              }).toList(),
                             ),
+                          ),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -401,75 +423,92 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
             children:
                 _modelsStorage.map((m) {
                   final isDel = _deleted.contains(m['name']);
-                  if (isDel) return const SizedBox.shrink();
-
                   final isPartial = m['partial'] as bool? ?? false;
                   final color = m['color'] as Color;
 
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: cardBg,
-                        borderRadius: BorderRadius.circular(50),
-                        border: Border.all(color: border),
-                        boxShadow: JemenaiTheme.shadowCard(isDark),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 36,
-                            height: 36,
-                            decoration: BoxDecoration(
-                              color: color.withOpacity(0.12),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Icon(Icons.flash_on, color: color, size: 16),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  m['name'] as String,
-                                  style: JemenaiTheme.fontBody(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.bold,
-                                    color: foreColor,
-                                  ),
-                                ),
-                                Text(
-                                  '${(m['gb'] as double).toStringAsFixed(1)} GB${isPartial ? " (downloading)" : ""}',
-                                  style: JemenaiTheme.fontBody(
-                                    fontSize: 11,
-                                    color: mutedFore,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              setState(() {
-                                _deleted.add(m['name'] as String);
-                              });
-                            },
-                            icon: Icon(
-                              Icons.delete_outline,
-                              size: 16,
-                              color: theme.colorScheme.error,
-                            ),
-                            style: IconButton.styleFrom(
-                              backgroundColor: theme.colorScheme.error.withOpacity(0.08),
-                              shape: RoundedRectangleBorder(
+                  return AnimatedCrossFade(
+                    duration: const Duration(milliseconds: 250),
+                    firstCurve: Curves.easeInOut,
+                    secondCurve: Curves.easeInOut,
+                    sizeCurve: Curves.easeInOut,
+                    crossFadeState:
+                        isDel
+                            ? CrossFadeState.showSecond
+                            : CrossFadeState.showFirst,
+                    secondChild: const SizedBox(
+                      height: 0,
+                      width: double.infinity,
+                    ),
+                    firstChild: Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: cardBg,
+                          borderRadius: BorderRadius.circular(50),
+                          border: Border.all(color: border),
+                          boxShadow: JemenaiTheme.shadowCard(isDark),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 36,
+                              height: 36,
+                              decoration: BoxDecoration(
+                                color: color.withOpacity(0.12),
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              padding: const EdgeInsets.all(8),
+                              child: Icon(
+                                Icons.flash_on,
+                                color: color,
+                                size: 16,
+                              ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    m['name'] as String,
+                                    style: JemenaiTheme.fontBody(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                      color: foreColor,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${(m['gb'] as double).toStringAsFixed(1)} GB${isPartial ? " (downloading)" : ""}',
+                                    style: JemenaiTheme.fontBody(
+                                      fontSize: 11,
+                                      color: mutedFore,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _deleted.add(m['name'] as String);
+                                });
+                              },
+                              icon: Icon(
+                                Icons.delete_outline,
+                                size: 16,
+                                color: theme.colorScheme.error,
+                              ),
+                              style: IconButton.styleFrom(
+                                backgroundColor:
+                                    theme.colorScheme.error.withOpacity(0.08),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                padding: const EdgeInsets.all(8),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );

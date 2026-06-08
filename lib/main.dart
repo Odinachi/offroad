@@ -20,7 +20,7 @@ class _JemenaiAppState extends State<JemenaiApp> {
     return MaterialApp(
       title: 'Jemenai AI',
       debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.dark,
+      themeMode: ThemeMode.light,
       theme: JemenaiTheme.lightTheme(),
       darkTheme: JemenaiTheme.darkTheme(),
       navigatorKey: AppRouter.navKey,

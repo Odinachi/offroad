@@ -215,7 +215,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
                     ),
                     child: InkWell(
                       onTap: () {
-                        AppRouter.pushAndRemoveUntil(AppRouteString.dashboard);
+                        AppRouter.pop();
                       },
                       borderRadius: BorderRadius.circular(50),
                       child: Container(
@@ -355,7 +355,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
                   ),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.08),
-                    borderRadius: BorderRadius.circular(50),
+                    borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: Colors.white.withOpacity(0.1)),
                   ),
                   child: Text(
@@ -376,7 +376,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
                   ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF312E81).withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(50),
+                    borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: const Color(0xFF818CF8).withOpacity(0.25),
                     ),
