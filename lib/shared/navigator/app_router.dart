@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:jemenai/features/dashboard/dashboard.dart';
+import 'package:jemenai/features/dashboard/views/dashboard.dart';
 import 'app_route_string.dart';
 import '../../features/auth/views/onboarding_screen.dart';
 import '../../features/ai/views/voice_chat_screen.dart';

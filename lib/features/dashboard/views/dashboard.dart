@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:jemenai/features/ai/views/models_store_screen.dart';
 import 'package:jemenai/features/dashboard/views/storage_dashboard_screen.dart';
@@ -17,8 +16,8 @@ class Dashboard extends StatefulWidget {
 class DashboardState extends State<Dashboard>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
-
   final navValue = ValueNotifier(0);
+
   @override
   void initState() {
     super.initState();
@@ -41,7 +40,6 @@ class DashboardState extends State<Dashboard>
       backgroundColor: theme.scaffoldBackgroundColor,
       extendBody: true,
       resizeToAvoidBottomInset: false,
-
       body: SafeArea(
         bottom: false,
         child: Stack(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jemenai/shared/navigator/app_route_string.dart';
 import 'package:jemenai/shared/navigator/app_router.dart';
-import 'package:jemenai/features/dashboard/dashboard.dart';
+import 'package:jemenai/features/dashboard/views/dashboard.dart';
 import '../../../shared/theme.dart';
 
 class HomeScreen extends StatefulWidget {
