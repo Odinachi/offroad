@@ -385,7 +385,7 @@ class _VoiceChatScreenState extends State<VoiceChatScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'JEMENAI AI',
+                        'OFFROAD',
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,

@@ -495,7 +495,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 const SizedBox(height: 16),
 
                 Text(
-                  'Jemenai AI',
+                  'Offroad',
                   textAlign: TextAlign.center,
                   style: JemenaiTheme.fontDisplay(
                     fontSize: 26,
