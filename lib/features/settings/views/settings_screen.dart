@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jemenai/features/dashboard/view_models/app_cubit.dart';
 import '../../../shared/theme.dart';
+import 'huggingface_token_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -20,11 +21,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _speed = "fast"; // 'fast' | 'balanced' | 'slow'
   String _voicePersonality = "nova"; // 'nova' | 'alloy' | 'echo'
   String _downloadQuality = "q8"; // 'q4' | 'q8'
+  String _hardwareMode = "gpu"; // 'gpu' | 'cpu'
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final jc = theme.jColors;
+
     final isDark = theme.brightness == Brightness.dark;
     final foreColor = theme.colorScheme.onSurface;
     final mutedFore = jc.mutedForeground;
@@ -128,6 +131,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   value: context.watch<AppCubit>().isDarkTheme,
                   onChanged: (val) {
                     context.read<AppCubit>().toggleTheme();
+                  },
+                ),
+              ],
+            ),
+
+            // Hardware & Performance Section
+            _buildSection(
+              label: 'Hardware & Performance',
+              children: [
+                _buildChipSelectorRow(
+                  icon: Icons.memory,
+                  iBg: const Color(0xFF1E1B4B),
+                  iColor: const Color(0xFF818CF8),
+                  title: 'Inference Engine',
+                  sub: 'Choose processing hardware for local models',
+                  value: _hardwareMode,
+                  options: const ['gpu', 'cpu'],
+                  optionLabels: const {
+                    'gpu': 'GPU (Accelerated)',
+                    'cpu': 'CPU (Standard)',
+                  },
+                  onChanged: (val) => setState(() => _hardwareMode = val),
+                ),
+                _buildNavRow(
+                  icon: Icons.vpn_key,
+                  iBg: const Color(0xFF1E1B4B),
+                  iColor: const Color(0xFF818CF8),
+                  title: 'Hugging Face Token',
+                  sub: 'Set up credentials to access models',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const HuggingFaceTokenScreen(),
+                      ),
+                    );
                   },
                 ),
               ],

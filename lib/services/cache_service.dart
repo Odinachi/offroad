@@ -23,6 +23,8 @@ class CacheService {
     return _prefs.getBool(_darkModeKey);
   }
 
+  final _huggingFaceTokenKey = "huggingFaceToken";
+
   //Onboarding
   Future<void> saveSeenOnboarding() async {
     await _prefs.setBool(_seenOnboardingKey, true);
@@ -30,6 +32,15 @@ class CacheService {
 
   bool getSeenOnboarding() {
     return _prefs.getBool(_seenOnboardingKey) ?? false;
+  }
+
+  //Hugging Face Token
+  Future<void> saveHuggingFaceToken(String value) async {
+    await _prefs.setString(_huggingFaceTokenKey, value);
+  }
+
+  String? getHuggingFaceToken() {
+    return _prefs.getString(_huggingFaceTokenKey);
   }
 
   //clear all
