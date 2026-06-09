@@ -1,3 +1,16 @@
+enum AICapability {
+  vision('Vision'),
+  audio('Audio'),
+  video('Video'),
+  thinking('Thinking'),
+  multilingual('Multilingual'),
+  code('Code'),
+  functionCalling('Function Calling');
+
+  final String label;
+  const AICapability(this.label);
+}
+
 class AIModel {
   final String url;
   final String name;
@@ -9,7 +22,7 @@ class AIModel {
 
   final List<String> compactibility;
 
-  final List<String>? capabilities;
+  final List<AICapability>? capabilities;
   final bool? requiresAuth;
 
   AIModel({
@@ -35,7 +48,7 @@ class AIModel {
       sizeGB < 1
           ? '${(sizeGB * 1000).toStringAsFixed(0)} MB'
           : '${sizeGB.toStringAsFixed(1)} GB';
-  List<String> get tags => capabilities ?? ["Assistant"];
+  List<String> get tags => capabilities?.map((c) => c.label).toList() ?? ["Assistant"];
   String get category {
     if (sizeMb < 600) return "Lightweight";
     if (specialty.toLowerCase().contains("code") ||

@@ -43,7 +43,12 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
         "Nothing Phone 2+",
         "Motorola Edge 40+",
       ],
-      capabilities: ["Vision", "Audio", "Function Calling", "Thinking"],
+      capabilities: [
+        AICapability.vision,
+        AICapability.audio,
+        AICapability.functionCalling,
+        AICapability.thinking,
+      ],
     ),
     AIModel(
       url:
@@ -65,7 +70,12 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
         "ASUS ROG Phone 7+",
         "Sony Xperia 1 V+",
       ],
-      capabilities: ["Vision", "Audio", "Function Calling", "Thinking"],
+      capabilities: [
+        AICapability.vision,
+        AICapability.audio,
+        AICapability.functionCalling,
+        AICapability.thinking,
+      ],
     ),
     AIModel(
       url:
@@ -88,7 +98,11 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
         "Motorola Edge 40+",
         "Realme GT 5+",
       ],
-      capabilities: ["Vision", "Audio", "Video"],
+      capabilities: [
+        AICapability.vision,
+        AICapability.audio,
+        AICapability.video,
+      ],
     ),
     AIModel(
       url:
@@ -110,7 +124,11 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
         "ASUS ROG Phone 7+",
         "Sony Xperia 1 V+",
       ],
-      capabilities: ["Vision", "Audio", "Video"],
+      capabilities: [
+        AICapability.vision,
+        AICapability.audio,
+        AICapability.video,
+      ],
     ),
     AIModel(
       url:
@@ -134,7 +152,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
         "Realme GT 2+",
         "Vivo V27+",
       ],
-      capabilities: ["Multilingual"],
+      capabilities: [AICapability.multilingual],
     ),
     AIModel(
       url:
@@ -161,7 +179,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
         "Tecno Camon 20+",
         "Infinix Note 30+",
       ],
-      capabilities: ["Multilingual"],
+      capabilities: [AICapability.multilingual],
     ),
     AIModel(
       url:
@@ -188,7 +206,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
         "Tecno Camon 20+",
         "Infinix Note 30+",
       ],
-      capabilities: ["Function Calling"],
+      capabilities: [AICapability.functionCalling],
     ),
     AIModel(
       url:
@@ -215,7 +233,11 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
         "Tecno Camon 20+",
         "Infinix Note 30+",
       ],
-      capabilities: ["Thinking", "Multilingual", "Function Calling"],
+      capabilities: [
+        AICapability.thinking,
+        AICapability.multilingual,
+        AICapability.functionCalling,
+      ],
     ),
     AIModel(
       url:
@@ -240,7 +262,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
         "Vivo V27+",
         "OPPO Reno 10+",
       ],
-      capabilities: ["Multilingual", "Code"],
+      capabilities: [AICapability.multilingual, AICapability.code],
     ),
     AIModel(
       url:
@@ -267,7 +289,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
         "Tecno Camon 20+",
         "Infinix Note 30+",
       ],
-      capabilities: ["Multilingual"],
+      capabilities: [AICapability.multilingual],
     ),
     AIModel(
       url:
@@ -318,7 +340,12 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
         "Realme GT 5+",
         "ASUS ROG Phone 7+",
       ],
-      capabilities: ["Thinking", "Function Calling", "Multilingual", "Code"],
+      capabilities: [
+        AICapability.thinking,
+        AICapability.functionCalling,
+        AICapability.multilingual,
+        AICapability.code,
+      ],
     ),
     AIModel(
       url:
@@ -343,7 +370,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
         "Vivo V27+",
         "OPPO Reno 10+",
       ],
-      capabilities: ["Thinking"],
+      capabilities: [AICapability.thinking],
     ),
   ];
   final List<String> _categories = [
@@ -447,7 +474,8 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
             final matchesSpecialty = model.specialty.toLowerCase().contains(
               query,
             );
-            return matchesName || matchesSpecialty;
+            final matchesCompany = model.maker.toLowerCase().contains(query);
+            return matchesName || matchesSpecialty || matchesCompany;
           }
           return true;
         }).toList();

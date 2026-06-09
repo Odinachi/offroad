@@ -882,7 +882,7 @@ class _AuthScreenState extends State<AuthScreen>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final jc = theme.jColors;
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = context.read<AppCubit>().isDarkTheme;
     final cardBg = jc.card;
     final inputBg = jc.muted;
     final foreground = theme.colorScheme.onSurface;
@@ -900,7 +900,11 @@ class _AuthScreenState extends State<AuthScreen>
                 const SizedBox(height: 72),
 
                 // Sparkles App Logo
-                Assets.svg.appLogo.svg(width: 64, height: 64),
+                Assets.svg.appLogo.svg(
+                  width: 64,
+                  height: 64,
+                  color: isDark ? Colors.white : Colors.black,
+                ),
                 const SizedBox(height: 16),
 
                 Text(
