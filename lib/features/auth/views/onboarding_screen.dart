@@ -839,6 +839,8 @@ class _AuthScreenState extends State<AuthScreen>
   bool _loading = false;
   final _emailController = TextEditingController();
   final _passController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
 
   final authType = ValueNotifier(0);
 
@@ -846,6 +848,17 @@ class _AuthScreenState extends State<AuthScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _emailController.dispose();
+    _passController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    authType.dispose();
+    super.dispose();
   }
 
   void _submit() {
@@ -941,74 +954,103 @@ class _AuthScreenState extends State<AuthScreen>
                   ),
                 ),
 
-                // Custom Switch Toggle (Sign in / Create Account)
-                // Container(
-                //   height: 48,
-                //   decoration: BoxDecoration(
-                //     color: jc.secondaryFill,
-                //     borderRadius: BorderRadius.circular(16),
-                //   ),
-                //   padding: const EdgeInsets.all(4),
-                //   child: Row(
-                //     children: [
-                //       Expanded(
-                //         child: InkWell(
-                //           onTap: () => setState(() => _mode = 'in'),
-                //           borderRadius: BorderRadius.circular(12),
-                //           child: AnimatedContainer(
-                //             duration: const Duration(milliseconds: 200),
-                //             decoration: BoxDecoration(
-                //               color:
-                //                   _mode == 'in' ? cardBg : Colors.transparent,
-                //               borderRadius: BorderRadius.circular(12),
-                //               boxShadow:
-                //                   _mode == 'in'
-                //                       ? JemenaiTheme.shadowCard(isDark)
-                //                       : [],
-                //             ),
-                //             alignment: Alignment.center,
-                //             child: Text(
-                //               'Sign In',
-                //               style: JemenaiTheme.fontBody(
-                //                 fontSize: 13,
-                //                 fontWeight: FontWeight.bold,
-                //                 color: _mode == 'in' ? foreground : mutedFore,
-                //               ),
-                //             ),
-                //           ),
-                //         ),
-                //       ),
-                //       Expanded(
-                //         child: InkWell(
-                //           onTap: () => setState(() => _mode = 'up'),
-                //           borderRadius: BorderRadius.circular(12),
-                //           child: AnimatedContainer(
-                //             duration: const Duration(milliseconds: 200),
-                //             decoration: BoxDecoration(
-                //               color:
-                //                   _mode == 'up' ? cardBg : Colors.transparent,
-                //               borderRadius: BorderRadius.circular(12),
-                //               boxShadow:
-                //                   _mode == 'up'
-                //                       ? JemenaiTheme.shadowCard(isDark)
-                //                       : [],
-                //             ),
-                //             alignment: Alignment.center,
-                //             child: Text(
-                //               'Create Account',
-                //               style: JemenaiTheme.fontBody(
-                //                 fontSize: 13,
-                //                 fontWeight: FontWeight.bold,
-                //                 color: _mode == 'up' ? foreground : mutedFore,
-                //               ),
-                //             ),
-                //           ),
-                //         ),
-                //       ),
-                //     ],
-                //   ),
-                // ),
                 const SizedBox(height: 20),
+
+                // First and Last Name Inputs (Create Account only)
+                ValueListenableBuilder(
+                  valueListenable: authType,
+                  builder: (context, value, child) {
+                    if (value != 1) return const SizedBox.shrink();
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _firstNameController,
+                              textCapitalization: TextCapitalization.words,
+                              style: JemenaiTheme.fontBody(
+                                fontSize: 14,
+                                color: foreground,
+                              ),
+                              decoration: InputDecoration(
+                                hintText: 'First name',
+                                hintStyle: JemenaiTheme.fontBody(
+                                  fontSize: 14,
+                                  color: mutedFore,
+                                ),
+                                filled: true,
+                                fillColor: inputBg,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 16,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide.none,
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide.none,
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide(
+                                    color: theme.colorScheme.primary.withOpacity(
+                                      0.25,
+                                    ),
+                                    width: 2,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: TextField(
+                              controller: _lastNameController,
+                              textCapitalization: TextCapitalization.words,
+                              style: JemenaiTheme.fontBody(
+                                fontSize: 14,
+                                color: foreground,
+                              ),
+                              decoration: InputDecoration(
+                                hintText: 'Last name',
+                                hintStyle: JemenaiTheme.fontBody(
+                                  fontSize: 14,
+                                  color: mutedFore,
+                                ),
+                                filled: true,
+                                fillColor: inputBg,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 16,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide.none,
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide.none,
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                  borderSide: BorderSide(
+                                    color: theme.colorScheme.primary.withOpacity(
+                                      0.25,
+                                    ),
+                                    width: 2,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
 
                 // Email Input
                 TextField(
@@ -1126,12 +1168,6 @@ class _AuthScreenState extends State<AuthScreen>
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white,
                                       ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    const Icon(
-                                      Icons.arrow_forward,
-                                      color: Colors.white,
-                                      size: 16,
                                     ),
                                   ],
                                 ),
