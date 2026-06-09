@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jemenai/shared/assets.dart';
 import 'package:jemenai/shared/navigator/app_route_string.dart';
 import 'package:jemenai/shared/navigator/app_router.dart';
 import 'package:jemenai/features/dashboard/views/dashboard.dart';
@@ -244,15 +245,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 Container(
                   width: 28,
                   height: 28,
+                  padding: EdgeInsets.all(3),
                   decoration: BoxDecoration(
                     gradient: JemenaiTheme.gradBrand,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(
-                    Icons.auto_awesome,
-                    color: Colors.white,
-                    size: 14,
-                  ),
+                  child: Assets.svg.appLogo.svg(color: AppColors.white),
                 ),
                 const SizedBox(width: 12),
                 Expanded(

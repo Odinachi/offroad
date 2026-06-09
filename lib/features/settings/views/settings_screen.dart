@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jemenai/features/dashboard/view_models/app_cubit.dart';
 import '../../../shared/theme.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -123,8 +125,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           : const Color(0xFFD97706),
                   title: 'Dark Mode',
                   sub: isDark ? 'Dark theme active' : 'Light theme active',
-                  value: isDark,
-                  onChanged: (val) => {},
+                  value: context.watch<AppCubit>().isDarkTheme,
+                  onChanged: (val) {
+                    context.read<AppCubit>().toggleTheme();
+                  },
                 ),
               ],
             ),

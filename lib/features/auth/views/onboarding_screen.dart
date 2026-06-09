@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jemenai/features/dashboard/view_models/app_cubit.dart';
 import 'package:jemenai/shared/assets.dart';
 import 'package:jemenai/shared/navigator/app_route_string.dart';
 import 'package:jemenai/shared/navigator/app_router.dart';
@@ -847,6 +849,7 @@ class _AuthScreenState extends State<AuthScreen>
   @override
   void initState() {
     super.initState();
+    context.read<AppCubit>().seenOnboarding();
     _tabController = TabController(length: 2, vsync: this);
   }
 
@@ -996,9 +999,8 @@ class _AuthScreenState extends State<AuthScreen>
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16),
                                   borderSide: BorderSide(
-                                    color: theme.colorScheme.primary.withOpacity(
-                                      0.25,
-                                    ),
+                                    color: theme.colorScheme.primary
+                                        .withOpacity(0.25),
                                     width: 2,
                                   ),
                                 ),
@@ -1037,9 +1039,8 @@ class _AuthScreenState extends State<AuthScreen>
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16),
                                   borderSide: BorderSide(
-                                    color: theme.colorScheme.primary.withOpacity(
-                                      0.25,
-                                    ),
+                                    color: theme.colorScheme.primary
+                                        .withOpacity(0.25),
                                     width: 2,
                                   ),
                                 ),
