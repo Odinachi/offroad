@@ -107,7 +107,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ],
                     ),
                   ),
-                  Icon(Icons.arrow_forward_ios, size: 18, color: mutedFore),
                 ],
               ),
             ),
