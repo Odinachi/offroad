@@ -1,23 +1,60 @@
 PODS:
+  - background_downloader (0.0.1):
+    - Flutter
   - Flutter (1.0.0)
+  - flutter_gemma (0.16.4):
+    - Flutter
+    - MediaPipeTasksGenAI (= 0.10.33)
+    - MediaPipeTasksGenAIC (= 0.10.33)
+  - large_file_handler (0.4.0):
+    - Flutter
+  - MediaPipeTasksGenAI (0.10.33):
+    - MediaPipeTasksGenAIC (= 0.10.33)
+  - MediaPipeTasksGenAIC (0.10.33)
+  - path_provider_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
 
 DEPENDENCIES:
+  - background_downloader (from `.symlinks/plugins/background_downloader/ios`)
   - Flutter (from `Flutter`)
+  - flutter_gemma (from `.symlinks/plugins/flutter_gemma/ios`)
+  - large_file_handler (from `.symlinks/plugins/large_file_handler/ios`)
+  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
 
+SPEC REPOS:
+  trunk:
+    - MediaPipeTasksGenAI
+    - MediaPipeTasksGenAIC
+
 EXTERNAL SOURCES:
+  background_downloader:
+    :path: ".symlinks/plugins/background_downloader/ios"
   Flutter:
     :path: Flutter
+  flutter_gemma:
+    :path: ".symlinks/plugins/flutter_gemma/ios"
+  large_file_handler:
+    :path: ".symlinks/plugins/large_file_handler/ios"
+  path_provider_foundation:
+    :path: ".symlinks/plugins/path_provider_foundation/darwin"
   shared_preferences_foundation:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
 
 SPEC CHECKSUMS:
+  background_downloader: a05c77d32a0d70615b9c04577aa203535fc924ff
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  flutter_gemma: 00a30243ef43c4668ca09c537f3bb696f8ddca1d
+  large_file_handler: b0da5998ce84ea647987d9cc2c37d2383eabdca6
+  MediaPipeTasksGenAI: 8eed8e6d03fe26d30c4205cb5295ec7b394432ad
+  MediaPipeTasksGenAIC: cb098ecea44e248efe8fe7e2f62b4cb0df781802
+  path_provider_foundation: 0b743cbb62d8e47eab856f09262bb8c1ddcfe6ba
   shared_preferences_foundation: 5086985c1d43c5ba4d5e69a4e8083a389e2909e6
 
-PODFILE CHECKSUM: 3c63482e143d1b91d2d2560aee9fb04ecc74ac7e
+PODFILE CHECKSUM: 1850da77952c5c1c982a01c29689a8173a296934
 
 COCOAPODS: 1.16.2
