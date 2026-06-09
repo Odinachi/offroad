@@ -454,10 +454,10 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
 
     // Calculate total downloaded sizes
     double totalGB = 0;
-    for (var id in _downloaded) {
-      final model = _models.firstWhere((m) => m.id == id);
-      totalGB += model.sizeGB;
-    }
+    // for (var id in _downloaded) {
+    //   final model = _models.firstWhere((m) => m.id == id);
+    //   totalGB += model.sizeGB;
+    // }
 
     return Container(
       color: theme.scaffoldBackgroundColor,
@@ -533,49 +533,6 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
           ),
           const SizedBox(height: 12),
 
-          // Horizontal Categories Bar
-          SizedBox(
-            height: 38,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              itemCount: _categories.length,
-              itemBuilder: (context, index) {
-                final cat = _categories[index];
-                final isSelected = cat == _activeCategory;
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: InkWell(
-                    onTap: () => setState(() => _activeCategory = cat),
-                    borderRadius: BorderRadius.circular(12),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        gradient: isSelected ? JemenaiTheme.gradBrand : null,
-                        color: isSelected ? null : jc.muted,
-                        borderRadius: BorderRadius.circular(50),
-                        boxShadow:
-                            isSelected ? JemenaiTheme.glowSm(isDark) : [],
-                      ),
-                      child: Text(
-                        cat,
-                        style: JemenaiTheme.fontBody(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: isSelected ? Colors.white : mutedFore,
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
           // Models List
           Expanded(
             child: ListView.builder(
@@ -587,7 +544,6 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                 final isDling = _downloading.contains(model.id);
                 final prog = _progress[model.id] ?? 0;
                 final iqDetails = _getIQDetails(model.iq);
-                final speedStyle = _getSpeedStyle(model.speed);
                 final isExpanded = _expandedCompat.contains(model.id);
 
                 return Padding(
@@ -763,46 +719,13 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                 children: [
                                   _buildStatPill(
                                     Icons.storage,
-                                    '${model.sizeGB} GB',
+                                    model.size,
                                     foreColor,
                                   ),
                                   _buildStatPill(
                                     Icons.memory,
                                     '${model.ramGB} GB RAM',
                                     foreColor,
-                                  ),
-                                  // Speed style
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 5,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: speedStyle['bg'] as Color,
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(
-                                        color: speedStyle['border'] as Color,
-                                      ),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(
-                                          Icons.flash_on,
-                                          size: 12,
-                                          color: speedStyle['text'] as Color,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          model.speed,
-                                          style: JemenaiTheme.fontBody(
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.bold,
-                                            color: speedStyle['text'] as Color,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
                                   ),
                                   // Offline
                                   Container(
@@ -1111,12 +1034,6 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
       );
     }
 
-    // Download option
-    final text =
-        model.sizeGB < 1
-            ? '${(model.sizeGB * 1000).toStringAsFixed(0)} MB'
-            : '${model.sizeGB} GB';
-
     return InkWell(
       onTap: () => _startDownload(model.id),
       borderRadius: BorderRadius.circular(12),
@@ -1133,7 +1050,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
             const Icon(Icons.download, size: 13, color: Colors.white),
             const SizedBox(width: 4),
             Text(
-              text,
+              model.size,
               style: JemenaiTheme.fontBody(
                 fontSize: 11,
                 fontWeight: FontWeight.bold,

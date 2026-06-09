@@ -909,7 +909,7 @@ class _AuthScreenState extends State<AuthScreen>
                   style: JemenaiTheme.fontDisplay(
                     fontSize: 26,
                     fontWeight: FontWeight.w800,
-                    color: foreground,
+                    color: isDark ? Colors.white : Colors.black,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -1213,17 +1213,16 @@ class _AuthScreenState extends State<AuthScreen>
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-
                   children: [
                     Expanded(
                       child: _buildSocialBtn(
                         label: 'Apple',
-                        textColor: Colors.white,
-                        backgroundColor: Colors.black,
+                        textColor: isDark ? Colors.black : Colors.white,
+                        backgroundColor: isDark ? Colors.white : Colors.black,
                         icon: Assets.svg.apple.svg(
                           height: 18,
                           width: 18,
-                          color: AppColors.white,
+                          color: isDark ? Colors.black : AppColors.white,
                         ),
                       ),
                     ),

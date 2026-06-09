@@ -86,7 +86,7 @@ class DashboardState extends State<Dashboard>
                         ),
                         dividerColor: Colors.transparent,
                         indicator: BoxDecoration(
-                          color: AppColors.jmIndigo.withAlpha(20),
+                          color: jc.jmIndigo.withAlpha(20),
                           borderRadius: BorderRadius.circular(25),
                         ),
                         indicatorSize: TabBarIndicatorSize.tab,
@@ -99,7 +99,7 @@ class DashboardState extends State<Dashboard>
                         labelStyle: JemenaiTheme.fontBody(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.jmIndigo,
+                          color: jc.jmIndigo,
                         ),
                         tabs: [
                           Tab(
@@ -109,7 +109,7 @@ class DashboardState extends State<Dashboard>
                               height: 23,
                               color:
                                   value == 0
-                                      ? AppColors.jmIndigo
+                                      ? jc.jmIndigo
                                       : AppColors.grey,
                             ),
                             text: "Home",
@@ -121,7 +121,7 @@ class DashboardState extends State<Dashboard>
                               height: 23,
                               color:
                                   value == 1
-                                      ? AppColors.jmIndigo
+                                      ? jc.jmIndigo
                                       : AppColors.grey,
                             ),
                             text: "Models",
@@ -133,7 +133,7 @@ class DashboardState extends State<Dashboard>
                               height: 23,
                               color:
                                   value == 2
-                                      ? AppColors.jmIndigo
+                                      ? jc.jmIndigo
                                       : AppColors.grey,
                             ),
                             text: "Storage",
@@ -145,7 +145,7 @@ class DashboardState extends State<Dashboard>
                               height: 23,
                               color:
                                   value == 3
-                                      ? AppColors.jmIndigo
+                                      ? jc.jmIndigo
                                       : AppColors.grey,
                             ),
                             text: "Settings",
