@@ -3,44 +3,40 @@ import 'package:flutter/material.dart';
 import '../../../shared/theme.dart';
 
 class ModelsStoreScreen extends StatefulWidget {
-
-  const ModelsStoreScreen({
-    super.key,
-  });
+  const ModelsStoreScreen({super.key});
 
   @override
   State<ModelsStoreScreen> createState() => _ModelsStoreScreenState();
 }
 
 class AIModel {
-  final String id;
+  final String url;
   final String name;
   final String maker;
   final String specialty;
   final String description;
-  final double sizeGB;
+  final double sizeMb;
   final int ramGB;
   final String speed; // 'Fast' | 'Medium' | 'Slow'
-  final int iq;
-  final List<String> compat;
-  final String category;
-  final List<String> tags;
-  final bool popular;
+
+  final List<String> compactibility;
+
+  final List<String>? capabilities;
+  final bool? requiresAuth;
 
   AIModel({
-    required this.id,
+    required this.url,
     required this.name,
     required this.maker,
     required this.specialty,
     required this.description,
-    required this.sizeGB,
+    required this.sizeMb,
     required this.ramGB,
     required this.speed,
-    required this.iq,
-    required this.compat,
-    required this.category,
-    required this.tags,
-    this.popular = false,
+
+    required this.compactibility,
+    this.capabilities,
+    this.requiresAuth,
   });
 }
 
@@ -58,127 +54,199 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
 
   final List<AIModel> _models = [
     AIModel(
-      id: "llama-3.2-3b",
-      name: "Llama 3.2 3B",
-      maker: "Meta",
+      url:
+          "https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/blob/main/gemma-4-E2B-it.litertlm",
+      name: "Gemma 4 E2B",
+      maker: "Google",
       specialty: "General Assistant",
       description:
-          "Meta's compact powerhouse. Excellent for everyday tasks, Q&A, and conversation with a surprisingly large context window.",
-      sizeGB: 2.0,
+          "Google's compact powerhouse. Excellent for everyday tasks, Q&A, and conversation with a surprisingly large context window.",
+      sizeMb: 2590,
       ramGB: 3,
       speed: "Fast",
-      iq: 82,
-      compat: ["iPhone 14+", "Pixel 7+", "Galaxy S23+"],
-      category: "General",
-      tags: ["Chat", "Q&A", "Writing"],
-      popular: true,
+
+      compactibility: ["iPhone 14+", "Pixel 7+", "Galaxy S23+"],
+      capabilities: ["Thinking", "Audio", "Image generation"],
     ),
     AIModel(
-      id: "phi-3-mini",
-      name: "Phi-3 Mini",
-      maker: "Microsoft",
-      specialty: "Coding & Reasoning",
-      description:
-          "Microsoft's reasoning powerhouse. Exceptional for code generation, debugging, and logical tasks in a tiny package.",
-      sizeGB: 1.8,
-      ramGB: 2,
-      speed: "Fast",
-      iq: 85,
-      compat: ["iPhone 13+", "Android 12+"],
-      category: "Coding",
-      tags: ["Code", "Logic", "Math"],
-      popular: true,
-    ),
-    AIModel(
-      id: "gemma-2b",
-      name: "Gemma 2B",
+      url:
+          "https://huggingface.co/litert-community/gemma-4-E4B-it-litert-lm/blob/main/gemma-4-E4B-it.litertlm",
+      name: "Gemma 4 E4B",
       maker: "Google",
-      specialty: "Creative Writing",
+      specialty: "General Assistant",
       description:
-          "Google's creative writing model. Excellent for storytelling, poetry, and imaginative brainstorming tasks.",
-      sizeGB: 1.4,
-      ramGB: 2,
-      speed: "Fast",
-      iq: 78,
-      compat: ["All devices"],
-      category: "Creative",
-      tags: ["Writing", "Stories", "Poetry"],
-    ),
-    AIModel(
-      id: "mistral-7b",
-      name: "Mistral 7B",
-      maker: "Mistral",
-      specialty: "Advanced Reasoning",
-      description:
-          "European AI powerhouse. Exceptional multilingual reasoning, analysis, and instruction-following with superior context.",
-      sizeGB: 4.1,
-      ramGB: 6,
-      speed: "Medium",
-      iq: 91,
-      compat: ["iPhone 15 Pro", "Pixel 8 Pro", "S24+"],
-      category: "Advanced",
-      tags: ["Analysis", "Research", "ML"],
-      popular: true,
-    ),
-    AIModel(
-      id: "llama-3.1-8b",
-      name: "Llama 3.1 8B",
-      maker: "Meta",
-      specialty: "General + Code",
-      description:
-          "The most capable Llama model for on-device. Handles complex reasoning, long context, and technical tasks beautifully.",
-      sizeGB: 4.7,
+          "Google's compact powerhouse. Excellent for everyday tasks, Q&A, and conversation with a surprisingly large context window.",
+      sizeMb: 3660,
       ramGB: 8,
-      speed: "Medium",
-      iq: 88,
-      compat: ["iPhone 15 Pro", "Pixel 8 Pro"],
-      category: "General",
-      tags: ["Chat", "Code", "Long Context"],
+      speed: "Fast",
+
+      compactibility: ["iPhone 14+", "Pixel 7+", "Galaxy S23+"],
+      capabilities: ["Thinking", "Audio", "Image generation"],
     ),
     AIModel(
-      id: "codegemma-7b",
-      name: "CodeGemma 7B",
+      url:
+          "https://huggingface.co/google/gemma-3n-E2B-it-litert-preview/blob/main/gemma-3n-E2B-it-int4.task",
+      name: "Gemma 3n E2B",
       maker: "Google",
-      specialty: "Code Generation",
+      specialty: "General Assistant",
       description:
-          "Dedicated code assistant. Auto-complete, generation, and multi-language explanation across 20+ programming languages.",
-      sizeGB: 3.9,
-      ramGB: 5,
-      speed: "Medium",
-      iq: 87,
-      compat: ["iPhone 15", "Android 13+"],
-      category: "Coding",
-      tags: ["Code", "Autocomplete", "Debug"],
+          "Google's compact powerhouse. Excellent for everyday tasks, Q&A, and conversation with a surprisingly large context window.",
+      sizeMb: 3140,
+      ramGB: 8,
+      speed: "Fast",
+
+      compactibility: ["iPhone 14+", "Pixel 7+", "Galaxy S23+"],
+      capabilities: ["Thinking", "Audio", "Image generation"],
     ),
     AIModel(
-      id: "tinyllama-1b",
-      name: "TinyLlama 1.1B",
-      maker: "Community",
-      specialty: "Ultra-Lightweight",
+      url:
+          "https://huggingface.co/google/gemma-3n-E4B-it-litert-preview/blob/main/gemma-3n-E4B-it-int4.task",
+      name: "Gemma 3n E4B",
+      maker: "Google",
+      specialty: "General Assistant",
       description:
-          "Tiny but capable. Perfect for older devices or when battery life and response speed matter more than raw capability.",
-      sizeGB: 0.6,
-      ramGB: 1,
+          "Google's compact powerhouse. Excellent for everyday tasks, Q&A, and conversation with a surprisingly large context window.",
+      sizeMb: 6500,
+      ramGB: 12,
       speed: "Fast",
-      iq: 65,
-      compat: ["All devices"],
-      category: "Lightweight",
-      tags: ["Fast", "Battery", "Compact"],
+
+      compactibility: ["iPhone 14+", "Pixel 7+", "Galaxy S23+"],
+      capabilities: ["Thinking", "Audio", "Image generation"],
     ),
     AIModel(
-      id: "stablelm-3b",
-      name: "StableLM 3B",
-      maker: "Stability",
-      specialty: "Instruction",
+      url:
+          "https://huggingface.co/litert-community/Gemma3-1B-IT/blob/main/Gemma3-1B-IT_seq128_q8_ekv1280.task",
+      name: "Gemma3 1B",
+      maker: "Google",
+      specialty: "General Assistant",
       description:
-          "Excellent at following complex multi-step instructions and producing clean, structured outputs for business workflows.",
-      sizeGB: 1.8,
-      ramGB: 3,
+          "Google's compact powerhouse. Excellent for everyday tasks, Q&A, and conversation with a surprisingly large context window.",
+      sizeMb: 1020,
+      ramGB: 4,
       speed: "Fast",
-      iq: 79,
-      compat: ["iPhone 13+", "Android 11+"],
-      category: "General",
-      tags: ["Instructions", "Summary", "Structured"],
+
+      compactibility: ["iPhone 14+", "Pixel 7+", "Galaxy S23+"],
+      capabilities: ["Thinking", "Audio", "Image generation"],
+    ),
+    AIModel(
+      url:
+          "https://huggingface.co/litert-community/gemma-3-270m-it/blob/main/gemma3-270m-it-q8.litertlm",
+      name: "Gemma3 270m",
+      maker: "Google",
+      specialty: "General Assistant",
+      description:
+          "Google's compact powerhouse. Excellent for everyday tasks, Q&A, and conversation with a surprisingly large context window.",
+      sizeMb: 300,
+      ramGB: 4,
+      speed: "Fast",
+
+      compactibility: ["iPhone 14+", "Pixel 7+", "Galaxy S23+"],
+      capabilities: ["Thinking", "Audio", "Image generation"],
+    ),
+    AIModel(
+      url:
+          "https://huggingface.co/sasha-denisov/function-gemma-270M-it/blob/main/functiongemma-270M-it.litertlm",
+      name: "Function-Gemma 270m",
+      maker: "Google",
+      specialty: "Function Calling",
+      description:
+          "Google's compact powerhouse. Excellent for everyday tasks, Q&A, and conversation with a surprisingly large context window.",
+      sizeMb: 270,
+      ramGB: 4,
+      speed: "Fast",
+
+      compactibility: ["iPhone 14+", "Pixel 7+", "Galaxy S23+"],
+      capabilities: ["Thinking", "Audio", "Image generation"],
+    ),
+    AIModel(
+      url:
+          "https://huggingface.co/litert-community/Qwen3-0.6B/blob/main/Qwen3-0.6B.litertlm",
+      name: "Qwen3 0.6B",
+      maker: "Alibaba",
+      specialty: "General Assistant",
+      description:
+          "Google's compact powerhouse. Excellent for everyday tasks, Q&A, and conversation with a surprisingly large context window.",
+      sizeMb: 586,
+      ramGB: 4,
+      speed: "Fast",
+
+      compactibility: ["iPhone 14+", "Pixel 7+", "Galaxy S23+"],
+      capabilities: ["Thinking", "Audio", "Image generation"],
+    ),
+    AIModel(
+      url:
+          "https://huggingface.co/litert-community/Qwen2.5-1.5B-Instruct/blob/main/Qwen2.5-1.5B-Instruct_seq128_q8_ekv1280.tflite",
+      name: "Qwen2.5 1.5B Instruct",
+      maker: "Alibaba",
+      specialty: "General Assistant",
+      description:
+          "Google's compact powerhouse. Excellent for everyday tasks, Q&A, and conversation with a surprisingly large context window.",
+      sizeMb: 1570,
+      ramGB: 8,
+      speed: "Fast",
+
+      compactibility: ["iPhone 14+", "Pixel 7+", "Galaxy S23+"],
+      capabilities: ["Thinking", "Audio", "Image generation"],
+    ),
+    AIModel(
+      url:
+          "https://huggingface.co/litert-community/Qwen2.5-0.5B-Instruct/blob/main/Qwen2.5-0.5B-Instruct_seq128_q8_ekv1280.tflite",
+      name: "Qwen2.5 0.5B Instruct",
+      maker: "Alibaba",
+      specialty: "General Assistant",
+      description:
+          "Google's compact powerhouse. Excellent for everyday tasks, Q&A, and conversation with a surprisingly large context window.",
+      sizeMb: 513,
+      ramGB: 4,
+      speed: "Fast",
+
+      compactibility: ["iPhone 14+", "Pixel 7+", "Galaxy S23+"],
+      capabilities: ["Thinking", "Audio", "Image generation"],
+    ),
+    AIModel(
+      url:
+          "https://huggingface.co/litert-community/SmolLM-135M-Instruct/blob/main/SmolLM-135M-Instruct_seq128_q8_ekv1280.tflite",
+      name: "SmolLM 135M Instruct",
+      maker: "Microsoft",
+      specialty: "General Assistant",
+      description:
+          "Google's compact powerhouse. Excellent for everyday tasks, Q&A, and conversation with a surprisingly large context window.",
+      sizeMb: 148,
+      ramGB: 4,
+      speed: "Fast",
+
+      compactibility: ["iPhone 14+", "Pixel 7+", "Galaxy S23+"],
+      capabilities: ["Thinking", "Audio", "Image generation"],
+    ),
+    AIModel(
+      url:
+          "https://huggingface.co/litert-community/Phi-4-mini-instruct/blob/main/Phi-4-mini-instruct_multi-prefill-seq_q8_ekv4096.litertlm",
+      name: "Phi-4-mini-instruct",
+      maker: "Microsoft",
+      specialty: "General Assistant",
+      description:
+          "Google's compact powerhouse. Excellent for everyday tasks, Q&A, and conversation with a surprisingly large context window.",
+      sizeMb: 3951,
+      ramGB: 4,
+      speed: "Fast",
+
+      compactibility: ["iPhone 14+", "Pixel 7+", "Galaxy S23+"],
+      capabilities: ["Thinking", "Audio", "Image generation"],
+    ),
+    AIModel(
+      url:
+          "https://huggingface.co/litert-community/DeepSeek-R1-Distill-Qwen-1.5B/blob/main/DeepSeek-R1-Distill-Qwen-1.5B_multi-prefill-seq_q8_ekv4096.litertlm",
+      name: "DeepSeek-R1-Distill-Qwen-1.5B",
+      maker: "Microsoft",
+      specialty: "General Assistant",
+      description:
+          "Google's compact powerhouse. Excellent for everyday tasks, Q&A, and conversation with a surprisingly large context window.",
+      sizeMb: 1830,
+      ramGB: 8,
+      speed: "Fast",
+
+      compactibility: ["iPhone 14+", "Pixel 7+", "Galaxy S23+"],
+      capabilities: ["Thinking", "Audio", "Image generation"],
     ),
   ];
 
@@ -339,11 +407,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                   fontSize: 14,
                   color: mutedFore,
                 ),
-                prefixIcon: Icon(
-                  Icons.search,
-                  size: 16,
-                  color: mutedFore,
-                ),
+                prefixIcon: Icon(Icons.search, size: 16, color: mutedFore),
                 suffixIcon:
                     _searchQuery.isNotEmpty
                         ? IconButton(
@@ -394,15 +458,10 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         gradient: isSelected ? JemenaiTheme.gradBrand : null,
-                        color:
-                            isSelected
-                                ? null
-                                : jc.muted,
+                        color: isSelected ? null : jc.muted,
                         borderRadius: BorderRadius.circular(50),
                         boxShadow:
-                            isSelected
-                                ? JemenaiTheme.glowSm(isDark)
-                                : [],
+                            isSelected ? JemenaiTheme.glowSm(isDark) : [],
                       ),
                       child: Text(
                         cat,
@@ -520,7 +579,10 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                                   style: JemenaiTheme.fontBody(
                                                     fontSize: 10,
                                                     fontWeight: FontWeight.bold,
-                                                    color: theme.colorScheme.primary,
+                                                    color:
+                                                        theme
+                                                            .colorScheme
+                                                            .primary,
                                                   ),
                                                 ),
                                               ),
@@ -849,7 +911,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                               spacing: 8,
                               runSpacing: 8,
                               children:
-                                  model.compat.map((device) {
+                                  model.compactibility.map((device) {
                                     return Container(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 10,
@@ -873,7 +935,8 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                             device,
                                             style: JemenaiTheme.fontBody(
                                               fontSize: 11,
-                                              color: theme.colorScheme.onSurface,
+                                              color:
+                                                  theme.colorScheme.onSurface,
                                             ),
                                           ),
                                         ],
@@ -999,11 +1062,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            size: 12,
-            color: jc.mutedForeground,
-          ),
+          Icon(icon, size: 12, color: jc.mutedForeground),
           const SizedBox(width: 4),
           Text(
             text,
