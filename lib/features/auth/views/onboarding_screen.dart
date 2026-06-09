@@ -13,6 +13,19 @@ class OnboardingScreen extends StatefulWidget {
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
   int _idx = 0;
+  late final PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: _idx);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   final List<Map<String, dynamic>> _slides = [
     {
@@ -29,7 +42,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       'label': 'Offline Ready',
       'title': 'Works Without\nInternet.\nAlways.',
       'sub':
-          'Download models once. Run them forever — on a plane, in a tunnel, off the grid.',
+          'Download models once. Run them forever on a plane, in a tunnel, off the grid.',
       'colors': [const Color(0xFF0891B2), const Color(0xFF0E7490)],
       'accent': const Color(0xFF38BDF8),
     },
@@ -47,7 +60,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       'label': 'Powerful Models',
       'title': 'State-of-Art AI\nFits in Your\nPocket.',
       'sub':
-          "Llama, Mistral, Phi, Gemma — the world's best open models, running locally.",
+          "Llama, Mistral, Phi, Gemma the world's best open models, running locally.",
       'colors': [const Color(0xFF059669), const Color(0xFF0D9488)],
       'accent': const Color(0xFF34D399),
     },
@@ -55,9 +68,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   void _next() {
     if (_idx < _slides.length - 1) {
-      setState(() {
-        _idx++;
-      });
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     } else {
       AppRouter.push(AppRouteString.auth);
     }
@@ -89,29 +103,36 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                   child: Align(
                     alignment: Alignment.centerRight,
-                    child: InkWell(
-                      onTap: () {
-                        AppRouter.push(AppRouteString.auth);
-                      },
-                      borderRadius: BorderRadius.circular(12),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color:
-                              isDark
-                                  ? Colors.white.withOpacity(0.06)
-                                  : Colors.black.withOpacity(0.04),
+                    child: AnimatedOpacity(
+                      duration: const Duration(milliseconds: 200),
+                      opacity: _idx == _slides.length - 1 ? 0.0 : 1.0,
+                      child: IgnorePointer(
+                        ignoring: _idx == _slides.length - 1,
+                        child: InkWell(
+                          onTap: () {
+                            AppRouter.push(AppRouteString.auth);
+                          },
                           borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          'Skip',
-                          style: JemenaiTheme.fontBody(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: theme.jColors.mutedForeground,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color:
+                                  isDark
+                                      ? Colors.white.withOpacity(0.06)
+                                      : Colors.black.withOpacity(0.04),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              'Skip',
+                              style: JemenaiTheme.fontBody(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: theme.jColors.mutedForeground,
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -121,78 +142,59 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
                 // Content Area
                 Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Label Badge
-                        AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 300),
-                          child: Container(
-                            key: ValueKey<int>(_idx),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
+                  child: PageView.builder(
+                    controller: _pageController,
+                    itemCount: _slides.length,
+                    onPageChanged: (index) {
+                      setState(() {
+                        _idx = index;
+                      });
+                    },
+                    itemBuilder: (context, index) {
+                      final s = _slides[index];
+                      final List<Color> sColors = s['colors'] as List<Color>;
+                      final sAccent = s['accent'] as Color;
+
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 24),
+                            // Premium Visual Graphics
+                            OnboardingGraphics(
+                              idx: index,
+                              colors: sColors,
+                              accent: sAccent,
                             ),
-                            decoration: BoxDecoration(
-                              color: colors[0].withOpacity(0.12),
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                            child: Text(
-                              slide['label'] as String,
-                              style: JemenaiTheme.fontBody(
-                                fontSize: 10,
+                            const SizedBox(height: 36),
+
+                            // Title
+                            Text(
+                              s['title'] as String,
+                              style: JemenaiTheme.fontDisplay(
+                                fontSize: 32,
                                 fontWeight: FontWeight.w800,
-                                color: accent,
-                                lineHeight: 1.0,
+                                color: theme.colorScheme.onSurface,
+                                lineHeight: 1.15,
                               ),
                             ),
-                          ),
-                        ),
-                        const SizedBox(height: 24),
+                            const SizedBox(height: 16),
 
-                        // Animated Icon Block
-                        Center(
-                          child: SlideIconPulse(
-                            icon: slide['icon'] as IconData,
-                            gradientColors: colors,
-                          ),
-                        ),
-                        const SizedBox(height: 36),
-
-                        // Title
-                        AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 350),
-                          child: Text(
-                            slide['title'] as String,
-                            key: ValueKey<int>(_idx),
-                            style: JemenaiTheme.fontDisplay(
-                              fontSize: 32,
-                              fontWeight: FontWeight.w800,
-                              color: theme.colorScheme.onSurface,
-                              lineHeight: 1.15,
+                            // Subtitle
+                            Text(
+                              s['sub'] as String,
+                              style: JemenaiTheme.fontBody(
+                                fontSize: 14,
+                                color: theme.jColors.mutedForeground,
+                                lineHeight: 1.45,
+                              ),
                             ),
-                          ),
+                          ],
                         ),
-                        const SizedBox(height: 16),
-
-                        // Subtitle
-                        AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 350),
-                          child: Text(
-                            slide['sub'] as String,
-                            key: ValueKey<int>(_idx),
-                            style: JemenaiTheme.fontBody(
-                              fontSize: 14,
-                              color: theme.jColors.mutedForeground,
-                              lineHeight: 1.45,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                      );
+                    },
                   ),
                 ),
 
@@ -262,12 +264,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                   color: Colors.white,
                                 ),
                               ),
-                              const SizedBox(width: 8),
-                              const Icon(
-                                Icons.arrow_forward,
-                                color: Colors.white,
-                                size: 16,
-                              ),
                             ],
                           ),
                         ),
@@ -319,111 +315,508 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 }
 
-// Stateful slide icon pulse component
-class SlideIconPulse extends StatefulWidget {
-  final IconData icon;
-  final List<Color> gradientColors;
+// Premium Custom Onboarding Graphics Widget
+class OnboardingGraphics extends StatelessWidget {
+  final int idx;
+  final List<Color> colors;
+  final Color accent;
 
-  const SlideIconPulse({key, required this.icon, required this.gradientColors})
-    : super(key: key);
-
-  @override
-  State<SlideIconPulse> createState() => _SlideIconPulseState();
-}
-
-class _SlideIconPulseState extends State<SlideIconPulse>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _pulseController;
-  late Animation<double> _scaleAnimation;
-  late Animation<double> _opacityAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _pulseController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 3),
-    )..repeat();
-
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.16).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
-    );
-
-    _opacityAnimation = TweenSequence<double>([
-      TweenSequenceItem(
-        tween: Tween<double>(begin: 0.3, end: 0.75),
-        weight: 50,
-      ),
-      TweenSequenceItem(
-        tween: Tween<double>(begin: 0.75, end: 0.3),
-        weight: 50,
-      ),
-    ]).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
-    );
-  }
-
-  @override
-  void dispose() {
-    _pulseController.dispose();
-    super.dispose();
-  }
+  const OnboardingGraphics({
+    super.key,
+    required this.idx,
+    required this.colors,
+    required this.accent,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+
     return Container(
-      width: 140,
-      height: 140,
-      alignment: Alignment.center,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Pulse Shadow Outer
-          AnimatedBuilder(
-            animation: _pulseController,
-            builder: (context, child) {
-              return Transform.scale(
-                scale: _scaleAnimation.value,
-                child: Opacity(
-                  opacity: _opacityAnimation.value,
-                  child: Container(
-                    width: 110,
-                    height: 110,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(36),
-                      gradient: LinearGradient(
-                        colors: [
-                          widget.gradientColors[0].withOpacity(0.2),
-                          widget.gradientColors[1].withOpacity(0.2),
-                        ],
+      width: double.infinity,
+      height: 260,
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF16161A) : const Color(0xFFF3F4F6),
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(
+          color:
+              isDark
+                  ? Colors.white.withOpacity(0.05)
+                  : Colors.black.withOpacity(0.05),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: colors[0].withOpacity(isDark ? 0.08 : 0.05),
+            blurRadius: 32,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(30),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            // Decorative background patterns
+            Positioned(
+              top: -60,
+              left: -60,
+              child: Container(
+                width: 140,
+                height: 140,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: colors[0].withOpacity(0.1),
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: -40,
+              right: -40,
+              child: Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: colors[1].withOpacity(0.1),
+                ),
+              ),
+            ),
+
+            // Core Graphic depending on Slide Index
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 400),
+              transitionBuilder: (child, animation) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: ScaleTransition(
+                    scale: Tween<double>(begin: 0.92, end: 1.0).animate(
+                      CurvedAnimation(
+                        parent: animation,
+                        curve: Curves.easeOutCubic,
                       ),
                     ),
+                    child: child,
                   ),
+                );
+              },
+              child: _buildGraphic(isDark, theme, jc),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGraphic(bool isDark, ThemeData theme, JemenaiColors jc) {
+    switch (idx) {
+      case 0:
+        return _buildPrivacyGraphic(isDark, theme, jc);
+      case 1:
+        return _buildOfflineGraphic(isDark, theme, jc);
+      case 2:
+        return _buildSpeedGraphic(isDark, theme, jc);
+      case 3:
+        return _buildModelsGraphic(isDark, theme, jc);
+      default:
+        return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildPrivacyGraphic(bool isDark, ThemeData theme, JemenaiColors jc) {
+    return Container(
+      key: const ValueKey(0),
+      width: 160,
+      height: 200,
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF222227) : Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color:
+              isDark
+                  ? Colors.white.withOpacity(0.08)
+                  : Colors.black.withOpacity(0.08),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(isDark ? 0.3 : 0.06),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Simulated App Header
+          Row(
+            children: [
+              Container(
+                width: 8,
+                height: 8,
+                decoration: const BoxDecoration(
+                  color: Colors.redAccent,
+                  shape: BoxShape.circle,
                 ),
-              );
-            },
+              ),
+              const SizedBox(width: 4),
+              Container(
+                width: 8,
+                height: 8,
+                decoration: const BoxDecoration(
+                  color: Colors.amber,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Container(
+                width: 8,
+                height: 8,
+                decoration: const BoxDecoration(
+                  color: Colors.green,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const Spacer(),
+              Icon(Icons.shield, color: accent, size: 14),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          // Simulated chat message 1
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color:
+                    isDark ? const Color(0xFF2E2E35) : const Color(0xFFF3F4F6),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  topRight: Radius.circular(12),
+                  bottomRight: Radius.circular(12),
+                ),
+              ),
+              child: Text(
+                'Where is my data?',
+                style: JemenaiTheme.fontBody(
+                  fontSize: 10,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+
+          // Simulated chat response
+          Align(
+            alignment: Alignment.centerRight,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: const BoxDecoration(
+                gradient: JemenaiTheme.gradBrand,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  topRight: Radius.circular(12),
+                  bottomLeft: Radius.circular(12),
+                ),
+              ),
+              child: Text(
+                'Stored locally.',
+                style: JemenaiTheme.fontBody(
+                  fontSize: 10,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
           ),
 
-          // Core Icon Box
-          Container(
-            width: 88,
-            height: 88,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: widget.gradientColors,
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+          const Spacer(),
+
+          // Glowing lock badge
+          Center(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: const Color(0xFF022016),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: const Color(0xFF4ADE80).withOpacity(0.3),
+                ),
               ),
-              borderRadius: BorderRadius.circular(28),
-              boxShadow: [
-                BoxShadow(
-                  color: widget.gradientColors[0].withOpacity(0.4),
-                  blurRadius: 28,
-                  offset: const Offset(0, 12),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.lock, color: Color(0xFF4ADE80), size: 12),
+                  const SizedBox(width: 4),
+                  Text(
+                    'ON-DEVICE ONLY',
+                    style: JemenaiTheme.fontBody(
+                      fontSize: 8,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF4ADE80),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOfflineGraphic(bool isDark, ThemeData theme, JemenaiColors jc) {
+    return Container(
+      key: const ValueKey(1),
+      width: 220,
+      height: 130,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF222227) : Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color:
+              isDark
+                  ? Colors.white.withOpacity(0.08)
+                  : Colors.black.withOpacity(0.08),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(isDark ? 0.3 : 0.06),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildNetworkStatusPill(
+                icon: Icons.wifi_off,
+                label: 'No Wi-Fi',
+                color: Colors.redAccent,
+              ),
+              _buildNetworkStatusPill(
+                icon: Icons.airplanemode_active,
+                label: 'Airplane',
+                color: Colors.amber,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: const Color(0xFF022016),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: const Color(0xFF4ADE80).withOpacity(0.2),
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF4ADE80),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Offroad AI Engine: ONLINE',
+                  style: JemenaiTheme.fontBody(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFF4ADE80),
+                  ),
                 ),
               ],
             ),
-            child: Icon(widget.icon, color: Colors.white, size: 40),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNetworkStatusPill({
+    required IconData icon,
+    required String label,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withOpacity(0.2)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: color, size: 14),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: JemenaiTheme.fontBody(
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSpeedGraphic(bool isDark, ThemeData theme, JemenaiColors jc) {
+    return Container(
+      key: const ValueKey(2),
+      width: 150,
+      height: 150,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          SizedBox(
+            width: 130,
+            height: 130,
+            child: CircularProgressIndicator(
+              value: 0.85,
+              strokeWidth: 6,
+              color: accent,
+              backgroundColor:
+                  isDark
+                      ? Colors.white.withOpacity(0.08)
+                      : Colors.black.withOpacity(0.08),
+            ),
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                '0.8s',
+                style: JemenaiTheme.fontDisplay(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w900,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+              Text(
+                'LATENCY',
+                style: JemenaiTheme.fontBody(
+                  fontSize: 8,
+                  fontWeight: FontWeight.w800,
+                  color: jc.mutedForeground,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildModelsGraphic(bool isDark, ThemeData theme, JemenaiColors jc) {
+    return Container(
+      key: const ValueKey(3),
+      width: 240,
+      height: 160,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Positioned(
+            left: 0,
+            top: 20,
+            child: _buildModelCard('Llama 3.2', 'Meta', Colors.blue, isDark),
+          ),
+          Positioned(
+            right: 0,
+            top: 10,
+            child: _buildModelCard(
+              'Phi-3 Mini',
+              'Microsoft',
+              Colors.orange,
+              isDark,
+            ),
+          ),
+          Positioned(
+            bottom: 10,
+            child: _buildModelCard(
+              'Mistral 7B',
+              'Mistral AI',
+              Colors.purple,
+              isDark,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildModelCard(
+    String name,
+    String maker,
+    Color brandColor,
+    bool isDark,
+  ) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF222227) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color:
+              isDark
+                  ? Colors.white.withOpacity(0.08)
+                  : Colors.black.withOpacity(0.08),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(
+              color: brandColor,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                name,
+                style: JemenaiTheme.fontBody(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.white : Colors.black,
+                ),
+              ),
+              Text(
+                maker,
+                style: JemenaiTheme.fontBody(fontSize: 8, color: Colors.grey),
+              ),
+            ],
           ),
         ],
       ),
