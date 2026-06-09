@@ -13,6 +13,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
   // Storage data
   final double _totalGB = 128.0;
   final double _otherGB = 38.4;
+  final double _offroadGB = 1.2;
   final Set<String> _deleted = {};
 
   final List<Map<String, dynamic>> _modelsStorage = [
@@ -45,7 +46,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
       0.0,
       (acc, m) => acc + (m['gb'] as double),
     );
-    final double usedGB = aiGB + _otherGB;
+    final double usedGB = aiGB + _otherGB + _offroadGB;
     final double freeGB = _totalGB - usedGB;
     final double usedPct = (usedGB / _totalGB) * 100;
 
@@ -183,14 +184,21 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                             color: theme.colorScheme.primary,
                             isPrimary: true,
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 8),
                           _buildDonutStatRow(
                             label: 'AI Models',
                             valueText: '${aiGB.toStringAsFixed(1)} GB',
                             pct: (aiGB / _totalGB) * 100,
                             color: const Color(0xFF818CF8),
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 8),
+                          _buildDonutStatRow(
+                            label: 'Offroad App',
+                            valueText: '${_offroadGB.toStringAsFixed(1)} GB',
+                            pct: (_offroadGB / _totalGB) * 100,
+                            color: const Color(0xFF10B981),
+                          ),
+                          const SizedBox(height: 8),
                           _buildDonutStatRow(
                             label: 'Other',
                             valueText: '${_otherGB.toStringAsFixed(1)} GB',
@@ -268,7 +276,10 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
             height: 4.5,
             color: jc.secondaryFill,
             child: TweenAnimationBuilder<double>(
-              tween: Tween<double>(begin: 0.0, end: (pct / 100).clamp(0.0, 1.0)),
+              tween: Tween<double>(
+                begin: 0.0,
+                end: (pct / 100).clamp(0.0, 1.0),
+              ),
               duration: const Duration(milliseconds: 1000),
               curve: Curves.easeOutCubic,
               builder: (context, val, child) {
@@ -332,39 +343,43 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                   child: Container(
                     height: 12,
                     color: jc.secondaryFill,
-                    child: activeModels.isEmpty
-                        ? const SizedBox.shrink()
-                        : TweenAnimationBuilder<double>(
-                            tween: Tween<double>(begin: 0.0, end: 1.0),
-                            duration: const Duration(milliseconds: 1000),
-                            curve: Curves.easeOutCubic,
-                            builder: (context, val, child) {
-                              return FractionallySizedBox(
-                                alignment: Alignment.centerLeft,
-                                widthFactor: val,
-                                child: child,
-                              );
-                            },
-                            child: Row(
-                              children: activeModels.map((m) {
-                                final ratio = totalModelsGB > 0
-                                    ? (m['gb'] as double) / totalModelsGB
-                                    : 0;
-                                return Expanded(
-                                  flex: (ratio * 1000).toInt().clamp(
-                                        1,
-                                        1000,
-                                      ),
-                                  child: Container(
-                                    margin: const EdgeInsets.only(
-                                      right: 1.5,
-                                    ),
-                                    color: m['color'] as Color,
-                                  ),
+                    child:
+                        activeModels.isEmpty
+                            ? const SizedBox.shrink()
+                            : TweenAnimationBuilder<double>(
+                              tween: Tween<double>(begin: 0.0, end: 1.0),
+                              duration: const Duration(milliseconds: 1000),
+                              curve: Curves.easeOutCubic,
+                              builder: (context, val, child) {
+                                return FractionallySizedBox(
+                                  alignment: Alignment.centerLeft,
+                                  widthFactor: val,
+                                  child: child,
                                 );
-                              }).toList(),
+                              },
+                              child: Row(
+                                children:
+                                    activeModels.map((m) {
+                                      final ratio =
+                                          totalModelsGB > 0
+                                              ? (m['gb'] as double) /
+                                                  totalModelsGB
+                                              : 0;
+                                      return Expanded(
+                                        flex: (ratio * 1000).toInt().clamp(
+                                          1,
+                                          1000,
+                                        ),
+                                        child: Container(
+                                          margin: const EdgeInsets.only(
+                                            right: 1.5,
+                                          ),
+                                          color: m['color'] as Color,
+                                        ),
+                                      );
+                                    }).toList(),
+                              ),
                             ),
-                          ),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -499,8 +514,8 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                                 color: theme.colorScheme.error,
                               ),
                               style: IconButton.styleFrom(
-                                backgroundColor:
-                                    theme.colorScheme.error.withOpacity(0.08),
+                                backgroundColor: theme.colorScheme.error
+                                    .withOpacity(0.08),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
