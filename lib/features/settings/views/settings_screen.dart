@@ -193,7 +193,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.auto_awesome,
                   iBg: const Color(0xFF1E1B4B),
                   iColor: const Color(0xFF818CF8),
-                  title: 'Offroad',
+                  title: 'OffRoad',
                   sub: 'Version 2.0.0 · June 2026',
                   rightWidget: Text(
                     'Latest',

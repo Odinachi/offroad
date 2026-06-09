@@ -18,7 +18,6 @@ class _JemenaiAppState extends State<JemenaiApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Offroad',
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.light,
       theme: JemenaiTheme.lightTheme(),
