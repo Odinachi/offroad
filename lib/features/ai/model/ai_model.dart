@@ -1,3 +1,5 @@
+import 'package:jemenai/shared/assets.dart';
+
 enum AICapability {
   vision('Vision'),
   audio('Audio'),
@@ -36,6 +38,7 @@ class AIModel {
   final bool? requiresAuth;
   final List<AIModality> inputModalities;
   final List<AIModality> outputModalities;
+  final ImageAsset? image;
 
   AIModel({
     required this.url,
@@ -50,6 +53,7 @@ class AIModel {
     required this.compactibility,
     this.capabilities,
     this.requiresAuth,
+    this.image,
   });
 
   String get id => url;
@@ -105,6 +109,7 @@ final List<AIModel> models = [
       AICapability.thinking,
       AICapability.multilingual,
     ],
+    image: Assets.png.gemma,
   ),
   AIModel(
     url:
@@ -133,6 +138,7 @@ final List<AIModel> models = [
       AICapability.thinking,
       AICapability.multilingual,
     ],
+    image: Assets.png.gemma,
   ),
   AIModel(
     url:
@@ -163,6 +169,7 @@ final List<AIModel> models = [
     ],
     outputModalities: [AIModality.text],
     capabilities: [AICapability.multilingual],
+    image: Assets.png.gemma,
   ),
   AIModel(
     url:
@@ -192,6 +199,7 @@ final List<AIModel> models = [
     ],
     outputModalities: [AIModality.text],
     capabilities: [AICapability.multilingual],
+    image: Assets.png.gemma,
   ),
   AIModel(
     url:
@@ -218,6 +226,7 @@ final List<AIModel> models = [
     inputModalities: [AIModality.text],
     outputModalities: [AIModality.text],
     capabilities: [AICapability.multilingual],
+    image: Assets.png.gemma,
   ),
   AIModel(
     url:
@@ -247,6 +256,7 @@ final List<AIModel> models = [
     inputModalities: [AIModality.text],
     outputModalities: [AIModality.text],
     capabilities: [AICapability.multilingual],
+    image: Assets.png.gemma,
   ),
   AIModel(
     url:
@@ -276,6 +286,7 @@ final List<AIModel> models = [
     inputModalities: [AIModality.text],
     outputModalities: [AIModality.text],
     capabilities: [AICapability.functionCalling],
+    image: Assets.png.gemma,
   ),
   AIModel(
     url:
@@ -309,6 +320,7 @@ final List<AIModel> models = [
       AICapability.multilingual,
       AICapability.functionCalling,
     ],
+    image: Assets.png.qwen,
   ),
   AIModel(
     url:
@@ -336,6 +348,7 @@ final List<AIModel> models = [
     inputModalities: [AIModality.text],
     outputModalities: [AIModality.text],
     capabilities: [AICapability.multilingual, AICapability.code],
+    image: Assets.png.qwen,
   ),
   AIModel(
     url:
@@ -365,6 +378,7 @@ final List<AIModel> models = [
     inputModalities: [AIModality.text],
     outputModalities: [AIModality.text],
     capabilities: [AICapability.multilingual],
+    image: Assets.png.qwen,
   ),
   AIModel(
     url:
@@ -425,6 +439,7 @@ final List<AIModel> models = [
       AICapability.multilingual,
       AICapability.code,
     ],
+    image: Assets.png.microsoft,
   ),
   AIModel(
     url:
@@ -452,5 +467,6 @@ final List<AIModel> models = [
     inputModalities: [AIModality.text],
     outputModalities: [AIModality.text],
     capabilities: [AICapability.thinking],
+    image: Assets.png.deepseek,
   ),
 ];

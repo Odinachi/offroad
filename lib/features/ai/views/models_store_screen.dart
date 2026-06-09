@@ -237,23 +237,33 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Container(
-                                    width: 44,
-                                    height: 44,
-                                    decoration: BoxDecoration(
-                                      gradient:
-                                          isDl ? JemenaiTheme.gradBrand : null,
-                                      color: isDl ? null : jc.muted,
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                    child: Icon(
-                                      isDl
-                                          ? Icons.auto_awesome
-                                          : Icons.psychology,
-                                      color: isDl ? Colors.white : mutedFore,
-                                      size: 20,
-                                    ),
-                                  ),
+                                  model.image?.image(
+                                        width: 44,
+                                        height: 44,
+                                        fit: BoxFit.contain,
+                                      ) ??
+                                      Container(
+                                        width: 44,
+                                        height: 44,
+                                        decoration: BoxDecoration(
+                                          gradient:
+                                              isDl
+                                                  ? JemenaiTheme.gradBrand
+                                                  : null,
+                                          color: isDl ? null : jc.muted,
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
+                                        ),
+                                        child: Icon(
+                                          isDl
+                                              ? Icons.auto_awesome
+                                              : Icons.psychology,
+                                          color:
+                                              isDl ? Colors.white : mutedFore,
+                                          size: 20,
+                                        ),
+                                      ),
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: Column(

@@ -43,13 +43,45 @@ final class SvgAsset {
   }
 }
 
-/// Bundled raster under `assets/images/` (declared in `pubspec.yaml`).
-///
-/// Add an `Assets.image` catalog (mirroring [SvgAssets]) when bitmaps ship.
+/// Bundled raster under `assets/pngs/` (declared in `pubspec.yaml`).
 final class ImageAsset {
   const ImageAsset(this.path);
 
   final String path;
+
+  /// Renders this asset via [Image.asset].
+  Image image({
+    Key? key,
+    double? width,
+    double? height,
+    Color? color,
+    BoxFit? fit,
+    AlignmentGeometry alignment = Alignment.center,
+  }) {
+    return Image.asset(
+      path,
+      key: key,
+      width: width,
+      height: height,
+      color: color,
+      fit: fit,
+      alignment: alignment,
+    );
+  }
+}
+
+final class PngAssets {
+  final ImageAsset deepseek;
+  final ImageAsset gemma;
+  final ImageAsset qwen;
+  final ImageAsset microsoft;
+
+  const PngAssets({
+    this.deepseek = const ImageAsset('assets/pngs/deepseek.png'),
+    this.gemma = const ImageAsset('assets/pngs/gemma.png'),
+    this.qwen = const ImageAsset('assets/pngs/qwen.png'),
+    this.microsoft = const ImageAsset('assets/pngs/microsoft.png'),
+  });
 }
 
 /// All SVGs under `assets/svgs/`. Example: `Assets.svg.home.svg(width: 24)`.
@@ -122,4 +154,5 @@ final class SvgAssets {
 /// Typed asset entry points (AGENT.md §8).
 abstract final class Assets {
   static const svg = SvgAssets();
+  static const png = PngAssets();
 }
