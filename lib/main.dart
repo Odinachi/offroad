@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gemma/core/api/flutter_gemma.dart';
 import 'package:jemenai/features/dashboard/view_models/app_cubit.dart';
 import 'package:jemenai/services/cache_service.dart';
 import 'shared/navigator/app_route_string.dart';
@@ -11,6 +12,10 @@ final cacheService = CacheService.instance;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await cacheService.init();
+  await FlutterGemma.initialize(
+    huggingFaceToken: const String.fromEnvironment('HUGGINGFACE_TOKEN'),
+    maxDownloadRetries: 2,
+  );
   runApp(const JemenaiApp());
 }
 
