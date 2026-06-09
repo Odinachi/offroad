@@ -8,6 +8,7 @@ class CacheService {
 
   final _darkModeKey = "isDarkMode";
   final _seenOnboardingKey = "seenOnboarding";
+  final _huggingFaceTokenKey = "huggingFaceToken";
 
   //Initialize
   Future<void> init() async {
@@ -22,8 +23,6 @@ class CacheService {
   bool? getIsDarkMode() {
     return _prefs.getBool(_darkModeKey);
   }
-
-  final _huggingFaceTokenKey = "huggingFaceToken";
 
   //Onboarding
   Future<void> saveSeenOnboarding() async {
