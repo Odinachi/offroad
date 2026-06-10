@@ -1,64 +1,75 @@
 import 'package:flutter/material.dart';
 import 'package:jemenai/shared/navigator/app_route_string.dart';
 import 'package:jemenai/shared/navigator/app_router.dart';
+import 'package:jemenai/services/db_service.dart';
 import '../../../shared/theme.dart';
 
-class ChatsListScreen extends StatelessWidget {
-  ChatsListScreen({super.key});
+class ChatsListScreen extends StatefulWidget {
+  const ChatsListScreen({super.key});
 
-  final List<Map<String, dynamic>> _chats = [
-    {
-      'id': 1,
-      't': "Explain React hooks in depth",
-      'model': "Llama 3.2",
-      'when': "2m ago",
-      'pinned': true,
-      'preview':
-          "Let me break down React hooks with clear, practical examples...",
-    },
-    {
-      'id': 2,
-      't': "Business proposal for AI startup",
-      'model': "Phi-3 Mini",
-      'when': "1h ago",
-      'pinned': false,
-      'preview':
-          "Here's a comprehensive proposal framework tailored to your...",
-    },
-    {
-      'id': 3,
-      't': "Python data analysis script",
-      'model': "Llama 3.2",
-      'when': "3h ago",
-      'pinned': false,
-      'preview': "I'll create a clean pandas + matplotlib pipeline for you...",
-    },
-    {
-      'id': 4,
-      't': "Translate paragraphs to French",
-      'model': "Mistral 7B",
-      'when': "Yesterday",
-      'pinned': false,
-      'preview': "Voici les traductions demandées avec contexte naturel...",
-    },
-    {
-      'id': 5,
-      't': "Debug TypeScript generic error",
-      'model': "Phi-3 Mini",
-      'when': "2d ago",
-      'pinned': false,
-      'preview':
-          "The issue is a type mismatch in your generic constraint at line...",
-    },
-    {
-      'id': 6,
-      't': "Poem about the ocean at midnight",
-      'model': "Gemma 2B",
-      'when': "3d ago",
-      'pinned': false,
-      'preview': "Waves of data, infinite and deep, silver moonlight softly...",
-    },
-  ];
+  @override
+  State<ChatsListScreen> createState() => _ChatsListScreenState();
+}
+
+class _ChatsListScreenState extends State<ChatsListScreen> {
+  final List<Map<String, dynamic>> _chats = [];
+  bool _isLoading = false;
+  bool _hasMore = true;
+  int _offset = 0;
+  final int _limit = 15;
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadChats();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      _loadChats();
+    }
+  }
+
+  Future<void> _loadChats() async {
+    if (_isLoading || !_hasMore) return;
+    setState(() => _isLoading = true);
+    try {
+      final sessions = await DatabaseService().getSessions(
+        limit: _limit,
+        offset: _offset,
+      );
+      setState(() {
+        if (sessions.isEmpty) {
+          _hasMore = false;
+        } else {
+          _chats.addAll(sessions);
+          _offset += _limit;
+        }
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  String _timeAgo(int timestamp) {
+    final diff = DateTime.now().difference(
+      DateTime.fromMillisecondsSinceEpoch(timestamp),
+    );
+    if (diff.inDays > 0) return '${diff.inDays}d ago';
+    if (diff.inHours > 0) return '${diff.inHours}h ago';
+    if (diff.inMinutes > 0) return '${diff.inMinutes}m ago';
+    return 'Just now';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +82,11 @@ class ChatsListScreen extends StatelessWidget {
     final border = jc.border;
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: IconThemeData(color: foreColor),
+      ),
       body: SafeArea(
         child: Container(
           color: theme.scaffoldBackgroundColor,
@@ -79,7 +95,7 @@ class ChatsListScreen extends StatelessWidget {
             children: [
               // Header
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -93,7 +109,7 @@ class ChatsListScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${_chats.length} conversations',
+                      'All your past chats',
                       style: JemenaiTheme.fontBody(
                         fontSize: 12,
                         color: mutedFore,
@@ -105,96 +121,114 @@ class ChatsListScreen extends StatelessWidget {
 
               // Chats List
               Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 4,
-                  ),
-                  itemCount: _chats.length,
-                  itemBuilder: (context, index) {
-                    final chat = _chats[index];
-                    final pinned = chat['pinned'] as bool;
-
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 10.0),
-                      child: InkWell(
-                        onTap: () => AppRouter.push(AppRouteString.chat),
-                        borderRadius: BorderRadius.circular(20),
-                        child: Container(
+                child:
+                    _chats.isEmpty && !_isLoading
+                        ? Center(
+                          child: Text(
+                            'No conversations yet.',
+                            style: TextStyle(color: mutedFore),
+                          ),
+                        )
+                        : ListView.builder(
+                          controller: _scrollController,
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
+                            horizontal: 20,
+                            vertical: 4,
                           ),
-                          decoration: BoxDecoration(
-                            color: cardBg,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: border),
-                            boxShadow: JemenaiTheme.shadowCard(isDark),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  if (pinned) ...[
-                                    Text(
-                                      '📌',
-                                      style: JemenaiTheme.fontBody(
-                                        fontSize: 12,
-                                      ),
+                          itemCount: _chats.length + (_isLoading ? 1 : 0),
+                          itemBuilder: (context, index) {
+                            if (index == _chats.length) {
+                              return const Padding(
+                                padding: EdgeInsets.all(16.0),
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              );
+                            }
+
+                            final chat = _chats[index];
+                            final isPinned =
+                                false; // Add pin functionality later if needed
+
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 10.0),
+                              child: InkWell(
+                                onTap:
+                                    () => AppRouter.push(
+                                      AppRouteString.chat,
+                                      args: {
+                                        'sessionId': chat['id'],
+                                        'modelName': chat['modelName'],
+                                      },
                                     ),
-                                    const SizedBox(width: 6),
-                                  ],
-                                  Expanded(
-                                    child: Text(
-                                      chat['t'] as String,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: JemenaiTheme.fontBody(
-                                        fontSize: 13.5,
-                                        fontWeight: FontWeight.w600,
-                                        color: foreColor,
-                                      ),
-                                    ),
+                                borderRadius: BorderRadius.circular(20),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 14,
                                   ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    chat['when'] as String,
-                                    style: JemenaiTheme.fontBody(
-                                      fontSize: 11,
-                                      color: mutedFore,
-                                    ),
+                                  decoration: BoxDecoration(
+                                    color: cardBg,
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(color: border),
+                                    boxShadow: JemenaiTheme.shadowCard(isDark),
                                   ),
-                                ],
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                chat['preview'] as String,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: JemenaiTheme.fontBody(
-                                  fontSize: 12,
-                                  color: mutedFore,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          if (isPinned) ...[
+                                            Text(
+                                              '📌',
+                                              style: JemenaiTheme.fontBody(
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 6),
+                                          ],
+                                          Expanded(
+                                            child: Text(
+                                              chat['title'] as String? ??
+                                                  'New Chat',
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: JemenaiTheme.fontBody(
+                                                fontSize: 13.5,
+                                                fontWeight: FontWeight.w600,
+                                                color: foreColor,
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            _timeAgo(chat['updatedAt'] as int),
+                                            style: JemenaiTheme.fontBody(
+                                              fontSize: 11,
+                                              color: mutedFore,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        chat['modelName'] as String? ??
+                                            'Unknown',
+                                        style: JemenaiTheme.fontBody(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.bold,
+                                          color: theme.colorScheme.primary
+                                              .withOpacity(0.75),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                              const SizedBox(height: 8),
-                              Text(
-                                chat['model'] as String,
-                                style: JemenaiTheme.fontBody(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.bold,
-                                  color: theme.colorScheme.primary.withOpacity(
-                                    0.75,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                            );
+                          },
                         ),
-                      ),
-                    );
-                  },
-                ),
               ),
             ],
           ),

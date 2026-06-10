@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jemenai/services/db_service.dart';
 import 'package:jemenai/shared/assets.dart';
 import 'package:jemenai/shared/navigator/app_route_string.dart';
 import 'package:jemenai/shared/navigator/app_router.dart';
@@ -123,19 +124,49 @@ class _HomeScreenState extends State<HomeScreen> {
     'Summarize this research paper',
   ];
 
-  final List<Map<String, dynamic>> _recentChats = [
-    {'t': 'Explain React hooks in depth', 'm': 'Llama 3.2', 'when': '2m ago'},
-    {
-      't': 'Write a business proposal for...',
-      'm': 'Phi-3 Mini',
-      'when': '1h ago',
-    },
-    {
-      't': 'Python script for data analysis',
-      'm': 'Llama 3.2',
-      'when': '3h ago',
-    },
-  ];
+  final List<Map<String, dynamic>> _recentChats = [];
+  bool _isLoadingChats = false;
+  bool _hasMoreChats = true;
+  int _chatOffset = 0;
+  final int _chatLimit = 5;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRecentChats();
+  }
+
+  Future<void> _loadRecentChats() async {
+    if (_isLoadingChats || !_hasMoreChats) return;
+    setState(() => _isLoadingChats = true);
+    try {
+      final sessions = await DatabaseService().getSessions(
+        limit: _chatLimit,
+        offset: _chatOffset,
+      );
+      setState(() {
+        if (sessions.isEmpty) {
+          _hasMoreChats = false;
+        } else {
+          _recentChats.addAll(sessions);
+          _chatOffset += _chatLimit;
+        }
+        _isLoadingChats = false;
+      });
+    } catch (e) {
+      setState(() => _isLoadingChats = false);
+    }
+  }
+
+  String _timeAgo(int timestamp) {
+    final diff = DateTime.now().difference(
+      DateTime.fromMillisecondsSinceEpoch(timestamp),
+    );
+    if (diff.inDays > 0) return '${diff.inDays}d ago';
+    if (diff.inHours > 0) return '${diff.inHours}h ago';
+    if (diff.inMinutes > 0) return '${diff.inMinutes}m ago';
+    return 'Just now';
+  }
 
   String _getGreeting() {
     final hour = DateTime.now().hour;
@@ -347,7 +378,11 @@ class _HomeScreenState extends State<HomeScreen> {
             final textModels =
                 models
                     .where((m) => m.inputModalities.contains(AIModality.text))
-                    .where((m) => cubit.statusFor(m.id).phase == DownloadPhase.installed)
+                    .where(
+                      (m) =>
+                          cubit.statusFor(m.id).phase ==
+                          DownloadPhase.installed,
+                    )
                     .toList();
 
             return Container(
@@ -878,7 +913,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: InkWell(
-                      onTap: () => AppRouter.push(AppRouteString.chat),
+                      onTap:
+                          () => AppRouter.push(
+                            AppRouteString.chat,
+                            args: {
+                              'sessionId': chat['id'],
+                              'modelName': chat['modelName'],
+                            },
+                          ),
                       borderRadius: BorderRadius.circular(20),
                       child: Container(
                         padding: const EdgeInsets.all(12),
@@ -912,7 +954,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    chat['t'] as String,
+                                    chat['title'] as String? ?? 'New Chat',
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: JemenaiTheme.fontBody(
@@ -922,7 +964,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   const SizedBox(height: 2),
                                   Text(
-                                    '${chat['m'] as String} · ${chat['when'] as String}',
+                                    _timeAgo(chat['updatedAt'] as int),
                                     style: JemenaiTheme.fontBody(
                                       fontSize: 11,
                                       color: mutedFore,

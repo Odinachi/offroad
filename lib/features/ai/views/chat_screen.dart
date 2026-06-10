@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:uuid/uuid.dart';
+import 'package:jemenai/services/db_service.dart';
 import 'package:jemenai/shared/navigator/app_router.dart';
 import 'package:jemenai/shared/navigator/app_route_string.dart';
 import 'package:flutter_gemma/flutter_gemma.dart';
@@ -18,12 +20,14 @@ import 'package:flutter/foundation.dart';
 class ChatScreen extends StatefulWidget {
   final String? modelName;
   final String? initialPrompt;
+  final String? sessionId;
   final bool isTab;
 
   const ChatScreen({
     super.key,
     this.modelName,
     this.initialPrompt,
+    this.sessionId,
     this.isTab = false,
   });
 
@@ -53,11 +57,18 @@ class ChatMessage {
 
 class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   late String _model;
+  String? _currentSessionId;
+  final Uuid _uuid = const Uuid();
   bool _showModels = false;
   bool _typing = false;
   bool _streaming = false;
   bool _isLoadingModel = false;
   String _streamText = "";
+
+  int _messageOffset = 0;
+  final int _messageLimit = 20;
+  bool _isLoadingMoreMessages = false;
+  bool _hasMoreMessages = true;
 
   final List<ChatMessage> _messages = [];
   final _inputController = TextEditingController();
@@ -84,7 +95,68 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _model = widget.modelName ?? models.first.name;
+    _currentSessionId = widget.sessionId;
+
+    Future.microtask(() {
+      if (mounted && widget.sessionId != null && !_modelsList.contains(_model)) {
+        setState(() => _showModels = true);
+      }
+    });
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels <= 100 && !_isLoadingMoreMessages && _hasMoreMessages) {
+        _loadMoreMessages();
+      }
+    });
+
     _loadModel();
+  }
+
+  Future<void> _loadMoreMessages() async {
+    if (_currentSessionId == null) return;
+    setState(() => _isLoadingMoreMessages = true);
+    try {
+      final olderMessages = await DatabaseService().getMessages(
+        _currentSessionId!,
+        limit: _messageLimit,
+        offset: _messageOffset,
+      );
+      
+      if (olderMessages.isEmpty) {
+        setState(() {
+          _hasMoreMessages = false;
+          _isLoadingMoreMessages = false;
+        });
+        return;
+      }
+
+      final newChats = olderMessages.reversed.map((m) {
+        return ChatMessage(
+          id: m['id'] as String,
+          role: m['role'] as String,
+          content: m['content'] as String,
+          ts: DateTime.fromMillisecondsSinceEpoch(m['createdAt'] as int),
+        );
+      }).toList();
+
+      setState(() {
+        _messages.insertAll(0, newChats);
+        _messageOffset += olderMessages.length;
+        if (olderMessages.length < _messageLimit) _hasMoreMessages = false;
+        _isLoadingMoreMessages = false;
+      });
+      
+      if (_chat != null) {
+        final List<Message> replayHistory = _messages.map((m) {
+          return Message(text: m.content, isUser: m.role == 'user');
+        }).toList();
+        if (replayHistory.isNotEmpty) {
+          await _chat!.clearHistory(replayHistory: replayHistory);
+        }
+      }
+    } catch (e) {
+      setState(() => _isLoadingMoreMessages = false);
+    }
   }
 
   Future<void> _pickImage(ImageSource source) async {
@@ -143,6 +215,38 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       );
       _chat = await _inferenceModel!.createChat(isThinking: _isThinking);
 
+      if (_currentSessionId != null) {
+        final messages = await DatabaseService().getMessages(
+          _currentSessionId!,
+          limit: _messageLimit,
+          offset: _messageOffset,
+        );
+        _messageOffset += messages.length;
+        if (messages.length < _messageLimit) _hasMoreMessages = false;
+
+        final List<Message> replayHistory = [];
+        _messages.clear();
+        for (final m in messages.reversed) {
+          final isUser = m['role'] == 'user';
+          replayHistory.add(
+            Message(text: m['content'] as String, isUser: isUser),
+          );
+          _messages.add(
+            ChatMessage(
+              id: m['id'] as String,
+              role: m['role'] as String,
+              content: m['content'] as String,
+              ts: DateTime.fromMillisecondsSinceEpoch(m['createdAt'] as int),
+              imageBytes: null,
+            ),
+          );
+        }
+        if (replayHistory.isNotEmpty) {
+          await _chat!.clearHistory(replayHistory: replayHistory);
+        }
+        _scrollToBottom();
+      }
+
       if (mounted) {
         setState(() {
           _isLoadingModel = false;
@@ -196,11 +300,30 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
     final attachedImage = _attachedImageBytes;
     _inputController.clear();
+
+    if (_currentSessionId == null) {
+      _currentSessionId = _uuid.v4();
+      await DatabaseService().createSession(
+        id: _currentSessionId!,
+        title: text.length > 20 ? '${text.substring(0, 20)}...' : text,
+        modelName: _model,
+      );
+    }
+
+    final messageId = _uuid.v4();
+    await DatabaseService().addMessage(
+      id: messageId,
+      sessionId: _currentSessionId!,
+      role: 'user',
+      content: text,
+      hasImage: attachedImage != null,
+    );
+
     setState(() {
       _attachedImageBytes = null;
       _messages.add(
         ChatMessage(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          id: messageId,
           role: "user",
           content: text,
           ts: DateTime.now(),
@@ -259,20 +382,32 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       }
 
       if (mounted) {
-        setState(() {
-          if (_streamText.isNotEmpty) {
+        if (_streamText.isNotEmpty) {
+          final assistantMessageId = _uuid.v4();
+          await DatabaseService().addMessage(
+            id: assistantMessageId,
+            sessionId: _currentSessionId!,
+            role: 'assistant',
+            content: _streamText,
+          );
+          setState(() {
             _messages.add(
               ChatMessage(
-                id: DateTime.now().millisecondsSinceEpoch.toString(),
+                id: assistantMessageId,
                 role: "assistant",
                 content: _streamText,
                 ts: DateTime.now(),
               ),
             );
-          }
-          _streaming = false;
-          _streamText = "";
-        });
+            _streaming = false;
+            _streamText = "";
+          });
+        } else {
+          setState(() {
+            _streaming = false;
+            _streamText = "";
+          });
+        }
         _scrollToBottom();
       }
     } catch (e) {
@@ -415,15 +550,25 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   itemCount:
                       _messages.length +
                       (_typing ? 1 : 0) +
-                      (_streaming ? 1 : 0),
+                      (_streaming ? 1 : 0) +
+                      (_isLoadingMoreMessages ? 1 : 0),
                   itemBuilder: (context, index) {
-                    if (index < _messages.length) {
-                      return _buildMessageBubble(_messages[index]);
-                    } else if (_typing && index == _messages.length) {
+                    if (_isLoadingMoreMessages && index == 0) {
+                      return const Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    }
+                    final messageIndex = _isLoadingMoreMessages ? index - 1 : index;
+
+                    if (messageIndex < _messages.length) {
+                      return _buildMessageBubble(_messages[messageIndex]);
+                    } else if (_typing && messageIndex == _messages.length) {
                       return _buildTypingDots();
-                    } else {
+                    } else if (_streaming) {
                       return _buildStreamingBubble();
                     }
+                    return const SizedBox.shrink();
                   },
                 ),
               ),
@@ -476,6 +621,13 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                           _model = m;
                           _showModels = false;
                         });
+                        if (_currentSessionId != null) {
+                          DatabaseService().updateSessionModel(
+                            _currentSessionId!,
+                            m,
+                          );
+                        }
+                        _loadModel();
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
