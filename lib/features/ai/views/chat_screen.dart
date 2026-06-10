@@ -6,6 +6,9 @@ import 'package:jemenai/shared/navigator/app_router.dart';
 import 'package:jemenai/shared/navigator/app_route_string.dart';
 import 'package:flutter_gemma/flutter_gemma.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:url_launcher/url_launcher_string.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:typed_data';
 import '../../../shared/theme.dart';
 import '../model/ai_model.dart';
 import '../view_models/model_download_cubit.dart';
@@ -33,6 +36,7 @@ class ChatMessage {
   final DateTime ts;
   bool pinned;
   bool liked;
+  final Uint8List? imageBytes;
 
   ChatMessage({
     required this.id,
@@ -41,6 +45,7 @@ class ChatMessage {
     required this.ts,
     this.pinned = false,
     this.liked = false,
+    this.imageBytes,
   });
 }
 
@@ -56,6 +61,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   final _inputController = TextEditingController();
   final _scrollController = ScrollController();
   bool _showAttachments = false;
+  Uint8List? _attachedImageBytes;
 
   InferenceChat? _chat;
 
@@ -74,19 +80,19 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _model = widget.modelName ?? models.first.name;
-
-    // Add initial greeting message
-    _messages.add(
-      ChatMessage(
-        id: "init",
-        role: "assistant",
-        content:
-            "I'm Offroad, running entirely on your device with **complete privacy**.\n\nYour conversations are processed locally — nothing is ever sent to external servers. What would you like to explore?",
-        ts: DateTime.now(),
-      ),
-    );
-
     _loadModel();
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: source);
+    if (pickedFile != null) {
+      final bytes = await pickedFile.readAsBytes();
+      setState(() {
+        _attachedImageBytes = bytes;
+        _showAttachments = false;
+      });
+    }
   }
 
   Future<void> _loadModel() async {
@@ -100,7 +106,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         fileType: model.fileType,
       ).fromNetwork(model.downloadUrl).install();
 
-      final inferenceModel = await FlutterGemma.getActiveModel(maxTokens: 2048);
+      final inferenceModel = await FlutterGemma.getActiveModel(
+        maxTokens: 2048,
+        preferredBackend: PreferredBackend.cpu,
+      );
       _chat = await inferenceModel.createChat();
 
       if (mounted) {
@@ -148,16 +157,23 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
   Future<void> _send([String? overrideText]) async {
     final text = (overrideText ?? _inputController.text).trim();
-    if (text.isEmpty || _typing || _streaming || _isLoadingModel) return;
+    if ((text.isEmpty && _attachedImageBytes == null) ||
+        _typing ||
+        _streaming ||
+        _isLoadingModel)
+      return;
 
+    final attachedImage = _attachedImageBytes;
     _inputController.clear();
     setState(() {
+      _attachedImageBytes = null;
       _messages.add(
         ChatMessage(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           role: "user",
           content: text,
           ts: DateTime.now(),
+          imageBytes: attachedImage,
         ),
       );
       _typing = true;
@@ -181,7 +197,17 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     }
 
     try {
-      await _chat!.addQueryChunk(Message.text(text: text, isUser: true));
+      if (attachedImage != null) {
+        await _chat!.addQueryChunk(
+          Message.withImages(
+            text: text,
+            imageBytes: [attachedImage],
+            isUser: true,
+          ),
+        );
+      } else {
+        await _chat!.addQueryChunk(Message.text(text: text, isUser: true));
+      }
 
       setState(() {
         _typing = false;
@@ -282,15 +308,23 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                           Container(
                             width: 32,
                             height: 32,
+                            clipBehavior: Clip.antiAlias,
                             decoration: BoxDecoration(
                               gradient: JemenaiTheme.gradBrand,
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            child: const Icon(
-                              Icons.auto_awesome,
-                              color: Colors.white,
-                              size: 16,
-                            ),
+                            child:
+                                _currentAIModel.image != null
+                                    ? _currentAIModel.image!.image(
+                                      width: 32,
+                                      height: 32,
+                                      fit: BoxFit.cover,
+                                    )
+                                    : const Icon(
+                                      Icons.auto_awesome,
+                                      color: Colors.white,
+                                      size: 16,
+                                    ),
                           ),
                           const SizedBox(width: 10),
                           Expanded(
@@ -401,7 +435,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           boxShadow: JemenaiTheme.shadowFloat(isDark),
         ),
         child: ConstrainedBox(
-          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.4),
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.4,
+          ),
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -558,10 +594,29 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                               : const Radius.circular(20),
                     ),
                   ),
-                  child: MarkdownBodyText(
-                    content: msg.content,
-                    isUser: isUser,
-                    isDark: isDark,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (msg.imageBytes != null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.memory(
+                              msg.imageBytes!,
+                              width: 200,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      if (msg.content.isNotEmpty)
+                        MarkdownBodyText(
+                          content: msg.content,
+                          isUser: isUser,
+                          isDark: isDark,
+                        ),
+                    ],
                   ),
                 ),
               ),
@@ -788,7 +843,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     final mutedFore = jc.mutedForeground;
     final keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
     final extraPadding = (widget.isTab && !keyboardOpen) ? 80.0 : 0.0;
-    final hasInput = _inputController.text.trim().isNotEmpty;
+    final hasInput =
+        _inputController.text.trim().isNotEmpty || _attachedImageBytes != null;
 
     return Container(
       padding: EdgeInsets.fromLTRB(16, 8, 16, 16 + extraPadding),
@@ -800,6 +856,51 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         top: false,
         child: Column(
           children: [
+            if (_attachedImageBytes != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0, left: 8, right: 8),
+                child: Row(
+                  children: [
+                    Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.memory(
+                            _attachedImageBytes!,
+                            width: 60,
+                            height: 60,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Positioned(
+                          right: -8,
+                          top: -8,
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _attachedImageBytes = null;
+                              });
+                            },
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                color: Colors.black54,
+                                shape: BoxShape.circle,
+                              ),
+                              padding: const EdgeInsets.all(4),
+                              child: const Icon(
+                                Icons.close,
+                                size: 12,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             Container(
               decoration: BoxDecoration(
                 color: theme.scaffoldBackgroundColor,
@@ -835,17 +936,27 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                       _buildInputMediaBtn(
                                         Icons.image,
                                         mutedFore,
+                                        onTap:
+                                            () =>
+                                                _pickImage(ImageSource.gallery),
                                       ),
                                     ],
                                     _buildInputMediaBtn(
                                       Icons.attach_file,
                                       mutedFore,
+                                      onTap:
+                                          () => _pickImage(
+                                            ImageSource.gallery,
+                                          ), // fallback
                                     ),
                                     if (_currentAIModel.inputModalities
                                         .contains(AIModality.image)) ...[
                                       _buildInputMediaBtn(
                                         Icons.camera_alt,
                                         mutedFore,
+                                        onTap:
+                                            () =>
+                                                _pickImage(ImageSource.camera),
                                       ),
                                     ],
                                   ]
@@ -1112,7 +1223,7 @@ class MarkdownBodyText extends StatelessWidget {
     final textStyleColor = isUser ? Colors.white : theme.colorScheme.onSurface;
 
     final regex = RegExp(
-      r'(```[\s\S]*?(?:```|$)|\*\*[\s\S]*?(?:\*\*|$)|\*[^*]+(?:\*|$)|---[\s\S]*?(?:---|$))',
+      r'(```[\s\S]*?(?:```|$)|\*\*[\s\S]*?(?:\*\*|$)|\*[^*]+(?:\*|$)|\[[^\]]+\]\([^)]+\)|---[\s\S]*?(?:---|$))',
     );
     final matches = regex.allMatches(content);
     int currentIndex = 0;
@@ -1129,6 +1240,13 @@ class MarkdownBodyText extends StatelessWidget {
     }
 
     List<Widget> spans = [];
+
+    final baseStyle = JemenaiTheme.fontBody(
+      fontSize: 14,
+      fontWeight: FontWeight.normal,
+      color: textStyleColor,
+      lineHeight: 1.45,
+    );
 
     for (var part in parts) {
       if (part.isEmpty) continue;
@@ -1150,33 +1268,40 @@ class MarkdownBodyText extends StatelessWidget {
       } else if (part.startsWith('**') && part.length >= 2) {
         // Bold Text
         int endTruncate = part.endsWith('**') && part.length >= 4 ? 2 : 0;
-        final text = part.substring(2, part.length - endTruncate);
+        final inner = part.substring(2, part.length - endTruncate);
         spans.add(
-          Text(
-            text,
-            style: JemenaiTheme.fontBody(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: textStyleColor,
-              lineHeight: 1.45,
-            ),
-          ),
+          Text(inner, style: baseStyle.copyWith(fontWeight: FontWeight.bold)),
         );
-      } else if (part.startsWith('*') && part.length >= 1 && part != '*') {
+      } else if (part.startsWith('*') && part.length >= 1) {
         // Italic Text
         int endTruncate = part.endsWith('*') && part.length >= 2 ? 1 : 0;
-        final text = part.substring(1, part.length - endTruncate);
+        final inner = part.substring(1, part.length - endTruncate);
         spans.add(
-          Text(
-            text,
-            style: JemenaiTheme.fontBody(
-              fontSize: 14,
-              fontWeight: FontWeight.normal,
-              color: textStyleColor,
-              lineHeight: 1.45,
-            ).copyWith(fontStyle: FontStyle.italic),
-          ),
+          Text(inner, style: baseStyle.copyWith(fontStyle: FontStyle.italic)),
         );
+      } else if (part.startsWith('[')) {
+        // Link
+        final match = RegExp(r'\[([^\]]+)\]\(([^)]+)\)').firstMatch(part);
+        if (match != null) {
+          final text = match.group(1)!;
+          final url = match.group(2)!;
+          spans.add(
+            GestureDetector(
+              onTap: () {
+                launchUrlString(url, mode: LaunchMode.externalApplication);
+              },
+              child: Text(
+                text,
+                style: baseStyle.copyWith(
+                  color: Colors.blue,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+            ),
+          );
+        } else {
+          spans.add(Text(part, style: baseStyle));
+        }
       } else if (part.startsWith('---') && part.length >= 3) {
         // Section divider block
         int endTruncate = part.endsWith('---') && part.length >= 6 ? 3 : 0;
@@ -1190,14 +1315,7 @@ class MarkdownBodyText extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: jc.border),
             ),
-            child: Text(
-              text,
-              style: JemenaiTheme.fontBody(
-                fontSize: 12,
-                fontWeight: FontWeight.normal,
-                color: theme.colorScheme.onSurface,
-              ),
-            ),
+            child: Text(text, style: baseStyle.copyWith(fontSize: 12)),
           ),
         );
       } else {

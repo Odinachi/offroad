@@ -40,6 +40,10 @@ dependencies:
   flutter_bloc: 
   shared_preferences: ^2.5.5
   flutter_gemma: ^0.16.4
+  url_launcher: ^6.3.0
+  image_picker: ^1.1.2
+  file_picker: ^8.1.4
+
 
 dev_dependencies:
   flutter_test:
