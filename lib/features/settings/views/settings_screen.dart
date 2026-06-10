@@ -12,16 +12,8 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  // Settings States
-  bool _offline = false;
-  bool _voiceResponses = true;
   bool _notifs = true;
   bool _analytics = false;
-
-  String _speed = "fast"; // 'fast' | 'balanced' | 'slow'
-  String _voicePersonality = "nova"; // 'nova' | 'alloy' | 'echo'
-  String _downloadQuality = "q8"; // 'q4' | 'q8'
-  String _hardwareMode = "gpu"; // 'gpu' | 'cpu'
 
   @override
   Widget build(BuildContext context) {
@@ -145,13 +137,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   iColor: const Color(0xFF818CF8),
                   title: 'Inference Engine',
                   sub: 'Choose processing hardware for local models',
-                  value: _hardwareMode,
+                  value: context.watch<AppCubit>().inferenceEngine,
                   options: const ['gpu', 'cpu'],
                   optionLabels: const {
                     'gpu': 'GPU (Accelerated)',
                     'cpu': 'CPU (Standard)',
                   },
-                  onChanged: (val) => setState(() => _hardwareMode = val),
+                  onChanged: (val) {
+                    context.read<AppCubit>().saveInferenceEngine(val);
+                  },
                 ),
                 _buildNavRow(
                   icon: Icons.vpn_key,

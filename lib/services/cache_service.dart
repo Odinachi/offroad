@@ -9,6 +9,7 @@ class CacheService {
   final _darkModeKey = "isDarkMode";
   final _seenOnboardingKey = "seenOnboarding";
   final _huggingFaceTokenKey = "huggingFaceToken";
+  final _inferenceEngineKey = "inferenceEngine";
 
   //Initialize
   Future<void> init() async {
@@ -40,6 +41,15 @@ class CacheService {
 
   String? getHuggingFaceToken() {
     return _prefs.getString(_huggingFaceTokenKey);
+  }
+
+  //Inference Engine
+  Future<void> saveInferenceEngine(String value) async {
+    await _prefs.setString(_inferenceEngineKey, value);
+  }
+
+  String? getInferenceEngine() {
+    return _prefs.getString(_inferenceEngineKey);
   }
 
   //clear all
