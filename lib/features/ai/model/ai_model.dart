@@ -1,3 +1,4 @@
+import 'package:flutter_gemma/flutter_gemma.dart';
 import 'package:jemenai/shared/assets.dart';
 
 enum AICapability {
@@ -31,6 +32,8 @@ class AIModel {
   final String description;
   final double sizeMb;
   final int ramGB;
+  final ModelType modelType;
+  final ModelFileType fileType;
 
   final List<String> compactibility;
 
@@ -48,9 +51,11 @@ class AIModel {
     required this.description,
     required this.sizeMb,
     required this.ramGB,
+    required this.modelType,
     required this.inputModalities,
     required this.outputModalities,
     required this.compactibility,
+    this.fileType = ModelFileType.task,
     this.capabilities,
     this.requiresAuth,
     this.image,
@@ -60,6 +65,12 @@ class AIModel {
   bool get popular => name.contains('Gemma 4') || name.contains('R1');
   double get sizeGB => sizeMb / 1024;
   int get iq => sizeMb > 3000 ? 90 : (sizeMb > 1000 ? 80 : 70);
+
+  /// Converts HuggingFace `/blob/` viewer URLs to `/resolve/` direct-download URLs.
+  String get downloadUrl => url.replaceFirst('/blob/', '/resolve/');
+
+  /// Extracts the model filename from the URL (e.g. `gemma-4-E2B-it.litertlm`).
+  String get fileName => Uri.parse(url).pathSegments.last;
 
   String get size =>
       sizeGB < 1
@@ -92,6 +103,8 @@ final List<AIModel> models = [
         "Google's edge-optimised MoE model with 2B effective parameters. Natively understands text, images, and audio on-device. Supports function calling, a 128K context window, and speculative decoding via Multi-Token Prediction.",
     sizeMb: 2590,
     ramGB: 3,
+    modelType: ModelType.gemma4,
+    fileType: ModelFileType.litertlm,
     compactibility: [
       "iPhone 14+",
       "Pixel 7+",
@@ -121,6 +134,8 @@ final List<AIModel> models = [
         "The larger of Google's Gemma 4 edge pair, with 4B effective parameters for stronger reasoning and more accurate function calling. Handles text, image, and audio input with a 128K context window. Best suited to flagship devices.",
     sizeMb: 3660,
     ramGB: 6,
+    modelType: ModelType.gemma4,
+    fileType: ModelFileType.litertlm,
     compactibility: [
       "iPhone 15+",
       "Pixel 8+",
@@ -150,6 +165,8 @@ final List<AIModel> models = [
         "Google's Gemma 3n with selective parameter activation — runs at an effective 2B footprint while carrying 5B total parameters. Supports text, image, video, and audio input across 140+ languages. Uses Matformer architecture for nested model sizing.",
     sizeMb: 3140,
     ramGB: 2,
+    modelType: ModelType.gemmaIt,
+    requiresAuth: true,
     compactibility: [
       "iPhone 14+",
       "Pixel 7+",
@@ -181,6 +198,8 @@ final List<AIModel> models = [
         "Gemma 3n's larger edge variant, with 4B effective parameters drawn from an 8B total model. Full multimodal input (text, image, video, audio), 140+ language support, and the Matformer nested-model architecture for flexible on-device deployment.",
     sizeMb: 6500,
     ramGB: 3,
+    modelType: ModelType.gemmaIt,
+    requiresAuth: true,
     compactibility: [
       "iPhone 15+",
       "Pixel 8+",
@@ -211,6 +230,7 @@ final List<AIModel> models = [
         "Google's compact Gemma 3 text model with 1B parameters, trained on 2 trillion tokens with a 32K context window. Text-only, optimised for low-latency Q&A, summarisation, and instruction following on resource-constrained hardware.",
     sizeMb: 1020,
     ramGB: 2,
+    modelType: ModelType.gemmaIt,
     compactibility: [
       "iPhone 14+",
       "Pixel 7+",
@@ -238,6 +258,8 @@ final List<AIModel> models = [
         "Google's smallest Gemma 3 model at 270M parameters, over-trained on 6 trillion tokens for surprisingly strong instruction following. Text-only with a 32K context window. Runs at INT4 with minimal quality loss — uses under 0.75% battery for 25 conversations on Pixel 9 Pro.",
     sizeMb: 300,
     ramGB: 1,
+    modelType: ModelType.gemmaIt,
+    fileType: ModelFileType.litertlm,
     compactibility: [
       "iPhone 12+",
       "Pixel 6+",
@@ -268,6 +290,8 @@ final List<AIModel> models = [
         "Google's smallest dedicated function-calling model, built on Gemma 3 270M and fine-tuned to map natural language to structured API actions. Not a general chat model — designed as a fine-tuning base for on-device agents. Achieves ~58% accuracy out-of-the-box, up to ~85% after task-specific fine-tuning.",
     sizeMb: 270,
     ramGB: 1,
+    modelType: ModelType.functionGemma,
+    fileType: ModelFileType.litertlm,
     compactibility: [
       "iPhone 12+",
       "Pixel 6+",
@@ -298,6 +322,8 @@ final List<AIModel> models = [
         "Alibaba's 0.6B dense model from the Qwen3 series, trained on 36 trillion tokens across 119 languages. Uniquely supports both a 'thinking' mode for step-by-step reasoning and a 'non-thinking' mode for fast chat, switchable per query. 32K context window.",
     sizeMb: 586,
     ramGB: 1,
+    modelType: ModelType.qwen3,
+    fileType: ModelFileType.litertlm,
     compactibility: [
       "iPhone 12+",
       "Pixel 6+",
@@ -332,6 +358,8 @@ final List<AIModel> models = [
         "Alibaba's 1.5B instruction-tuned model from the Qwen2.5 series. Strong at coding, maths, and structured output (JSON). Supports 29+ languages, long-text generation over 8K tokens, and a 32K context window. A reliable mid-range edge model.",
     sizeMb: 1570,
     ramGB: 4,
+    modelType: ModelType.qwen,
+    fileType: ModelFileType.binary,
     compactibility: [
       "iPhone 13+",
       "Pixel 7+",
@@ -360,6 +388,8 @@ final List<AIModel> models = [
         "Alibaba's smallest Qwen2.5 model at 490M parameters (360M non-embedding). Instruction-tuned for Q&A, summarisation, and basic structured output. Supports 29+ languages and a 32K context window. Ideal for extremely memory-constrained devices.",
     sizeMb: 513,
     ramGB: 1,
+    modelType: ModelType.qwen,
+    fileType: ModelFileType.binary,
     compactibility: [
       "iPhone 12+",
       "Pixel 6+",
@@ -390,6 +420,8 @@ final List<AIModel> models = [
         "HuggingFace's ultra-compact 135M model from the SmolLM series, trained on the curated SmolLM-Corpus of synthetic textbooks and code. English-focused with a 2K context window. Suited for simple instruction following, text completion, and classification in memory-critical environments.",
     sizeMb: 148,
     ramGB: 1,
+    modelType: ModelType.general,
+    fileType: ModelFileType.binary,
     compactibility: [
       "iPhone 12+",
       "Pixel 6+",
@@ -419,6 +451,8 @@ final List<AIModel> models = [
         "Microsoft's 3.8B dense model built on high-quality synthetic data, optimised for reasoning, maths, and code. Features function calling, a 128K context window, and strong multilingual support across 20+ languages. One of the most capable models at this parameter count.",
     sizeMb: 3951,
     ramGB: 4,
+    modelType: ModelType.phi,
+    fileType: ModelFileType.litertlm,
     compactibility: [
       "iPhone 14+",
       "Pixel 7+",
@@ -451,6 +485,8 @@ final List<AIModel> models = [
         "DeepSeek's 1.5B reasoning model, distilled from the full DeepSeek-R1 using chain-of-thought training data. Based on Qwen2.5-Math-1.5B and inherits strong maths and logical reasoning. Supports a 128K context window. Produces extended reasoning traces before answering.",
     sizeMb: 1830,
     ramGB: 4,
+    modelType: ModelType.deepSeek,
+    fileType: ModelFileType.litertlm,
     compactibility: [
       "iPhone 13+",
       "Pixel 7+",
