@@ -12,6 +12,8 @@ import 'dart:typed_data';
 import '../../../shared/theme.dart';
 import '../model/ai_model.dart';
 import '../view_models/model_download_cubit.dart';
+import '../../dashboard/view_models/app_cubit.dart';
+import 'package:flutter/foundation.dart';
 
 class ChatScreen extends StatefulWidget {
   final String? modelName;
@@ -106,9 +108,17 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         fileType: model.fileType,
       ).fromNetwork(model.downloadUrl).install();
 
+      final inferenceEngineStr = context.read<AppCubit>().inferenceEngine;
+      final preferredBackend =
+          kDebugMode
+              ? PreferredBackend.cpu
+              : (inferenceEngineStr == "gpu"
+                  ? PreferredBackend.gpu
+                  : PreferredBackend.cpu);
+
       final inferenceModel = await FlutterGemma.getActiveModel(
         maxTokens: 2048,
-        preferredBackend: PreferredBackend.cpu,
+        preferredBackend: preferredBackend,
       );
       _chat = await inferenceModel.createChat();
 
