@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:jemenai/shared/navigator/app_router.dart';
 import 'package:jemenai/shared/navigator/app_route_string.dart';
 import '../../../shared/theme.dart';
+import '../model/ai_model.dart';
 
 class ChatScreen extends StatefulWidget {
   final String? modelName;
@@ -51,6 +52,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   final _inputController = TextEditingController();
   final _scrollController = ScrollController();
   Timer? _streamTimer;
+  bool _showAttachments = false;
+
+  AIModel get _currentAIModel =>
+      models.firstWhere((m) => m.name == _model, orElse: () => models.first);
 
   final List<String> _modelsList = ["Llama 3.2 3B", "Phi-3 Mini", "Mistral 7B"];
 
@@ -278,11 +283,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   ),
                 ),
 
-                // Top right actions
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.search, size: 18, color: foreColor),
-                ),
                 IconButton(
                   onPressed: () {},
                   icon: Icon(Icons.more_horiz, size: 18, color: foreColor),
@@ -439,71 +439,63 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         crossAxisAlignment:
             isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
-          // Pinned badge
-          if (msg.pinned)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 4.0, left: 42.0),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.push_pin,
-                    size: 12,
-                    color: theme.colorScheme.primary,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Pinned',
-                    style: JemenaiTheme.fontBody(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: theme.colorScheme.primary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
           Row(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment:
                 isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
             children: [
-              // Assistant Sparkles icon
+              // Assistant Avatar
               if (!isUser)
                 Container(
-                  width: 32,
-                  height: 32,
+                  width: 28,
+                  height: 28,
                   margin: const EdgeInsets.only(right: 8, top: 4),
                   decoration: BoxDecoration(
-                    gradient: JemenaiTheme.gradBrand,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: JemenaiTheme.shadowCard(isDark),
+                    color: jc.card,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                  child: const Icon(
-                    Icons.auto_awesome,
-                    color: Colors.white,
-                    size: 14,
-                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child:
+                      _currentAIModel.image != null
+                          ? _currentAIModel.image!.image(
+                            width: 28,
+                            height: 28,
+                            fit: BoxFit.cover,
+                          )
+                          : Container(
+                            decoration: const BoxDecoration(
+                              gradient: JemenaiTheme.gradBrand,
+                            ),
+                            child: const Icon(
+                              Icons.auto_awesome,
+                              color: Colors.white,
+                              size: 14,
+                            ),
+                          ),
                 ),
 
               // Message Content Bubble
               Flexible(
                 child: Container(
                   constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width * 0.72,
+                    maxWidth: MediaQuery.of(context).size.width * 0.75,
                   ),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    gradient: isUser ? JemenaiTheme.gradBrand : null,
-                    color: isUser ? null : jc.card,
-                    borderRadius: BorderRadius.only(
-                      topLeft: const Radius.circular(20),
-                      topRight: const Radius.circular(20),
+                    color:
+                        isUser ? theme.colorScheme.primary : jc.secondaryFill,
+                    borderRadius: BorderRadius.circular(20).copyWith(
                       bottomLeft:
                           isUser
                               ? const Radius.circular(20)
@@ -513,8 +505,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                               ? const Radius.circular(4)
                               : const Radius.circular(20),
                     ),
-                    border: isUser ? null : Border.all(color: jc.border),
-                    boxShadow: JemenaiTheme.shadowCard(isDark),
                   ),
                   child: MarkdownBodyText(
                     content: msg.content,
@@ -554,16 +544,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                       ),
                     );
                   }),
-                  _buildBubbleAction(
-                    Icons.push_pin,
-                    () => setState(() => msg.pinned = !msg.pinned),
-                    activeColor: msg.pinned ? theme.colorScheme.primary : null,
-                  ),
-                  _buildBubbleAction(
-                    Icons.thumb_up,
-                    () => setState(() => msg.liked = !msg.liked),
-                    activeColor: msg.liked ? theme.colorScheme.primary : null,
-                  ),
+
                   _buildBubbleAction(Icons.volume_up, () {}),
                   _buildBubbleAction(Icons.delete_outline, () {
                     setState(() {
@@ -612,36 +593,50 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Assistant icon
+          // Assistant Avatar
           Container(
-            width: 32,
-            height: 32,
+            width: 28,
+            height: 28,
             margin: const EdgeInsets.only(right: 8, top: 4),
             decoration: BoxDecoration(
-              gradient: JemenaiTheme.gradBrand,
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: JemenaiTheme.shadowCard(isDark),
+              color: jc.card,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
-            child: const Icon(
-              Icons.auto_awesome,
-              color: Colors.white,
-              size: 14,
-            ),
+            clipBehavior: Clip.antiAlias,
+            child:
+                _currentAIModel.image != null
+                    ? _currentAIModel.image!.image(
+                      width: 28,
+                      height: 28,
+                      fit: BoxFit.cover,
+                    )
+                    : Container(
+                      decoration: const BoxDecoration(
+                        gradient: JemenaiTheme.gradBrand,
+                      ),
+                      child: const Icon(
+                        Icons.auto_awesome,
+                        color: Colors.white,
+                        size: 14,
+                      ),
+                    ),
           ),
 
           // Typing Bubble
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             decoration: BoxDecoration(
-              color: jc.card,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-                bottomLeft: Radius.circular(4),
-                bottomRight: Radius.circular(20),
-              ),
-              border: Border.all(color: jc.border),
-              boxShadow: JemenaiTheme.shadowCard(isDark),
+              color: jc.secondaryFill,
+              borderRadius: BorderRadius.circular(
+                20,
+              ).copyWith(bottomLeft: const Radius.circular(4)),
             ),
             child: SizedBox(
               width: 36,
@@ -664,37 +659,53 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Assistant Avatar
           Container(
-            width: 32,
-            height: 32,
+            width: 28,
+            height: 28,
             margin: const EdgeInsets.only(right: 8, top: 4),
             decoration: BoxDecoration(
-              gradient: JemenaiTheme.gradBrand,
-              borderRadius: BorderRadius.circular(10),
+              color: jc.card,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
-            child: const Icon(
-              Icons.auto_awesome,
-              color: Colors.white,
-              size: 14,
-            ),
+            clipBehavior: Clip.antiAlias,
+            child:
+                _currentAIModel.image != null
+                    ? _currentAIModel.image!.image(
+                      width: 28,
+                      height: 28,
+                      fit: BoxFit.cover,
+                    )
+                    : Container(
+                      decoration: const BoxDecoration(
+                        gradient: JemenaiTheme.gradBrand,
+                      ),
+                      child: const Icon(
+                        Icons.auto_awesome,
+                        color: Colors.white,
+                        size: 14,
+                      ),
+                    ),
           ),
 
           Flexible(
             child: Container(
               constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.72,
+                maxWidth: MediaQuery.of(context).size.width * 0.75,
               ),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: jc.card,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                  bottomLeft: Radius.circular(4),
-                  bottomRight: Radius.circular(20),
-                ),
-                border: Border.all(color: jc.border),
-                boxShadow: JemenaiTheme.shadowCard(isDark),
+                color: jc.secondaryFill,
+                borderRadius: BorderRadius.circular(
+                  20,
+                ).copyWith(bottomLeft: const Radius.circular(4)),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -750,9 +761,36 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   // Attachments row
                   Row(
                     children: [
-                      _buildInputMediaBtn(Icons.image, mutedFore),
-                      _buildInputMediaBtn(Icons.attach_file, mutedFore),
-                      _buildInputMediaBtn(Icons.camera_alt, mutedFore),
+                      _buildInputMediaBtn(
+                        _showAttachments ? Icons.close : Icons.add,
+                        mutedFore,
+                        onTap: () {
+                          setState(() {
+                            _showAttachments = !_showAttachments;
+                          });
+                        },
+                      ),
+                      AnimatedSize(
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeOutCubic,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children:
+                              _showAttachments
+                                  ? [
+                                    _buildInputMediaBtn(Icons.image, mutedFore),
+                                    _buildInputMediaBtn(
+                                      Icons.attach_file,
+                                      mutedFore,
+                                    ),
+                                    _buildInputMediaBtn(
+                                      Icons.camera_alt,
+                                      mutedFore,
+                                    ),
+                                  ]
+                                  : [],
+                        ),
+                      ),
                     ],
                   ),
 
@@ -760,17 +798,28 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: TextField(
+                      child: TextFormField(
                         controller: _inputController,
-                        maxLines: null,
+
                         keyboardType: TextInputType.multiline,
                         style: JemenaiTheme.fontBody(
                           fontSize: 14,
                           color: foreColor,
                         ),
+
                         onChanged: (text) => setState(() {}),
                         decoration: InputDecoration(
-                          hintText: 'Message Jemenai...',
+                          hintText: 'Message OffRoad...',
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: false,
                           hintStyle: JemenaiTheme.fontBody(
                             fontSize: 14,
                             color: mutedFore,
