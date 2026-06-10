@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jemenai/shared/assets.dart';
 import 'package:jemenai/shared/navigator/app_route_string.dart';
 import 'package:jemenai/shared/navigator/app_router.dart';
 import 'package:jemenai/features/dashboard/views/dashboard.dart';
+import 'package:jemenai/features/ai/model/ai_model.dart';
+import 'package:jemenai/features/ai/view_models/model_download_cubit.dart';
 import '../../../shared/theme.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, this.callback});
+
+  final Function(int page)? callback;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -320,7 +325,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _showModelSelectionModal(BuildContext context, String query) {
+  void _showModelSelectionModal(BuildContext context, String query) async {
     final theme = Theme.of(context);
     final jc = theme.jColors;
     final foreColor = theme.colorScheme.onSurface;
@@ -328,144 +333,153 @@ class _HomeScreenState extends State<HomeScreen> {
     final cardBg = jc.card;
     final border = jc.border;
 
-    showModalBottomSheet(
+    final a = await showModalBottomSheet(
       context: context,
       backgroundColor: cardBg,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
       ),
       builder: (context) {
-        return Container(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-          child: SafeArea(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: border,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Select AI Model',
-                  style: JemenaiTheme.fontDisplay(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: foreColor,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Choose a model to process your request',
-                  style: JemenaiTheme.fontBody(fontSize: 12, color: mutedFore),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 20),
-                _buildModelOption(
-                  context,
-                  name: 'Llama 3.2 3B',
-                  specialty: 'General Assistant',
-                  description: 'Versatile and perfect for everyday tasks.',
-                  maker: 'Meta',
-                  size: '2.0 GB',
-                  speed: 'Fast',
-                  icon: Icons.auto_awesome,
-                  query: query,
-                ),
-                const SizedBox(height: 10),
-                _buildModelOption(
-                  context,
-                  name: 'Phi-3 Mini',
-                  specialty: 'Coding & Reasoning',
-                  description: 'Exceptional for logic and math tasks.',
-                  maker: 'Microsoft',
-                  size: '1.8 GB',
-                  speed: 'Fast',
-                  icon: Icons.code,
-                  query: query,
-                  customColor: theme.colorScheme.tertiary,
-                ),
-                const SizedBox(height: 10),
-                _buildModelOption(
-                  context,
-                  name: 'Mistral 7B',
-                  specialty: 'Advanced Reasoning',
-                  description: 'Superior multilingual capabilities.',
-                  maker: 'Mistral',
-                  size: '4.1 GB',
-                  speed: 'Medium',
-                  icon: Icons.psychology,
-                  query: query,
-                  customColor: Colors.pinkAccent,
-                ),
-                const SizedBox(height: 16),
-                Divider(
-                  height: 1,
-                  color: AppColors.grey.withValues(alpha: 0.5),
-                ),
-                const SizedBox(height: 16),
-                InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  borderRadius: BorderRadius.circular(16),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.primary.withOpacity(0.08),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: theme.colorScheme.primary.withOpacity(0.15),
+        return BlocBuilder<ModelDownloadCubit, ModelDownloadState>(
+          builder: (context, state) {
+            final cubit = context.read<ModelDownloadCubit>();
+            final textModels =
+                models
+                    .where((m) => m.inputModalities.contains(AIModality.text))
+                    .where((m) => cubit.statusFor(m.id).phase == DownloadPhase.installed)
+                    .toList();
+
+            return Container(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+              child: SafeArea(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: border,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
                       ),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.cloud_download_outlined,
-                          color: theme.colorScheme.primary,
-                          size: 18,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Explore & Download More Models',
+                    const SizedBox(height: 16),
+                    Text(
+                      'Select AI Model',
+                      style: JemenaiTheme.fontDisplay(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: foreColor,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Choose a model to process your request',
+                      style: JemenaiTheme.fontBody(
+                        fontSize: 12,
+                        color: mutedFore,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 20),
+                    if (textModels.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 32),
+                        child: Text(
+                          'No models downloaded yet.\nPlease download a model to start chatting.',
                           style: JemenaiTheme.fontBody(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.primary,
+                            fontSize: 14,
+                            color: mutedFore,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      )
+                    else
+                      Flexible(
+                        child: ListView.separated(
+                          shrinkWrap: true,
+                          itemCount: textModels.length,
+                          separatorBuilder:
+                              (context, index) => const SizedBox(height: 10),
+                          itemBuilder: (context, index) {
+                            final model = textModels[index];
+                            final status = cubit.statusFor(model.id);
+                            final isInstalled =
+                                status.phase == DownloadPhase.installed;
+                            return _buildModelOption(
+                              context,
+                              model: model,
+                              query: query,
+                              isInstalled: isInstalled,
+                            );
+                          },
+                        ),
+                      ),
+                    const SizedBox(height: 16),
+                    Divider(
+                      height: 1,
+                      color: AppColors.grey.withValues(alpha: 0.5),
+                    ),
+                    const SizedBox(height: 16),
+                    InkWell(
+                      onTap: () {
+                        AppRouter.pop(true);
+                      },
+                      borderRadius: BorderRadius.circular(16),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary.withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: theme.colorScheme.primary.withOpacity(0.15),
                           ),
                         ),
-                      ],
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.cloud_download_outlined,
+                              color: theme.colorScheme.primary,
+                              size: 18,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Explore & Download More Models',
+                              style: JemenaiTheme.fontBody(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: theme.colorScheme.primary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );
+
+    if (a == true) {
+      widget.callback?.call(1);
+    }
   }
 
   Widget _buildModelOption(
     BuildContext context, {
-    required String name,
-    required String specialty,
-    required String description,
-    required String maker,
-    required String size,
-    required String speed,
-    required IconData icon,
+    required AIModel model,
     required String query,
-    Color? customColor,
+    required bool isInstalled,
   }) {
     final theme = Theme.of(context);
     final jc = theme.jColors;
@@ -475,11 +489,16 @@ class _HomeScreenState extends State<HomeScreen> {
     return InkWell(
       onTap: () {
         Navigator.pop(context);
-        _askController.clear();
-        AppRouter.push(
-          AppRouteString.chat,
-          args: {'modelName': name, 'prompt': query},
-        );
+        if (isInstalled) {
+          _askController.clear();
+          AppRouter.push(
+            AppRouteString.chat,
+            args: {'modelName': model.name, 'prompt': query},
+          );
+        } else {
+          // Navigate to storage to download
+          AppRouter.push(AppRouteString.dashboard, args: {'index': 1});
+        }
       },
       borderRadius: BorderRadius.circular(18),
       child: Container(
@@ -495,11 +514,20 @@ class _HomeScreenState extends State<HomeScreen> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                gradient: customColor == null ? JemenaiTheme.gradBrand : null,
-                color: customColor?.withOpacity(0.15),
+                color: theme.colorScheme.primary.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: customColor ?? Colors.white, size: 20),
+              child:
+                  model.image != null
+                      ? Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image.asset(model.image!.path),
+                      )
+                      : Icon(
+                        Icons.auto_awesome,
+                        color: theme.colorScheme.primary,
+                        size: 20,
+                      ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -509,7 +537,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Row(
                     children: [
                       Text(
-                        name,
+                        model.name,
                         style: JemenaiTheme.fontBody(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -518,7 +546,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        '· $maker',
+                        '· ${model.maker}',
                         style: JemenaiTheme.fontBody(
                           fontSize: 11,
                           color: mutedFore,
@@ -528,7 +556,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    description,
+                    model.specialty,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: JemenaiTheme.fontBody(
                       fontSize: 11,
                       color: jc.mutedForeground,
@@ -541,55 +571,14 @@ class _HomeScreenState extends State<HomeScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: jc.secondaryFill,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    size,
-                    style: JemenaiTheme.fontBody(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: mutedFore,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color:
-                        speed == 'Fast'
-                            ? const Color(0xFF022016)
-                            : const Color(0xFF1C1400),
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(
-                      color:
-                          speed == 'Fast'
-                              ? const Color(0xFF4ADE80).withOpacity(0.18)
-                              : const Color(0xFFFBBF24).withOpacity(0.18),
-                    ),
-                  ),
-                  child: Text(
-                    speed,
-                    style: JemenaiTheme.fontBody(
-                      fontSize: 9,
-                      fontWeight: FontWeight.bold,
-                      color:
-                          speed == 'Fast'
-                              ? const Color(0xFF4ADE80)
-                              : const Color(0xFFFBBF24),
-                    ),
-                  ),
-                ),
+                if (!isInstalled)
+                  Icon(
+                    Icons.download_for_offline,
+                    color: theme.colorScheme.primary,
+                    size: 20,
+                  )
+                else
+                  const Icon(Icons.check_circle, color: Colors.green, size: 20),
               ],
             ),
           ],
@@ -643,7 +632,61 @@ class _HomeScreenState extends State<HomeScreen> {
             final label = action['label'] as String;
 
             return InkWell(
-              onTap: () {},
+              onTap: () {
+                final cubit = context.read<ModelDownloadCubit>();
+                final bool needsVision =
+                    action['id'] == 'pic-to-text' ||
+                    action['id'] == 'doc-analysis';
+                final bool needsAudio = action['id'] == 'voice-to-text';
+
+                final matchingModels =
+                    models.where((m) {
+                      if (needsVision &&
+                          !m.inputModalities.contains(AIModality.image))
+                        return false;
+                      if (needsAudio &&
+                          !m.inputModalities.contains(AIModality.audio))
+                        return false;
+                      return m.inputModalities.contains(AIModality.text);
+                    }).toList();
+
+                final downloadedModel =
+                    matchingModels
+                        .where(
+                          (m) =>
+                              cubit.statusFor(m.id).phase ==
+                              DownloadPhase.installed,
+                        )
+                        .firstOrNull;
+
+                if (downloadedModel != null) {
+                  AppRouter.push(
+                    AppRouteString.chat,
+                    args: {
+                      'modelName': downloadedModel.name,
+                      'prompt': 'Help me with $label',
+                    },
+                  );
+                } else {
+                  // No model installed for this, prompt to store
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Please download a model that supports $label first.',
+                      ),
+                      action: SnackBarAction(
+                        label: 'Store',
+                        onPressed: () {
+                          AppRouter.push(
+                            AppRouteString.dashboard,
+                            args: {'index': 1},
+                          );
+                        },
+                      ),
+                    ),
+                  );
+                }
+              },
               borderRadius: BorderRadius.circular(50),
               child: Container(
                 decoration: BoxDecoration(
@@ -737,11 +780,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: InkWell(
-                      onTap:
-                          () => AppRouter.push(
-                            AppRouteString.chat,
-                            args: {'prompt': p},
-                          ),
+                      onTap: () => _showModelSelectionModal(context, p),
                       borderRadius: BorderRadius.circular(50),
                       child: Container(
                         padding: const EdgeInsets.symmetric(

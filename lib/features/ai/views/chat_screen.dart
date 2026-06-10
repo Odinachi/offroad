@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jemenai/shared/navigator/app_router.dart';
 import 'package:jemenai/shared/navigator/app_route_string.dart';
+import 'package:flutter_gemma/flutter_gemma.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../shared/theme.dart';
 import '../model/ai_model.dart';
+import '../view_models/model_download_cubit.dart';
 
 class ChatScreen extends StatefulWidget {
   final String? modelName;
@@ -23,7 +26,7 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class Message {
+class ChatMessage {
   final String id;
   final String role; // 'user' or 'assistant'
   String content;
@@ -31,7 +34,7 @@ class Message {
   bool pinned;
   bool liked;
 
-  Message({
+  ChatMessage({
     required this.id,
     required this.role,
     required this.content,
@@ -46,52 +49,86 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   bool _showModels = false;
   bool _typing = false;
   bool _streaming = false;
+  bool _isLoadingModel = false;
   String _streamText = "";
 
-  final List<Message> _messages = [];
+  final List<ChatMessage> _messages = [];
   final _inputController = TextEditingController();
   final _scrollController = ScrollController();
-  Timer? _streamTimer;
   bool _showAttachments = false;
+
+  InferenceChat? _chat;
 
   AIModel get _currentAIModel =>
       models.firstWhere((m) => m.name == _model, orElse: () => models.first);
 
-  final List<String> _modelsList = ["Llama 3.2 3B", "Phi-3 Mini", "Mistral 7B"];
-
-  final List<String> _predefinedResponses = [
-    "I'm Offroad, running entirely on your device with **complete privacy**.\n\nYour conversations are processed locally — nothing is ever sent to external servers. Here's what I can help with:\n\n```\n• Writing & editing\n• Code generation & debugging  \n• Research & analysis\n• Creative brainstorming\n• Translation & explanation\n```\n\nWhat would you like to explore?",
-    "Here's a clean solution:\n\n```javascript\nconst debounce = (fn, delay) => {\n  let timer;\n  return (...args) => {\n    clearTimeout(timer);\n    timer = setTimeout(() => fn(...args), delay);\n  };\n};\n\n// Usage\nconst onSearch = debounce(query => {\n  console.log('Searching:', query);\n}, 300);\n```\n\nThis delays execution until the user stops typing for 300ms — perfect for search inputs and resize handlers.",
-    "**Quantum computing** leverages quantum mechanics to solve problems that stump classical computers.\n\n**The key concepts:**\n\n- **Qubits** — Unlike bits (0 or 1), qubits exist in *superposition* — both states simultaneously\n- **Entanglement** — Linked qubits share state instantaneously across any distance\n- **Interference** — Algorithms amplify correct answers and cancel wrong ones\n\n**Real-world impact:** Drug discovery, cryptography, climate modeling, and financial optimization could be millions of times faster than today.",
-    "Here's a professional email draft:\n\n---\n\nSubject: Rescheduling Our Meeting — [New Time Options]\n\nHi [Name],\n\nI hope this finds you well. I need to reschedule our meeting originally planned for [Date/Time].\n\n**Available windows:**\n- [Option 1]\n- [Option 2]  \n- [Option 3]\n\nPlease let me know which works best, or suggest an alternative. I apologize for any inconvenience.\n\nBest regards,\n[Your Name]",
-  ];
+  List<String> get _modelsList {
+    final cubit = context.read<ModelDownloadCubit>();
+    return models
+        .where((m) => cubit.statusFor(m.id).phase == DownloadPhase.installed)
+        .map((e) => e.name)
+        .toList();
+  }
 
   @override
   void initState() {
     super.initState();
-    _model = widget.modelName ?? "Llama 3.2 3B";
+    _model = widget.modelName ?? models.first.name;
 
     // Add initial greeting message
     _messages.add(
-      Message(
+      ChatMessage(
         id: "init",
         role: "assistant",
-        content: _predefinedResponses[0],
+        content:
+            "I'm Offroad, running entirely on your device with **complete privacy**.\n\nYour conversations are processed locally — nothing is ever sent to external servers. What would you like to explore?",
         ts: DateTime.now(),
       ),
     );
 
-    // Handle initial prompt redirect
-    if (widget.initialPrompt != null && widget.initialPrompt!.isNotEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _send(widget.initialPrompt!);
-      });
+    _loadModel();
+  }
+
+  Future<void> _loadModel() async {
+    setState(() {
+      _isLoadingModel = true;
+    });
+    try {
+      final model = _currentAIModel;
+      await FlutterGemma.installModel(
+        modelType: model.modelType,
+        fileType: model.fileType,
+      ).fromNetwork(model.downloadUrl).install();
+
+      final inferenceModel = await FlutterGemma.getActiveModel(maxTokens: 2048);
+      _chat = await inferenceModel.createChat();
+
+      if (mounted) {
+        setState(() {
+          _isLoadingModel = false;
+        });
+        // Handle initial prompt redirect after model is loaded
+        if (widget.initialPrompt != null && widget.initialPrompt!.isNotEmpty) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _send(widget.initialPrompt!);
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint("Failed to load model: $e");
+      if (mounted) {
+        setState(() {
+          _isLoadingModel = false;
+        });
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to load model: $e')));
+      }
     }
   }
 
   @override
   void dispose() {
-    _streamTimer?.cancel();
     _inputController.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -109,47 +146,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     }
   }
 
-  void _streamResponse(String text, String id) {
-    setState(() {
-      _streaming = true;
-      _streamText = "";
-    });
-
-    int pos = 0;
-    _streamTimer = Timer.periodic(const Duration(milliseconds: 24), (timer) {
-      pos += (math.Random().nextInt(3) + 2); // Stream 2 to 4 chars
-      if (pos >= text.length) {
-        timer.cancel();
-        setState(() {
-          _messages.add(
-            Message(
-              id: id,
-              role: "assistant",
-              content: text,
-              ts: DateTime.now(),
-            ),
-          );
-          _streamText = "";
-          _streaming = false;
-        });
-        _scrollToBottom();
-      } else {
-        setState(() {
-          _streamText = text.substring(0, pos);
-        });
-        _scrollToBottom();
-      }
-    });
-  }
-
-  void _send([String? overrideText]) {
+  Future<void> _send([String? overrideText]) async {
     final text = (overrideText ?? _inputController.text).trim();
-    if (text.isEmpty || _typing || _streaming) return;
+    if (text.isEmpty || _typing || _streaming || _isLoadingModel) return;
 
     _inputController.clear();
     setState(() {
       _messages.add(
-        Message(
+        ChatMessage(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           role: "user",
           content: text,
@@ -160,35 +164,78 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     });
     _scrollToBottom();
 
-    // Simulate thinking delay
-    final thinkingDelay = Duration(
-      milliseconds: 900 + math.Random().nextInt(600),
-    );
-    Future.delayed(thinkingDelay, () {
-      if (!mounted) return;
+    if (_chat == null) {
       setState(() {
         _typing = false;
+        _messages.add(
+          ChatMessage(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            role: "assistant",
+            content: "Sorry, the AI model is not loaded yet.",
+            ts: DateTime.now(),
+          ),
+        );
       });
+      _scrollToBottom();
+      return;
+    }
 
-      final lowercaseQuery = text.toLowerCase();
-      String responseText = _predefinedResponses[0];
-      if (lowercaseQuery.contains("code") ||
-          lowercaseQuery.contains("function") ||
-          lowercaseQuery.contains("debug")) {
-        responseText = _predefinedResponses[1];
-      } else if (lowercaseQuery.contains("quantum") ||
-          lowercaseQuery.contains("explain")) {
-        responseText = _predefinedResponses[2];
-      } else if (lowercaseQuery.contains("email") ||
-          lowercaseQuery.contains("write")) {
-        responseText = _predefinedResponses[3];
+    try {
+      await _chat!.addQueryChunk(Message.text(text: text, isUser: true));
+
+      setState(() {
+        _typing = false;
+        _streaming = true;
+        _streamText = "";
+      });
+      _scrollToBottom();
+
+      final stream = _chat!.generateChatResponseAsync();
+      await for (final response in stream) {
+        if (!mounted) break;
+        if (response is TextResponse) {
+          setState(() {
+            _streamText += response.token;
+          });
+          _scrollToBottom();
+        }
       }
 
-      _streamResponse(
-        responseText,
-        (DateTime.now().millisecondsSinceEpoch + 1).toString(),
-      );
-    });
+      if (mounted) {
+        setState(() {
+          if (_streamText.isNotEmpty) {
+            _messages.add(
+              ChatMessage(
+                id: DateTime.now().millisecondsSinceEpoch.toString(),
+                role: "assistant",
+                content: _streamText,
+                ts: DateTime.now(),
+              ),
+            );
+          }
+          _streaming = false;
+          _streamText = "";
+        });
+        _scrollToBottom();
+      }
+    } catch (e) {
+      debugPrint("Error sending message: $e");
+      if (mounted) {
+        setState(() {
+          _typing = false;
+          _streaming = false;
+          _messages.add(
+            ChatMessage(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              role: "assistant",
+              content: "An error occurred: $e",
+              ts: DateTime.now(),
+            ),
+          );
+        });
+        _scrollToBottom();
+      }
+    }
   }
 
   @override
@@ -353,81 +400,86 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           border: Border.all(color: border),
           boxShadow: JemenaiTheme.shadowFloat(isDark),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children:
-              _modelsList.map((m) {
-                final isSelected = m == _model;
-                return InkWell(
-                  onTap: () {
-                    setState(() {
-                      _model = m;
-                      _showModels = false;
-                    });
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 32,
-                          height: 32,
-                          decoration: BoxDecoration(
-                            gradient:
-                                isDark
-                                    ? JemenaiTheme.gradSubtleDark
-                                    : JemenaiTheme.gradSubtleLight,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Icon(
-                            Icons.auto_awesome,
-                            size: 14,
-                            color: theme.colorScheme.primary,
-                          ),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.4),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children:
+                  _modelsList.map((m) {
+                    final isSelected = m == _model;
+                    return InkWell(
+                      onTap: () {
+                        setState(() {
+                          _model = m;
+                          _showModels = false;
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                m,
-                                style: JemenaiTheme.fontBody(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.bold,
-                                  color: foreColor,
-                                ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 32,
+                              height: 32,
+                              decoration: BoxDecoration(
+                                gradient:
+                                    isDark
+                                        ? JemenaiTheme.gradSubtleDark
+                                        : JemenaiTheme.gradSubtleLight,
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                              Text(
-                                'On-device',
-                                style: JemenaiTheme.fontBody(
-                                  fontSize: 10,
-                                  color: jc.mutedForeground,
-                                ),
+                              child: Icon(
+                                Icons.auto_awesome,
+                                size: 14,
+                                color: theme.colorScheme.primary,
                               ),
-                            ],
-                          ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    m,
+                                    style: JemenaiTheme.fontBody(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                      color: foreColor,
+                                    ),
+                                  ),
+                                  Text(
+                                    'On-device',
+                                    style: JemenaiTheme.fontBody(
+                                      fontSize: 10,
+                                      color: jc.mutedForeground,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (isSelected)
+                              Icon(
+                                Icons.done_all,
+                                size: 16,
+                                color: theme.colorScheme.primary,
+                              ),
+                          ],
                         ),
-                        if (isSelected)
-                          Icon(
-                            Icons.done_all,
-                            size: 16,
-                            color: theme.colorScheme.primary,
-                          ),
-                      ],
-                    ),
-                  ),
-                );
-              }).toList(),
+                      ),
+                    );
+                  }).toList(),
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildMessageBubble(Message msg) {
+  Widget _buildMessageBubble(ChatMessage msg) {
     final theme = Theme.of(context);
     final jc = theme.jColors;
     final isDark = theme.brightness == Brightness.dark;
@@ -778,15 +830,24 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                           children:
                               _showAttachments
                                   ? [
-                                    _buildInputMediaBtn(Icons.image, mutedFore),
+                                    if (_currentAIModel.inputModalities
+                                        .contains(AIModality.image)) ...[
+                                      _buildInputMediaBtn(
+                                        Icons.image,
+                                        mutedFore,
+                                      ),
+                                    ],
                                     _buildInputMediaBtn(
                                       Icons.attach_file,
                                       mutedFore,
                                     ),
-                                    _buildInputMediaBtn(
-                                      Icons.camera_alt,
-                                      mutedFore,
-                                    ),
+                                    if (_currentAIModel.inputModalities
+                                        .contains(AIModality.image)) ...[
+                                      _buildInputMediaBtn(
+                                        Icons.camera_alt,
+                                        mutedFore,
+                                      ),
+                                    ],
                                   ]
                                   : [],
                         ),
@@ -837,13 +898,16 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   // Mic & Send
                   Row(
                     children: [
-                      _buildInputMediaBtn(
-                        Icons.mic,
-                        mutedFore,
-                        onTap: () {
-                          AppRouter.push(AppRouteString.voice);
-                        },
-                      ),
+                      if (_currentAIModel.inputModalities.contains(
+                        AIModality.audio,
+                      ))
+                        _buildInputMediaBtn(
+                          Icons.mic,
+                          mutedFore,
+                          onTap: () {
+                            AppRouter.push(AppRouteString.voice);
+                          },
+                        ),
                       const SizedBox(width: 4),
                       InkWell(
                         onTap:
@@ -1047,20 +1111,32 @@ class MarkdownBodyText extends StatelessWidget {
     final jc = theme.jColors;
     final textStyleColor = isUser ? Colors.white : theme.colorScheme.onSurface;
 
-    // Basic Tokenizer mimicking the React splitter
-    // regex splits: code blocks ```...```, bold **...**, italics *...*, and dividers ---...---
-    final parts = content.split(
-      RegExp(r'(```[\s\S]*?```|\*\*[\s\S]*?\*\*|\*[^*]+\*|---[\s\S]*?---)'),
+    final regex = RegExp(
+      r'(```[\s\S]*?(?:```|$)|\*\*[\s\S]*?(?:\*\*|$)|\*[^*]+(?:\*|$)|---[\s\S]*?(?:---|$))',
     );
+    final matches = regex.allMatches(content);
+    int currentIndex = 0;
+    final parts = <String>[];
+    for (final match in matches) {
+      if (match.start > currentIndex) {
+        parts.add(content.substring(currentIndex, match.start));
+      }
+      parts.add(match.group(0)!);
+      currentIndex = match.end;
+    }
+    if (currentIndex < content.length) {
+      parts.add(content.substring(currentIndex));
+    }
 
     List<Widget> spans = [];
 
     for (var part in parts) {
       if (part.isEmpty) continue;
 
-      if (part.startsWith('```') && part.endsWith('```')) {
+      if (part.startsWith('```')) {
         // Code Block
-        final inner = part.substring(3, part.length - 3);
+        int endTruncate = part.endsWith('```') && part.length >= 6 ? 3 : 0;
+        final inner = part.substring(3, part.length - endTruncate);
         final lines = inner.split('\n');
         String lang = "code";
         String code = inner;
@@ -1071,9 +1147,10 @@ class MarkdownBodyText extends StatelessWidget {
           code = lines.sublist(1).join('\n');
         }
         spans.add(_buildCodeBlock(code, lang));
-      } else if (part.startsWith('**') && part.endsWith('**')) {
+      } else if (part.startsWith('**') && part.length >= 2) {
         // Bold Text
-        final text = part.substring(2, part.length - 2);
+        int endTruncate = part.endsWith('**') && part.length >= 4 ? 2 : 0;
+        final text = part.substring(2, part.length - endTruncate);
         spans.add(
           Text(
             text,
@@ -1085,9 +1162,10 @@ class MarkdownBodyText extends StatelessWidget {
             ),
           ),
         );
-      } else if (part.startsWith('*') && part.endsWith('*')) {
+      } else if (part.startsWith('*') && part.length >= 1 && part != '*') {
         // Italic Text
-        final text = part.substring(1, part.length - 1);
+        int endTruncate = part.endsWith('*') && part.length >= 2 ? 1 : 0;
+        final text = part.substring(1, part.length - endTruncate);
         spans.add(
           Text(
             text,
@@ -1099,9 +1177,10 @@ class MarkdownBodyText extends StatelessWidget {
             ).copyWith(fontStyle: FontStyle.italic),
           ),
         );
-      } else if (part.startsWith('---') && part.endsWith('---')) {
+      } else if (part.startsWith('---') && part.length >= 3) {
         // Section divider block
-        final text = part.substring(3, part.length - 3).trim();
+        int endTruncate = part.endsWith('---') && part.length >= 6 ? 3 : 0;
+        final text = part.substring(3, part.length - endTruncate).trim();
         spans.add(
           Container(
             margin: const EdgeInsets.symmetric(vertical: 8),

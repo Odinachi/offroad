@@ -46,8 +46,13 @@ class DashboardState extends State<Dashboard>
           children: [
             TabBarView(
               controller: _tabController,
-              children: const [
-                HomeScreen(),
+              children: [
+                HomeScreen(
+                  callback: (a) {
+                    _tabController.animateTo(a);
+                    navValue.value = a;
+                  },
+                ),
                 ModelsStoreScreen(),
                 StorageDashboardScreen(),
                 SettingsScreen(),
@@ -107,10 +112,7 @@ class DashboardState extends State<Dashboard>
                             icon: Assets.svg.home.svg(
                               width: 23,
                               height: 23,
-                              color:
-                                  value == 0
-                                      ? jc.jmIndigo
-                                      : AppColors.grey,
+                              color: value == 0 ? jc.jmIndigo : AppColors.grey,
                             ),
                             text: "Home",
                           ),
@@ -119,10 +121,7 @@ class DashboardState extends State<Dashboard>
                             icon: Assets.svg.store.svg(
                               width: 23,
                               height: 23,
-                              color:
-                                  value == 1
-                                      ? jc.jmIndigo
-                                      : AppColors.grey,
+                              color: value == 1 ? jc.jmIndigo : AppColors.grey,
                             ),
                             text: "Models",
                           ),
@@ -131,10 +130,7 @@ class DashboardState extends State<Dashboard>
                             icon: Assets.svg.hardDrive.svg(
                               width: 23,
                               height: 23,
-                              color:
-                                  value == 2
-                                      ? jc.jmIndigo
-                                      : AppColors.grey,
+                              color: value == 2 ? jc.jmIndigo : AppColors.grey,
                             ),
                             text: "Storage",
                           ),
@@ -143,10 +139,7 @@ class DashboardState extends State<Dashboard>
                             icon: Assets.svg.settings.svg(
                               width: 23,
                               height: 23,
-                              color:
-                                  value == 3
-                                      ? jc.jmIndigo
-                                      : AppColors.grey,
+                              color: value == 3 ? jc.jmIndigo : AppColors.grey,
                             ),
                             text: "Settings",
                           ),

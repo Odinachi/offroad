@@ -350,16 +350,15 @@ final List<AIModel> models = [
   ),
   AIModel(
     url:
-        "https://huggingface.co/litert-community/Qwen2.5-1.5B-Instruct/blob/main/Qwen2.5-1.5B-Instruct_seq128_q8_ekv1280.tflite",
+        "https://huggingface.co/litert-community/Qwen2.5-1.5B-Instruct/blob/main/Qwen2.5-1.5B-Instruct_multi-prefill-seq_q8_ekv1280.task",
     name: "Qwen2.5 1.5B Instruct",
     maker: "Alibaba",
     specialty: "General Assistant",
     description:
         "Alibaba's 1.5B instruction-tuned model from the Qwen2.5 series. Strong at coding, maths, and structured output (JSON). Supports 29+ languages, long-text generation over 8K tokens, and a 32K context window. A reliable mid-range edge model.",
-    sizeMb: 1570,
-    ramGB: 4,
+    sizeMb: 1640,
+    ramGB: 2,
     modelType: ModelType.qwen,
-    fileType: ModelFileType.binary,
     compactibility: [
       "iPhone 13+",
       "Pixel 7+",
@@ -380,7 +379,7 @@ final List<AIModel> models = [
   ),
   AIModel(
     url:
-        "https://huggingface.co/litert-community/Qwen2.5-0.5B-Instruct/blob/main/Qwen2.5-0.5B-Instruct_seq128_q8_ekv1280.tflite",
+        "https://huggingface.co/litert-community/Qwen2.5-0.5B-Instruct/blob/main/Qwen2.5-0.5B-Instruct_multi-prefill-seq_q8_ekv1280.task",
     name: "Qwen2.5 0.5B Instruct",
     maker: "Alibaba",
     specialty: "General Assistant",
@@ -389,7 +388,6 @@ final List<AIModel> models = [
     sizeMb: 513,
     ramGB: 1,
     modelType: ModelType.qwen,
-    fileType: ModelFileType.binary,
     compactibility: [
       "iPhone 12+",
       "Pixel 6+",
@@ -412,16 +410,15 @@ final List<AIModel> models = [
   ),
   AIModel(
     url:
-        "https://huggingface.co/litert-community/SmolLM-135M-Instruct/blob/main/SmolLM-135M-Instruct_seq128_q8_ekv1280.tflite",
+        "https://huggingface.co/litert-community/SmolLM-135M-Instruct/blob/main/SmolLM-135M-Instruct_multi-prefill-seq_q8_ekv1280.task",
     name: "SmolLM 135M Instruct",
     maker: "HuggingFace",
-    specialty: "On-Device Inference",
+    specialty: "Lightweight Chat",
     description:
-        "HuggingFace's ultra-compact 135M model from the SmolLM series, trained on the curated SmolLM-Corpus of synthetic textbooks and code. English-focused with a 2K context window. Suited for simple instruction following, text completion, and classification in memory-critical environments.",
-    sizeMb: 148,
+        "An extremely compact 135M parameter model from HuggingFace, trained on Cosmopedia v2 and Python Edu. Highly capable for its size but suited only for very simple prompts, basic summarisation, and testing. English only.",
+    sizeMb: 140,
     ramGB: 1,
     modelType: ModelType.general,
-    fileType: ModelFileType.binary,
     compactibility: [
       "iPhone 12+",
       "Pixel 6+",
@@ -504,5 +501,30 @@ final List<AIModel> models = [
     outputModalities: [AIModality.text],
     capabilities: [AICapability.thinking],
     image: Assets.png.deepseek,
+  ),
+  AIModel(
+    url:
+        "https://huggingface.co/litert-community/FastVLM-0.5B/blob/main/FastVLM-0.5B.litertlm",
+    name: "FastVLM 0.5B",
+    maker: "Apple",
+    specialty: "Vision-Language",
+    description:
+        "FastVLM is an efficient vision-language model designed for on-device applications. It provides strong multimodal understanding (image + text) with extremely low latency due to its 0.5B parameter size.",
+    sizeMb: 550,
+    ramGB: 2,
+    modelType: ModelType.general,
+    fileType: ModelFileType.litertlm,
+    image: Assets.png.apple,
+    compactibility: [
+      "iPhone 12+",
+      "Pixel 6+",
+      "Galaxy S21+",
+      "Galaxy A53+",
+      "OnePlus 9+",
+      "Xiaomi 11+",
+    ],
+    inputModalities: [AIModality.text, AIModality.image],
+    outputModalities: [AIModality.text],
+    capabilities: [AICapability.vision],
   ),
 ];

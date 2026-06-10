@@ -75,12 +75,14 @@ final class PngAssets {
   final ImageAsset gemma;
   final ImageAsset qwen;
   final ImageAsset microsoft;
+  final ImageAsset apple;
 
   const PngAssets({
     this.deepseek = const ImageAsset('assets/pngs/deepseek.png'),
     this.gemma = const ImageAsset('assets/pngs/gemma.png'),
     this.qwen = const ImageAsset('assets/pngs/qwen.png'),
     this.microsoft = const ImageAsset('assets/pngs/microsoft.png'),
+    this.apple = const ImageAsset('assets/pngs/apple.png'),
   });
 }
 
