@@ -44,25 +44,11 @@ class _HomeScreenState extends State<HomeScreen> {
     },
 
     {
-      'id': 'ai-image',
-      'icon': Icons.image,
-      'label': 'AI Image',
-      'accent': const Color(0xFFF472B6),
-      'darkBg': const Color(0xFF2D0A20),
-    },
-    {
       'id': 'voice-to-text',
       'icon': Icons.mic,
       'label': 'Voice-to-Text',
       'accent': const Color(0xFF34D399),
       'darkBg': const Color(0xFF022016),
-    },
-    {
-      'id': 'doc-analysis',
-      'icon': Icons.description,
-      'label': 'Doc Analysis',
-      'accent': const Color(0xFFFBBF24),
-      'darkBg': const Color(0xFF201800),
     },
 
     {
@@ -72,27 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'accent': const Color(0xFFFB923C),
       'darkBg': const Color(0xFF1E0A00),
     },
-    {
-      'id': 'translate',
-      'icon': Icons.translate,
-      'label': 'Translate',
-      'accent': const Color(0xFF60A5FA),
-      'darkBg': const Color(0xFF061428),
-    },
-    {
-      'id': 'explain-code',
-      'icon': Icons.code,
-      'label': 'Explain Code',
-      'accent': const Color(0xFF4ADE80),
-      'darkBg': const Color(0xFF021808),
-    },
-    {
-      'id': 'pdf-summarizer',
-      'icon': Icons.find_in_page,
-      'label': 'PDF Summarizer',
-      'accent': const Color(0xFFE879F9),
-      'darkBg': const Color(0xFF220A2C),
-    },
+
     {
       'id': 'brainstorm',
       'icon': Icons.lightbulb_outline,
@@ -106,14 +72,6 @@ class _HomeScreenState extends State<HomeScreen> {
       'label': 'Email Writer',
       'accent': const Color(0xFF38BDF8),
       'darkBg': const Color(0xFF04141E),
-    },
-
-    {
-      'id': 'resume-analyzer',
-      'icon': Icons.assignment_turned_in,
-      'label': 'Resume Analyzer',
-      'accent': const Color(0xFFA78BFA),
-      'darkBg': const Color(0xFF14063C),
     },
   ];
 

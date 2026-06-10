@@ -6,7 +6,6 @@ import '../../features/auth/views/onboarding_screen.dart';
 import '../../features/ai/views/voice_chat_screen.dart';
 import '../../features/ai/views/ai_chat_list_screen.dart';
 import '../../features/ai/views/chat_screen.dart';
-import '../../features/ai/views/quick_action_screen.dart';
 
 class AppRouter {
   static final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
@@ -22,13 +21,7 @@ class AppRouter {
       AppRouteString.voice => const VoiceChatScreen(),
       AppRouteString.auth => const AuthScreen(),
       AppRouteString.dashboard => const Dashboard(),
-      AppRouteString.quickAction => () {
-        final map = args as Map<String, dynamic>? ?? {};
-        return QuickActionScreen(
-          action: map['action'] as String? ?? 'text-assistant',
-          label: map['label'] as String? ?? 'AI Text Assistant',
-        );
-      }(),
+
       _ => const OnboardingScreen(),
     };
     return CupertinoPageRoute<void>(builder: (_) => page, settings: settings);
