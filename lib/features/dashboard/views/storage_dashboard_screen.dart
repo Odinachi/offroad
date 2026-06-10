@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../ai/model/ai_model.dart';
+import '../../ai/view_models/model_download_cubit.dart';
 import '../../../shared/theme.dart';
 
 class StorageDashboardScreen extends StatefulWidget {
@@ -14,17 +17,14 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
   final double _totalGB = 128.0;
   final double _otherGB = 38.4;
   final double _offroadGB = 1.2;
-  final Set<String> _deleted = {};
 
-  final List<Map<String, dynamic>> _modelsStorage = [
-    {'name': "Llama 3.2 3B", 'gb': 2.0, 'color': const Color(0xFF818CF8)},
-    {'name': "Phi-3 Mini", 'gb': 1.8, 'color': const Color(0xFFA78BFA)},
-    {
-      'name': "Mistral 7B*",
-      'gb': 2.8,
-      'color': const Color(0xFF38BDF8),
-      'partial': true,
-    },
+  final List<Color> _modelColors = [
+    const Color(0xFF818CF8),
+    const Color(0xFFA78BFA),
+    const Color(0xFF38BDF8),
+    const Color(0xFF10B981),
+    const Color(0xFFF43F5E),
+    const Color(0xFFF59E0B),
   ];
 
   @override
@@ -37,15 +37,37 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
     final cardBg = jc.card;
     final border = jc.border;
 
-    // Filter active items
-    final activeModels =
-        _modelsStorage.where((m) => !_deleted.contains(m['name'])).toList();
+    final cubit = context.watch<ModelDownloadCubit>();
+
+    final List<Map<String, dynamic>> activeModels = [];
+    int colorIndex = 0;
+
+    for (final model in models) {
+      final status = cubit.statusFor(model.id);
+      if (status.phase == DownloadPhase.installed ||
+          status.phase == DownloadPhase.downloading) {
+        activeModels.add({
+          'model': model,
+          'name': model.name,
+          'gb': model.sizeGB,
+          'color': _modelColors[colorIndex % _modelColors.length],
+          'partial': status.phase == DownloadPhase.downloading,
+          'progress': status.progress,
+        });
+        colorIndex++;
+      }
+    }
 
     // Recompute sizes
-    final double aiGB = activeModels.fold(
-      0.0,
-      (acc, m) => acc + (m['gb'] as double),
-    );
+    final double aiGB = activeModels.fold(0.0, (acc, m) {
+      if (m['partial'] == true) {
+        return acc +
+            (m['gb'] as num).toDouble() *
+                ((m['progress'] as num?)?.toDouble() ?? 0) /
+                100;
+      }
+      return acc + (m['gb'] as num).toDouble();
+    });
     final double usedGB = aiGB + _otherGB + _offroadGB;
     final double freeGB = _totalGB - usedGB;
     final double usedPct = (usedGB / _totalGB) * 100;
@@ -223,9 +245,6 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
               foreColor,
               mutedFore,
             ),
-
-            // Tips Section
-            _buildTipsSection(foreColor, mutedFore),
           ],
         ),
       ),
@@ -362,7 +381,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                                     activeModels.map((m) {
                                       final ratio =
                                           totalModelsGB > 0
-                                              ? (m['gb'] as double) /
+                                              ? (m['gb'] as num).toDouble() /
                                                   totalModelsGB
                                               : 0;
                                       return Expanded(
@@ -389,8 +408,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                   spacing: 12,
                   runSpacing: 6,
                   children:
-                      _modelsStorage.map((m) {
-                        final isAct = !_deleted.contains(m['name']);
+                      activeModels.map((m) {
                         return Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -398,10 +416,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                               width: 8,
                               height: 8,
                               decoration: BoxDecoration(
-                                color:
-                                    isAct
-                                        ? (m['color'] as Color)
-                                        : mutedFore.withOpacity(0.4),
+                                color: m['color'] as Color,
                                 borderRadius: BorderRadius.circular(2),
                               ),
                             ),
@@ -413,12 +428,8 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                                   .join(' '),
                               style: JemenaiTheme.fontBody(
                                 fontSize: 11,
-                                color:
-                                    isAct
-                                        ? foreColor
-                                        : mutedFore.withOpacity(0.6),
-                                fontWeight:
-                                    isAct ? FontWeight.bold : FontWeight.normal,
+                                color: foreColor,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ],
@@ -436,244 +447,135 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Column(
             children:
-                _modelsStorage.map((m) {
-                  final isDel = _deleted.contains(m['name']);
+                activeModels.map((m) {
                   final isPartial = m['partial'] as bool? ?? false;
                   final color = m['color'] as Color;
+                  final progress = (m['progress'] as num?)?.toDouble() ?? 0.0;
+                  final aiModel = m['model'] as AIModel;
 
-                  return AnimatedCrossFade(
-                    duration: const Duration(milliseconds: 250),
-                    firstCurve: Curves.easeInOut,
-                    secondCurve: Curves.easeInOut,
-                    sizeCurve: Curves.easeInOut,
-                    crossFadeState:
-                        isDel
-                            ? CrossFadeState.showSecond
-                            : CrossFadeState.showFirst,
-                    secondChild: const SizedBox(
-                      height: 0,
-                      width: double.infinity,
-                    ),
-                    firstChild: Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: cardBg,
-                          borderRadius: BorderRadius.circular(50),
-                          border: Border.all(color: border),
-                          boxShadow: JemenaiTheme.shadowCard(isDark),
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 36,
-                              height: 36,
-                              decoration: BoxDecoration(
-                                color: color.withOpacity(0.12),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Icon(
-                                Icons.flash_on,
-                                color: color,
-                                size: 16,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    m['name'] as String,
-                                    style: JemenaiTheme.fontBody(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.bold,
-                                      color: foreColor,
-                                    ),
-                                  ),
-                                  Text(
-                                    '${(m['gb'] as double).toStringAsFixed(1)} GB${isPartial ? " (downloading)" : ""}',
-                                    style: JemenaiTheme.fontBody(
-                                      fontSize: 11,
-                                      color: mutedFore,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  _deleted.add(m['name'] as String);
-                                });
-                              },
-                              icon: Icon(
-                                Icons.delete_outline,
-                                size: 16,
-                                color: theme.colorScheme.error,
-                              ),
-                              style: IconButton.styleFrom(
-                                backgroundColor: theme.colorScheme.error
-                                    .withOpacity(0.08),
-                                shape: RoundedRectangleBorder(
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: cardBg,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: border),
+                        boxShadow: JemenaiTheme.shadowCard(isDark),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                width: 36,
+                                height: 36,
+                                decoration: BoxDecoration(
+                                  color: color.withOpacity(0.12),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                padding: const EdgeInsets.all(8),
+                                child: Icon(
+                                  Icons.flash_on,
+                                  color: color,
+                                  size: 16,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      m['name'] as String,
+                                      style: JemenaiTheme.fontBody(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold,
+                                        color: foreColor,
+                                      ),
+                                    ),
+                                    Text(
+                                      '${(m['gb'] as num).toDouble().toStringAsFixed(1)} GB',
+                                      style: JemenaiTheme.fontBody(
+                                        fontSize: 11,
+                                        color: mutedFore,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (isPartial) ...[
+                                Text(
+                                  '${progress.toInt()}%',
+                                  style: JemenaiTheme.fontBody(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: theme.colorScheme.primary,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                IconButton(
+                                  onPressed: () {
+                                    context
+                                        .read<ModelDownloadCubit>()
+                                        .cancelDownload(aiModel.id);
+                                  },
+                                  icon: Icon(
+                                    Icons.close,
+                                    size: 16,
+                                    color: theme.colorScheme.error,
+                                  ),
+                                  style: IconButton.styleFrom(
+                                    backgroundColor: theme.colorScheme.error
+                                        .withOpacity(0.08),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    padding: const EdgeInsets.all(8),
+                                  ),
+                                ),
+                              ] else
+                                IconButton(
+                                  onPressed: () {
+                                    context
+                                        .read<ModelDownloadCubit>()
+                                        .deleteModel(aiModel);
+                                  },
+                                  icon: Icon(
+                                    Icons.delete_outline,
+                                    size: 16,
+                                    color: theme.colorScheme.error,
+                                  ),
+                                  style: IconButton.styleFrom(
+                                    backgroundColor: theme.colorScheme.error
+                                        .withOpacity(0.08),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    padding: const EdgeInsets.all(8),
+                                  ),
+                                ),
+                            ],
+                          ),
+                          if (isPartial) ...[
+                            const SizedBox(height: 12),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(4),
+                              child: LinearProgressIndicator(
+                                value: progress / 100,
+                                backgroundColor: jc.secondaryFill,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  color,
+                                ),
+                                minHeight: 6,
                               ),
                             ),
                           ],
-                        ),
+                        ],
                       ),
                     ),
                   );
                 }).toList(),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTipsSection(Color foreColor, Color mutedFore) {
-    final theme = Theme.of(context);
-    final jc = theme.jColors;
-    final isDark = theme.brightness == Brightness.dark;
-
-    return Column(
-      children: [
-        // Tip 1: Optimize Storage
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 6.0),
-          child: Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: jc.card,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: jc.border),
-              boxShadow: JemenaiTheme.shadowCard(isDark),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: Colors.amber.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.trending_down,
-                    color: Colors.amber,
-                    size: 18,
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Optimize Storage',
-                        style: JemenaiTheme.fontBody(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          color: foreColor,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        'TinyLlama (600 MB) offers a 4x storage saving over larger models for everyday tasks.',
-                        style: JemenaiTheme.fontBody(
-                          fontSize: 11,
-                          color: jc.mutedForeground,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      InkWell(
-                        onTap: () {},
-                        child: Text(
-                          'Explore lightweight models →',
-                          style: JemenaiTheme.fontBody(
-                            fontSize: 11.5,
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.primary,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-
-        // Tip 2: Before you download
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 6.0),
-          child: Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: jc.card,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: jc.border),
-              boxShadow: JemenaiTheme.shadowCard(isDark),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.download,
-                    color: Colors.blue,
-                    size: 18,
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Before You Download',
-                        style: JemenaiTheme.fontBody(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          color: foreColor,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        'Check storage impact before committing to a large model download.',
-                        style: JemenaiTheme.fontBody(
-                          fontSize: 11,
-                          color: jc.mutedForeground,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      InkWell(
-                        onTap: () {},
-                        child: Text(
-                          'Browse models →',
-                          style: JemenaiTheme.fontBody(
-                            fontSize: 11.5,
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.primary,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
           ),
         ),
       ],
