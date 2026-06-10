@@ -44,9 +44,10 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
         final cubit = context.read<ModelDownloadCubit>();
 
         // Resolve statuses map
-        final statuses = downloadState is ModelDownloadUpdated
-            ? downloadState.statuses
-            : <String, ModelDownloadStatus>{};
+        final statuses =
+            downloadState is ModelDownloadUpdated
+                ? downloadState.statuses
+                : <String, ModelDownloadStatus>{};
 
         // Count installed and total size
         int downloadedCount = 0;
@@ -60,17 +61,21 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
         }
 
         // Filter models
-        final filteredModels = models.where((model) {
-          if (_searchQuery.isNotEmpty) {
-            final query = _searchQuery.toLowerCase();
-            final matchesName = model.name.toLowerCase().contains(query);
-            final matchesSpecialty =
-                model.specialty.toLowerCase().contains(query);
-            final matchesCompany = model.maker.toLowerCase().contains(query);
-            return matchesName || matchesSpecialty || matchesCompany;
-          }
-          return true;
-        }).toList();
+        final filteredModels =
+            models.where((model) {
+              if (_searchQuery.isNotEmpty) {
+                final query = _searchQuery.toLowerCase();
+                final matchesName = model.name.toLowerCase().contains(query);
+                final matchesSpecialty = model.specialty.toLowerCase().contains(
+                  query,
+                );
+                final matchesCompany = model.maker.toLowerCase().contains(
+                  query,
+                );
+                return matchesName || matchesSpecialty || matchesCompany;
+              }
+              return true;
+            }).toList();
 
         return Container(
           color: theme.scaffoldBackgroundColor,
@@ -94,8 +99,10 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                     const SizedBox(height: 4),
                     Text(
                       '$downloadedCount downloaded · ${totalGB.toStringAsFixed(1)} GB used',
-                      style:
-                          JemenaiTheme.fontBody(fontSize: 12, color: mutedFore),
+                      style: JemenaiTheme.fontBody(
+                        fontSize: 12,
+                        color: mutedFore,
+                      ),
                     ),
                   ],
                 ),
@@ -118,15 +125,20 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                       color: mutedFore,
                     ),
                     prefixIcon: Icon(Icons.search, size: 16, color: mutedFore),
-                    suffixIcon: _searchQuery.isNotEmpty
-                        ? IconButton(
-                            icon: Icon(Icons.close, size: 16, color: mutedFore),
-                            onPressed: () {
-                              _searchController.clear();
-                              setState(() => _searchQuery = "");
-                            },
-                          )
-                        : null,
+                    suffixIcon:
+                        _searchQuery.isNotEmpty
+                            ? IconButton(
+                              icon: Icon(
+                                Icons.close,
+                                size: 16,
+                                color: mutedFore,
+                              ),
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() => _searchQuery = "");
+                              },
+                            )
+                            : null,
                     filled: true,
                     fillColor: jc.muted,
                     contentPadding: const EdgeInsets.symmetric(
@@ -153,8 +165,8 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                   itemCount: filteredModels.length,
                   itemBuilder: (context, index) {
                     final model = filteredModels[index];
-                    final status = statuses[model.id] ??
-                        const ModelDownloadStatus();
+                    final status =
+                        statuses[model.id] ?? const ModelDownloadStatus();
                     final isDl = status.phase == DownloadPhase.installed;
                     final isDling = status.phase == DownloadPhase.downloading;
                     final isFailed = status.phase == DownloadPhase.failed;
@@ -170,13 +182,13 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                           color: cardBg,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: isDling
-                                ? jc.jmIndigo.withOpacity(0.3)
-                                : border,
+                            color:
+                                isDling ? jc.jmIndigo.withOpacity(0.3) : border,
                           ),
-                          boxShadow: isDling
-                              ? JemenaiTheme.glowSm(isDark)
-                              : JemenaiTheme.shadowCard(isDark),
+                          boxShadow:
+                              isDling
+                                  ? JemenaiTheme.glowSm(isDark)
+                                  : JemenaiTheme.shadowCard(isDark),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -200,9 +212,10 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                             width: 44,
                                             height: 44,
                                             decoration: BoxDecoration(
-                                              gradient: isDl
-                                                  ? JemenaiTheme.gradBrand
-                                                  : null,
+                                              gradient:
+                                                  isDl
+                                                      ? JemenaiTheme.gradBrand
+                                                      : null,
                                               color: isDl ? null : jc.muted,
                                               borderRadius:
                                                   BorderRadius.circular(16),
@@ -211,9 +224,10 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                               isDl
                                                   ? Icons.auto_awesome
                                                   : Icons.psychology,
-                                              color: isDl
-                                                  ? Colors.white
-                                                  : mutedFore,
+                                              color:
+                                                  isDl
+                                                      ? Colors.white
+                                                      : mutedFore,
                                               size: 20,
                                             ),
                                           ),
@@ -231,8 +245,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                               children: [
                                                 Text(
                                                   model.name,
-                                                  style:
-                                                      JemenaiTheme.fontBody(
+                                                  style: JemenaiTheme.fontBody(
                                                     fontSize: 14,
                                                     fontWeight: FontWeight.bold,
                                                     color: foreColor,
@@ -240,48 +253,52 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                                 ),
                                                 if (model.popular)
                                                   Container(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                      horizontal: 6,
-                                                      vertical: 2,
-                                                    ),
+                                                    padding:
+                                                        const EdgeInsets.symmetric(
+                                                          horizontal: 6,
+                                                          vertical: 2,
+                                                        ),
                                                     decoration: BoxDecoration(
-                                                      gradient: isDark
-                                                          ? JemenaiTheme
-                                                              .gradSubtleDark
-                                                          : JemenaiTheme
-                                                              .gradSubtleLight,
+                                                      gradient:
+                                                          isDark
+                                                              ? JemenaiTheme
+                                                                  .gradSubtleDark
+                                                              : JemenaiTheme
+                                                                  .gradSubtleLight,
                                                       borderRadius:
                                                           BorderRadius.circular(
-                                                              8),
+                                                            8,
+                                                          ),
                                                     ),
                                                     child: Text(
                                                       'Popular',
-                                                      style: JemenaiTheme
-                                                          .fontBody(
-                                                        fontSize: 10,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: theme
-                                                            .colorScheme
-                                                            .primary,
-                                                      ),
+                                                      style:
+                                                          JemenaiTheme.fontBody(
+                                                            fontSize: 10,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color:
+                                                                theme
+                                                                    .colorScheme
+                                                                    .primary,
+                                                          ),
                                                     ),
                                                   ),
                                                 if (isDl)
                                                   Container(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                      horizontal: 6,
-                                                      vertical: 2,
-                                                    ),
+                                                    padding:
+                                                        const EdgeInsets.symmetric(
+                                                          horizontal: 6,
+                                                          vertical: 2,
+                                                        ),
                                                     decoration: BoxDecoration(
                                                       color: const Color(
                                                         0xFF022016,
                                                       ),
                                                       borderRadius:
                                                           BorderRadius.circular(
-                                                              8),
+                                                            8,
+                                                          ),
                                                       border: Border.all(
                                                         color: const Color(
                                                           0xFF4ADE80,
@@ -290,15 +307,15 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                                     ),
                                                     child: Text(
                                                       '✓ Ready',
-                                                      style: JemenaiTheme
-                                                          .fontBody(
-                                                        fontSize: 10,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: const Color(
-                                                          0xFF4ADE80,
-                                                        ),
-                                                      ),
+                                                      style:
+                                                          JemenaiTheme.fontBody(
+                                                            fontSize: 10,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color: const Color(
+                                                              0xFF4ADE80,
+                                                            ),
+                                                          ),
                                                     ),
                                                   ),
                                               ],
@@ -325,11 +342,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                       ),
 
                                       // Action Button
-                                      _buildActionButton(
-                                        model,
-                                        status,
-                                        cubit,
-                                      ),
+                                      _buildActionButton(model, status, cubit),
                                     ],
                                   ),
                                   const SizedBox(height: 12),
@@ -368,8 +381,9 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                         ),
                                         decoration: BoxDecoration(
                                           color: jc.secondaryFill,
-                                          borderRadius:
-                                              BorderRadius.circular(8),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
                                         ),
                                         child: Row(
                                           mainAxisSize: MainAxisSize.min,
@@ -469,8 +483,9 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                         ),
                                         const SizedBox(height: 6),
                                         ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(4),
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
                                           child: Container(
                                             height: 6,
                                             width: double.infinity,
@@ -480,8 +495,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                               alignment: Alignment.centerLeft,
                                               widthFactor: prog / 100,
                                               child: Container(
-                                                decoration:
-                                                    const BoxDecoration(
+                                                decoration: const BoxDecoration(
                                                   gradient:
                                                       JemenaiTheme.gradBrand,
                                                 ),
@@ -504,8 +518,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                       decoration: BoxDecoration(
                                         color: theme.colorScheme.error
                                             .withOpacity(0.1),
-                                        borderRadius:
-                                            BorderRadius.circular(8),
+                                        borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Row(
                                         children: [
@@ -517,7 +530,9 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                           const SizedBox(width: 6),
                                           Expanded(
                                             child: Text(
-                                              'Download failed. Tap to retry.',
+                                              status.error != null
+                                                  ? '${status.error}'
+                                                  : 'Download failed. Tap to retry.',
                                               style: JemenaiTheme.fontBody(
                                                 fontSize: 11,
                                                 color: theme.colorScheme.error,
@@ -539,38 +554,41 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                         child: Wrap(
                                           spacing: 6,
                                           runSpacing: 4,
-                                          children: model.tags.map((t) {
-                                            return Container(
-                                              margin: const EdgeInsets.only(
-                                                right: 0,
-                                              ),
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                horizontal: 8,
-                                                vertical: 3,
-                                              ),
-                                              decoration: BoxDecoration(
-                                                color: jc.secondaryFill,
-                                                borderRadius:
-                                                    BorderRadius.circular(6),
-                                              ),
-                                              child: Text(
-                                                t,
-                                                style: JemenaiTheme.fontBody(
-                                                  fontSize: 10,
-                                                  color: mutedFore,
-                                                ),
-                                              ),
-                                            );
-                                          }).toList(),
+                                          children:
+                                              model.tags.map((t) {
+                                                return Container(
+                                                  margin: const EdgeInsets.only(
+                                                    right: 0,
+                                                  ),
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 8,
+                                                        vertical: 3,
+                                                      ),
+                                                  decoration: BoxDecoration(
+                                                    color: jc.secondaryFill,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          6,
+                                                        ),
+                                                  ),
+                                                  child: Text(
+                                                    t,
+                                                    style:
+                                                        JemenaiTheme.fontBody(
+                                                          fontSize: 10,
+                                                          color: mutedFore,
+                                                        ),
+                                                  ),
+                                                );
+                                              }).toList(),
                                         ),
                                       ),
                                       InkWell(
                                         onTap: () {
                                           setState(() {
                                             if (isExpanded) {
-                                              _expandedCompat
-                                                  .remove(model.id);
+                                              _expandedCompat.remove(model.id);
                                             } else {
                                               _expandedCompat.add(model.id);
                                             }
@@ -608,7 +626,8 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                 decoration: BoxDecoration(
                                   color: jc.secondaryFill,
                                   border: Border(
-                                      top: BorderSide(color: border)),
+                                    top: BorderSide(color: border),
+                                  ),
                                 ),
                                 padding: const EdgeInsets.all(12),
                                 child: Wrap(
@@ -616,38 +635,41 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                   runSpacing: 8,
                                   children:
                                       model.compactibility.map((device) {
-                                    return Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                        vertical: 4,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: cardBg,
-                                        borderRadius:
-                                            BorderRadius.circular(12),
-                                        border: Border.all(color: border),
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          const Icon(
-                                            Icons.check_circle_outline,
-                                            size: 12,
-                                            color: Color(0xFF4ADE80),
+                                        return Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 4,
                                           ),
-                                          const SizedBox(width: 6),
-                                          Text(
-                                            device,
-                                            style: JemenaiTheme.fontBody(
-                                              fontSize: 11,
-                                              color: theme
-                                                  .colorScheme.onSurface,
+                                          decoration: BoxDecoration(
+                                            color: cardBg,
+                                            borderRadius: BorderRadius.circular(
+                                              12,
                                             ),
+                                            border: Border.all(color: border),
                                           ),
-                                        ],
-                                      ),
-                                    );
-                                  }).toList(),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const Icon(
+                                                Icons.check_circle_outline,
+                                                size: 12,
+                                                color: Color(0xFF4ADE80),
+                                              ),
+                                              const SizedBox(width: 6),
+                                              Text(
+                                                device,
+                                                style: JemenaiTheme.fontBody(
+                                                  fontSize: 11,
+                                                  color:
+                                                      theme
+                                                          .colorScheme
+                                                          .onSurface,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      }).toList(),
                                 ),
                               ),
                           ],
@@ -775,8 +797,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
           onTap: () => cubit.startDownload(model),
           borderRadius: BorderRadius.circular(12),
           child: Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             decoration: BoxDecoration(
               color: theme.colorScheme.error.withOpacity(0.15),
               borderRadius: BorderRadius.circular(12),
@@ -804,8 +825,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
           onTap: () => cubit.startDownload(model),
           borderRadius: BorderRadius.circular(12),
           child: Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             decoration: BoxDecoration(
               gradient: JemenaiTheme.gradBrand,
               borderRadius: BorderRadius.circular(12),
