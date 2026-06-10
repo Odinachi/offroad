@@ -66,6 +66,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   Uint8List? _attachedImageBytes;
 
   InferenceChat? _chat;
+  InferenceModel? _inferenceModel;
+  bool _isThinking = false;
 
   AIModel get _currentAIModel =>
       models.firstWhere((m) => m.name == _model, orElse: () => models.first);
@@ -97,6 +99,25 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     }
   }
 
+  void _toggleThinking() async {
+    if (_inferenceModel == null) return;
+    setState(() {
+      _isThinking = !_isThinking;
+    });
+    try {
+      _chat = await _inferenceModel!.createChat(isThinking: _isThinking);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Reasoning mode: ${_isThinking ? "ON" : "OFF"}'),
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint("Error switching thinking mode: $e");
+    }
+  }
+
   Future<void> _loadModel() async {
     setState(() {
       _isLoadingModel = true;
@@ -116,11 +137,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   ? PreferredBackend.gpu
                   : PreferredBackend.cpu);
 
-      final inferenceModel = await FlutterGemma.getActiveModel(
-        maxTokens: 2048,
+      _inferenceModel = await FlutterGemma.getActiveModel(
+        maxTokens: 1024,
         preferredBackend: preferredBackend,
       );
-      _chat = await inferenceModel.createChat();
+      _chat = await _inferenceModel!.createChat(isThinking: _isThinking);
 
       if (mounted) {
         setState(() {
@@ -260,15 +281,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         setState(() {
           _typing = false;
           _streaming = false;
-          _messages.add(
-            ChatMessage(
-              id: DateTime.now().millisecondsSinceEpoch.toString(),
-              role: "assistant",
-              content: "An error occurred: $e",
-              ts: DateTime.now(),
-            ),
-          );
         });
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("An error occurred: $e")));
         _scrollToBottom();
       }
     }
@@ -909,6 +925,62 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                       ],
                     ),
                   ],
+                ),
+              ),
+            if (_currentAIModel.capabilities?.contains(AICapability.thinking) ??
+                false)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0, left: 4.0),
+                child: GestureDetector(
+                  onTap: _toggleThinking,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color:
+                          _isThinking
+                              ? theme.colorScheme.primary.withOpacity(0.15)
+                              : cardBg,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color:
+                            _isThinking
+                                ? theme.colorScheme.primary.withOpacity(0.5)
+                                : border,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.psychology_alt,
+                          size: 16,
+                          color:
+                              _isThinking
+                                  ? theme.colorScheme.primary
+                                  : jc.mutedForeground,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          "Reasoning",
+                          style: JemenaiTheme.fontBody(
+                            fontSize: 12,
+                            fontWeight:
+                                _isThinking
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                            color:
+                                _isThinking
+                                    ? theme.colorScheme.primary
+                                    : jc.mutedForeground,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             Container(
