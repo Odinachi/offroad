@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:jemenai/features/ai/model/ai_model.dart';
+import 'package:jemenai/features/ai/views/chat_screen.dart';
 import 'package:jemenai/shared/navigator/app_router.dart';
 import 'package:jemenai/shared/navigator/app_route_string.dart';
 import '../../../shared/theme.dart';
@@ -534,7 +536,7 @@ class _QuickActionScreenState extends State<QuickActionScreen> {
               const SizedBox(width: 12),
               Expanded(
                 child: InkWell(
-                  onTap: () => AppRouter.push(AppRouteString.chat, args: {'prompt': _input}),
+                  onTap: () => AppRouter.push(AppRouteString.chat, args: ChatScreenArg(initialPrompt: _input)),
                   borderRadius: BorderRadius.circular(12),
                   child: Container(
                     height: 44,

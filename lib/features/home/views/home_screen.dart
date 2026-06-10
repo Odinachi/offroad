@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jemenai/features/ai/model/ai_model.dart';
+import 'package:jemenai/features/ai/views/chat_screen.dart';
 import 'package:jemenai/services/db_service.dart';
 import 'package:jemenai/shared/assets.dart';
 import 'package:jemenai/shared/navigator/app_route_string.dart';
 import 'package:jemenai/shared/navigator/app_router.dart';
-import 'package:jemenai/features/dashboard/views/dashboard.dart';
-import 'package:jemenai/features/ai/model/ai_model.dart';
 import 'package:jemenai/features/ai/view_models/model_download_cubit.dart';
 import '../../../shared/theme.dart';
 
@@ -528,7 +528,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _askController.clear();
           AppRouter.push(
             AppRouteString.chat,
-            args: {'modelName': model.name, 'prompt': query},
+            args: ChatScreenArg(modelName: model.name, initialPrompt: query),
           );
         } else {
           // Navigate to storage to download
@@ -697,10 +697,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (downloadedModel != null) {
                   AppRouter.push(
                     AppRouteString.chat,
-                    args: {
-                      'modelName': downloadedModel.name,
-                      'prompt': 'Help me with $label',
-                    },
+                    args: ChatScreenArg(
+                      modelName: downloadedModel.name,
+                      initialPrompt: 'Help me with $label',
+                    ),
                   );
                 } else {
                   // No model installed for this, prompt to store
@@ -916,10 +916,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       onTap:
                           () => AppRouter.push(
                             AppRouteString.chat,
-                            args: {
-                              'sessionId': chat['id'],
-                              'modelName': chat['modelName'],
-                            },
+                            args: ChatScreenArg(
+                              sessionId: chat['id'],
+                              modelName: chat['modelName'],
+                            ),
                           ),
                       borderRadius: BorderRadius.circular(20),
                       child: Container(

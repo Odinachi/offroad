@@ -16,11 +16,7 @@ class AppRouter {
     final Widget page = switch (settings.name) {
       AppRouteString.onboarding => const OnboardingScreen(),
       AppRouteString.chat => () {
-        final map = args as Map<String, dynamic>? ?? {};
-        return ChatScreen(
-          modelName: map['modelName'] as String?,
-          initialPrompt: map['prompt'] as String?,
-        );
+        return ChatScreen(args: args as ChatScreenArg?);
       }(),
       AppRouteString.chatsList => ChatsListScreen(),
       AppRouteString.voice => const VoiceChatScreen(),
@@ -38,7 +34,7 @@ class AppRouter {
     return CupertinoPageRoute<void>(builder: (_) => page, settings: settings);
   }
 
-  static Future<T?> push<T>(String routeName, {Map<String, dynamic>? args}) {
+  static Future<T?> push<T>(String routeName, {dynamic args}) {
     return navKey.currentState!.pushNamed<T>(routeName, arguments: args);
   }
 

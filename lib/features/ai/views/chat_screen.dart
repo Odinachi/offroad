@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:jemenai/features/ai/model/chat_message.dart';
 import 'package:uuid/uuid.dart';
 import 'package:jemenai/services/db_service.dart';
 import 'package:jemenai/shared/navigator/app_router.dart';
@@ -10,7 +11,7 @@ import 'package:flutter_gemma/flutter_gemma.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:typed_data';
+
 import '../../../shared/theme.dart';
 import '../model/ai_model.dart';
 import '../view_models/model_download_cubit.dart';
@@ -18,41 +19,12 @@ import '../../dashboard/view_models/app_cubit.dart';
 import 'package:flutter/foundation.dart';
 
 class ChatScreen extends StatefulWidget {
-  final String? modelName;
-  final String? initialPrompt;
-  final String? sessionId;
-  final bool isTab;
+  final ChatScreenArg? args;
 
-  const ChatScreen({
-    super.key,
-    this.modelName,
-    this.initialPrompt,
-    this.sessionId,
-    this.isTab = false,
-  });
+  const ChatScreen({super.key, this.args});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
-}
-
-class ChatMessage {
-  final String id;
-  final String role; // 'user' or 'assistant'
-  String content;
-  final DateTime ts;
-  bool pinned;
-  bool liked;
-  final Uint8List? imageBytes;
-
-  ChatMessage({
-    required this.id,
-    required this.role,
-    required this.content,
-    required this.ts,
-    this.pinned = false,
-    this.liked = false,
-    this.imageBytes,
-  });
 }
 
 class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
@@ -94,17 +66,21 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _model = widget.modelName ?? models.first.name;
-    _currentSessionId = widget.sessionId;
+    _model = widget.args?.modelName ?? models.first.name;
+    _currentSessionId = widget.args?.sessionId;
 
     Future.microtask(() {
-      if (mounted && widget.sessionId != null && !_modelsList.contains(_model)) {
+      if (mounted &&
+          widget.args?.sessionId != null &&
+          !_modelsList.contains(_model)) {
         setState(() => _showModels = true);
       }
     });
 
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels <= 100 && !_isLoadingMoreMessages && _hasMoreMessages) {
+      if (_scrollController.position.pixels <= 100 &&
+          !_isLoadingMoreMessages &&
+          _hasMoreMessages) {
         _loadMoreMessages();
       }
     });
@@ -121,7 +97,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         limit: _messageLimit,
         offset: _messageOffset,
       );
-      
+
       if (olderMessages.isEmpty) {
         setState(() {
           _hasMoreMessages = false;
@@ -130,14 +106,15 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         return;
       }
 
-      final newChats = olderMessages.reversed.map((m) {
-        return ChatMessage(
-          id: m['id'] as String,
-          role: m['role'] as String,
-          content: m['content'] as String,
-          ts: DateTime.fromMillisecondsSinceEpoch(m['createdAt'] as int),
-        );
-      }).toList();
+      final newChats =
+          olderMessages.reversed.map((m) {
+            return ChatMessage(
+              id: m['id'] as String,
+              role: m['role'] as String,
+              content: m['content'] as String,
+              ts: DateTime.fromMillisecondsSinceEpoch(m['createdAt'] as int),
+            );
+          }).toList();
 
       setState(() {
         _messages.insertAll(0, newChats);
@@ -145,11 +122,12 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         if (olderMessages.length < _messageLimit) _hasMoreMessages = false;
         _isLoadingMoreMessages = false;
       });
-      
+
       if (_chat != null) {
-        final List<Message> replayHistory = _messages.map((m) {
-          return Message(text: m.content, isUser: m.role == 'user');
-        }).toList();
+        final List<Message> replayHistory =
+            _messages.map((m) {
+              return Message(text: m.content, isUser: m.role == 'user');
+            }).toList();
         if (replayHistory.isNotEmpty) {
           await _chat!.clearHistory(replayHistory: replayHistory);
         }
@@ -252,9 +230,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           _isLoadingModel = false;
         });
         // Handle initial prompt redirect after model is loaded
-        if (widget.initialPrompt != null && widget.initialPrompt!.isNotEmpty) {
+        if (widget.args?.initialPrompt != null &&
+            widget.args!.initialPrompt!.isNotEmpty) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            _send(widget.initialPrompt!);
+            _send(widget.args!.initialPrompt!);
           });
         }
       }
@@ -447,7 +426,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             child: Row(
               children: [
                 // Back button (hidden if tab)
-                if (!widget.isTab)
+                if (!(widget.args?.isTab ?? false))
                   IconButton(
                     onPressed: () => AppRouter.pop(),
                     icon: Icon(Icons.arrow_back_ios_new, color: foreColor),
@@ -559,7 +538,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                         child: Center(child: CircularProgressIndicator()),
                       );
                     }
-                    final messageIndex = _isLoadingMoreMessages ? index - 1 : index;
+                    final messageIndex =
+                        _isLoadingMoreMessages ? index - 1 : index;
 
                     if (messageIndex < _messages.length) {
                       return _buildMessageBubble(_messages[messageIndex]);
@@ -1020,7 +1000,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     final jc = theme.jColors;
     final mutedFore = jc.mutedForeground;
     final keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
-    final extraPadding = (widget.isTab && !keyboardOpen) ? 80.0 : 0.0;
+    final extraPadding =
+        ((widget.args?.isTab ?? false) && !keyboardOpen) ? 80.0 : 0.0;
     final hasInput =
         _inputController.text.trim().isNotEmpty || _attachedImageBytes != null;
 
@@ -1724,4 +1705,18 @@ class MarkdownBodyText extends StatelessWidget {
       },
     );
   }
+}
+
+class ChatScreenArg {
+  final String? modelName;
+  final String? initialPrompt;
+  final String? sessionId;
+  final bool isTab;
+
+  const ChatScreenArg({
+    this.modelName,
+    this.initialPrompt,
+    this.sessionId,
+    this.isTab = false,
+  });
 }

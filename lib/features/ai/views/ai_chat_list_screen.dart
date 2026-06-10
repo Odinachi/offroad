@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jemenai/features/ai/views/chat_screen.dart';
 import 'package:jemenai/shared/navigator/app_route_string.dart';
 import 'package:jemenai/shared/navigator/app_router.dart';
 import 'package:jemenai/services/db_service.dart';
@@ -156,10 +157,10 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
                                 onTap:
                                     () => AppRouter.push(
                                       AppRouteString.chat,
-                                      args: {
-                                        'sessionId': chat['id'],
-                                        'modelName': chat['modelName'],
-                                      },
+                                      args: ChatScreenArg(
+                                        sessionId: chat['id'],
+                                        modelName: chat['modelName'],
+                                      ),
                                     ),
                                 borderRadius: BorderRadius.circular(20),
                                 child: Container(
