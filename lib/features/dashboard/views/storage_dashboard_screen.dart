@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../ai/model/ai_model.dart';
 import '../../ai/view_models/model_download_cubit.dart';
+import '../../../services/storage_service.dart';
 import '../../../shared/theme.dart';
 
 class StorageDashboardScreen extends StatefulWidget {
@@ -14,9 +15,10 @@ class StorageDashboardScreen extends StatefulWidget {
 
 class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
   // Storage data
-  final double _totalGB = 128.0;
-  final double _otherGB = 38.4;
-  final double _offroadGB = 1.2;
+  double _totalGB = 128.0;
+  double _otherGB = 38.4;
+  double _offroadGB = 1.2;
+  bool _isLoadingStorage = true;
 
   final List<Color> _modelColors = [
     const Color(0xFF818CF8),
@@ -26,6 +28,31 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
     const Color(0xFFF43F5E),
     const Color(0xFFF59E0B),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStorageData();
+  }
+
+  Future<void> _loadStorageData() async {
+    final total = await StorageService.getTotalDiskSpaceGB();
+    final free = await StorageService.getFreeDiskSpaceGB();
+    final usedByDevice = total - free;
+    
+    final appSize = await StorageService.getAppDirectorySizeGB();
+
+    if (mounted) {
+      setState(() {
+        _totalGB = total > 0 ? total : 128.0;
+        _offroadGB = appSize;
+        
+        final other = usedByDevice - appSize;
+        _otherGB = other > 0 ? other : usedByDevice;
+        _isLoadingStorage = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,9 +95,10 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
       }
       return acc + (m['gb'] as num).toDouble();
     });
-    final double usedGB = aiGB + _otherGB + _offroadGB;
-    final double freeGB = _totalGB - usedGB;
-    final double usedPct = (usedGB / _totalGB) * 100;
+    
+    final double usedGB = _otherGB + _offroadGB;
+    final double freeGB = (_totalGB - usedGB) > 0 ? (_totalGB - usedGB) : 0;
+    final double usedPct = _totalGB > 0 ? (usedGB / _totalGB) * 100 : 0;
 
     final String health;
     final Color healthColor;
@@ -215,9 +243,9 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                           ),
                           const SizedBox(height: 8),
                           _buildDonutStatRow(
-                            label: 'Offroad App',
-                            valueText: '${_offroadGB.toStringAsFixed(1)} GB',
-                            pct: (_offroadGB / _totalGB) * 100,
+                            label: 'Offroad DB',
+                            valueText: '${(_offroadGB - aiGB > 0 ? _offroadGB - aiGB : 0).toStringAsFixed(1)} GB',
+                            pct: _totalGB > 0 ? ((_offroadGB - aiGB > 0 ? _offroadGB - aiGB : 0) / _totalGB) * 100 : 0,
                             color: const Color(0xFF10B981),
                           ),
                           const SizedBox(height: 8),

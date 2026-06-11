@@ -1,6 +1,8 @@
 PODS:
   - background_downloader (0.0.1):
     - Flutter
+  - disk_space_2 (0.0.1):
+    - Flutter
   - DKImagePickerController/Core (4.3.9):
     - DKImagePickerController/ImageDataManager
     - DKImagePickerController/Resource
@@ -65,6 +67,7 @@ PODS:
 
 DEPENDENCIES:
   - background_downloader (from `.symlinks/plugins/background_downloader/ios`)
+  - disk_space_2 (from `.symlinks/plugins/disk_space_2/ios`)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - Flutter (from `Flutter`)
   - flutter_gemma (from `.symlinks/plugins/flutter_gemma/ios`)
@@ -87,6 +90,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   background_downloader:
     :path: ".symlinks/plugins/background_downloader/ios"
+  disk_space_2:
+    :path: ".symlinks/plugins/disk_space_2/ios"
   file_picker:
     :path: ".symlinks/plugins/file_picker/ios"
   Flutter:
@@ -108,6 +113,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   background_downloader: a05c77d32a0d70615b9c04577aa203535fc924ff
+  disk_space_2: 4fa92f586ba1577d1c47574134c7441ff184cc6d
   DKImagePickerController: 946cec48c7873164274ecc4624d19e3da4c1ef3c
   DKPhotoGallery: b3834fecb755ee09a593d7c9e389d8b5d6deed60
   file_picker: b159e0c068aef54932bb15dc9fd1571818edaf49
