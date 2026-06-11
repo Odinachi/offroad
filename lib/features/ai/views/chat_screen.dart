@@ -75,7 +75,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           widget.args?.sessionId != null &&
           !_modelsList.contains(_model)) {
         _isResolvingMissingModel = true;
-        setState(() => _showModels = true);
       }
     });
 
