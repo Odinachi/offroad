@@ -1,4 +1,6 @@
 PODS:
+  - audio_waveforms (0.0.1):
+    - Flutter
   - background_downloader (0.0.1):
     - Flutter
   - disk_space_2 (0.0.1):
@@ -38,10 +40,12 @@ PODS:
     - DKImagePickerController/PhotoGallery
     - Flutter
   - Flutter (1.0.0)
-  - flutter_gemma (0.16.4):
+  - flutter_gemma (0.16.5):
     - Flutter
     - MediaPipeTasksGenAI (= 0.10.33)
     - MediaPipeTasksGenAIC (= 0.10.33)
+  - flutter_tts (0.0.1):
+    - Flutter
   - image_picker_ios (0.0.1):
     - Flutter
   - large_file_handler (0.4.0):
@@ -66,11 +70,13 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
+  - audio_waveforms (from `.symlinks/plugins/audio_waveforms/ios`)
   - background_downloader (from `.symlinks/plugins/background_downloader/ios`)
   - disk_space_2 (from `.symlinks/plugins/disk_space_2/ios`)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - Flutter (from `Flutter`)
   - flutter_gemma (from `.symlinks/plugins/flutter_gemma/ios`)
+  - flutter_tts (from `.symlinks/plugins/flutter_tts/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - large_file_handler (from `.symlinks/plugins/large_file_handler/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
@@ -88,6 +94,8 @@ SPEC REPOS:
     - SwiftyGif
 
 EXTERNAL SOURCES:
+  audio_waveforms:
+    :path: ".symlinks/plugins/audio_waveforms/ios"
   background_downloader:
     :path: ".symlinks/plugins/background_downloader/ios"
   disk_space_2:
@@ -98,6 +106,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_gemma:
     :path: ".symlinks/plugins/flutter_gemma/ios"
+  flutter_tts:
+    :path: ".symlinks/plugins/flutter_tts/ios"
   image_picker_ios:
     :path: ".symlinks/plugins/image_picker_ios/ios"
   large_file_handler:
@@ -112,23 +122,25 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
+  audio_waveforms: cd736909ebc6b6a164eb74701d8c705ce3241e1c
   background_downloader: a05c77d32a0d70615b9c04577aa203535fc924ff
   disk_space_2: 4fa92f586ba1577d1c47574134c7441ff184cc6d
   DKImagePickerController: 946cec48c7873164274ecc4624d19e3da4c1ef3c
   DKPhotoGallery: b3834fecb755ee09a593d7c9e389d8b5d6deed60
   file_picker: b159e0c068aef54932bb15dc9fd1571818edaf49
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
-  flutter_gemma: 00a30243ef43c4668ca09c537f3bb696f8ddca1d
-  image_picker_ios: 4f2f91b01abdb52842a8e277617df877e40f905b
+  flutter_gemma: 6bf34a12b45df17e3db9b33db7fea51506c8628f
+  flutter_tts: 91ad1884033cd95ef6e9338754adad54f01f090f
+  image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
   large_file_handler: b0da5998ce84ea647987d9cc2c37d2383eabdca6
   MediaPipeTasksGenAI: 8eed8e6d03fe26d30c4205cb5295ec7b394432ad
   MediaPipeTasksGenAIC: cb098ecea44e248efe8fe7e2f62b4cb0df781802
-  path_provider_foundation: 0b743cbb62d8e47eab856f09262bb8c1ddcfe6ba
+  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
-  shared_preferences_foundation: 5086985c1d43c5ba4d5e69a4e8083a389e2909e6
+  shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
   sqflite_darwin: 5a7236e3b501866c1c9befc6771dfd73ffb8702d
   SwiftyGif: 706c60cf65fa2bc5ee0313beece843c8eb8194d4
-  url_launcher_ios: bb13df5870e8c4234ca12609d04010a21be43dfa
+  url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
 
 PODFILE CHECKSUM: 1850da77952c5c1c982a01c29689a8173a296934
 
