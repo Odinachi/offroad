@@ -41,6 +41,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   final int _messageLimit = 20;
   bool _isLoadingMoreMessages = false;
   bool _hasMoreMessages = true;
+  bool _isResolvingMissingModel = false;
 
   final List<ChatMessage> _messages = [];
   final _inputController = TextEditingController();
@@ -73,6 +74,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       if (mounted &&
           widget.args?.sessionId != null &&
           !_modelsList.contains(_model)) {
+        _isResolvingMissingModel = true;
         setState(() => _showModels = true);
       }
     });
@@ -597,16 +599,34 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     final isSelected = m == _model;
                     return InkWell(
                       onTap: () {
+                        if (_model == m) {
+                          setState(() {
+                            _showModels = false;
+                          });
+                          return;
+                        }
+
                         setState(() {
                           _model = m;
                           _showModels = false;
                         });
-                        if (_currentSessionId != null) {
-                          DatabaseService().updateSessionModel(
-                            _currentSessionId!,
-                            m,
-                          );
+
+                        if (_isResolvingMissingModel) {
+                          _isResolvingMissingModel = false;
+                          if (_currentSessionId != null) {
+                            DatabaseService().updateSessionModel(
+                              _currentSessionId!,
+                              m,
+                            );
+                          }
+                        } else {
+                          // Start a new chat
+                          _currentSessionId = null;
+                          _messages.clear();
+                          _messageOffset = 0;
+                          _hasMoreMessages = true;
                         }
+
                         _loadModel();
                       },
                       child: Container(

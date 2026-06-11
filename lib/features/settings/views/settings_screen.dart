@@ -177,47 +177,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   sub: 'All data stays on-device',
                   showChevron: false,
                 ),
-                _buildNavRow(
-                  icon: Icons.lock,
-                  iBg: const Color(0xFF1E1B4B),
-                  iColor: const Color(0xFF818CF8),
-                  title: 'Local Encryption',
-                  sub: 'AES-256 on all stored data',
-                  rightWidget: const Text(
-                    'Active',
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF4ADE80),
-                    ),
-                  ),
-                  showChevron: false,
-                ),
-                _buildToggleRow(
-                  icon: Icons.public,
-                  iBg: const Color(0xFF0A1E2E),
-                  iColor: const Color(0xFF38BDF8),
-                  title: 'Usage Analytics',
-                  sub: 'Anonymous, local-only statistics',
-                  value: _analytics,
-                  onChanged: (val) => setState(() => _analytics = val),
-                ),
-              ],
-            ),
-
-            // Notifications Section
-            _buildSection(
-              label: 'Notifications',
-              children: [
-                _buildToggleRow(
-                  icon: Icons.notifications_active,
-                  iBg: const Color(0xFF1E1400),
-                  iColor: const Color(0xFFFBBF24),
-                  title: 'Download Alerts',
-                  sub: 'Notify when models finish downloading',
-                  value: _notifs,
-                  onChanged: (val) => setState(() => _notifs = val),
-                ),
               ],
             ),
 
