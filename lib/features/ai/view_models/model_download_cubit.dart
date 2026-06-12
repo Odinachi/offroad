@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gemma/flutter_gemma.dart';
 import 'package:jemenai/services/cache_service.dart';
+import 'package:jemenai/services/db_service.dart';
 
 import '../model/ai_model.dart';
 
@@ -109,6 +110,7 @@ class ModelDownloadCubit extends Cubit<ModelDownloadState> {
   Future<void> deleteModel(AIModel model) async {
     try {
       await FlutterGemma.uninstallModel(model.fileName);
+      await DatabaseService().deleteSessionsByModel(model.name);
     } catch (e) {
       debugPrint('⚠️ Failed to uninstall ${model.name}: $e');
     }

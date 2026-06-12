@@ -3,6 +3,7 @@ import 'package:jemenai/features/ai/views/chat_screen.dart';
 import 'package:jemenai/shared/navigator/app_route_string.dart';
 import 'package:jemenai/shared/navigator/app_router.dart';
 import 'package:jemenai/services/db_service.dart';
+import 'package:jemenai/features/ai/model/ai_model.dart';
 import '../../../shared/theme.dart';
 
 class ChatsListScreen extends StatefulWidget {
@@ -154,14 +155,26 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 10.0),
                               child: InkWell(
-                                onTap:
-                                    () => AppRouter.push(
-                                      AppRouteString.chat,
-                                      args: ChatScreenArg(
-                                        sessionId: chat['id'],
-                                        modelName: chat['modelName'],
-                                      ),
+                                onTap: () {
+                                  final modelName =
+                                      chat['modelName'] as String?;
+                                  final modelExists = models.any(
+                                    (m) => m.name == modelName,
+                                  );
+                                  if (!modelExists) {
+                                    AppRouter.showMessage(
+                                      "This chat's model no longer exists and it can't be accessed.",
+                                    );
+                                    return;
+                                  }
+                                  AppRouter.push(
+                                    AppRouteString.chat,
+                                    args: ChatScreenArg(
+                                      sessionId: chat['id'],
+                                      modelName: chat['modelName'],
                                     ),
+                                  );
+                                },
                                 borderRadius: BorderRadius.circular(20),
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(

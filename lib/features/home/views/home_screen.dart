@@ -871,14 +871,21 @@ class _HomeScreenState extends State<HomeScreen> {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: InkWell(
-                      onTap:
-                          () => AppRouter.push(
-                            AppRouteString.chat,
-                            args: ChatScreenArg(
-                              sessionId: chat['id'],
-                              modelName: chat['modelName'],
-                            ),
+                      onTap: () {
+                        final modelName = chat['modelName'] as String?;
+                        final modelExists = models.any((m) => m.name == modelName);
+                        if (!modelExists) {
+                          AppRouter.showMessage("This chat's model no longer exists and it can't be accessed.");
+                          return;
+                        }
+                        AppRouter.push(
+                          AppRouteString.chat,
+                          args: ChatScreenArg(
+                            sessionId: chat['id'],
+                            modelName: chat['modelName'],
                           ),
+                        );
+                      },
                       borderRadius: BorderRadius.circular(20),
                       child: Container(
                         padding: const EdgeInsets.all(12),

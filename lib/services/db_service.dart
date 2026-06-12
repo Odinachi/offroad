@@ -20,7 +20,14 @@ class DatabaseService {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'offroad_chat.db');
 
-    return await openDatabase(path, version: 1, onCreate: _onCreate);
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: _onCreate,
+      onConfigure: (db) async {
+        await db.execute('PRAGMA foreign_keys = ON');
+      },
+    );
   }
 
   Future<void> _onCreate(Database db, int version) async {
@@ -114,6 +121,32 @@ class DatabaseService {
     await db.delete('chat_sessions', where: 'id = ?', whereArgs: [id]);
   }
 
+  Future<void> deleteSessionsByModel(String modelName) async {
+    final db = await database;
+    await db.transaction((txn) async {
+      final sessions = await txn.query(
+        'chat_sessions',
+        columns: ['id'],
+        where: 'modelName = ?',
+        whereArgs: [modelName],
+      );
+      final sessionIds = sessions.map((s) => s['id'] as String).toList();
+      if (sessionIds.isNotEmpty) {
+        final placeholders = List.filled(sessionIds.length, '?').join(',');
+        await txn.delete(
+          'chat_messages',
+          where: 'sessionId IN ($placeholders)',
+          whereArgs: sessionIds,
+        );
+        await txn.delete(
+          'chat_sessions',
+          where: 'modelName = ?',
+          whereArgs: [modelName],
+        );
+      }
+    });
+  }
+
   // ── Message Methods ──
 
   Future<void> addMessage({
@@ -137,7 +170,11 @@ class DatabaseService {
     await updateSessionTime(sessionId);
   }
 
-  Future<List<Map<String, dynamic>>> getMessages(String sessionId, {int limit = 20, int offset = 0}) async {
+  Future<List<Map<String, dynamic>>> getMessages(
+    String sessionId, {
+    int limit = 20,
+    int offset = 0,
+  }) async {
     final db = await database;
     return await db.query(
       'chat_messages',
