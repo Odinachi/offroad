@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jemenai/features/ai/model/ai_model.dart';
 import 'package:jemenai/features/ai/views/chat_screen.dart';
+import 'package:jemenai/features/ai/views/swipeable_chat_item.dart';
 import 'package:jemenai/services/db_service.dart';
 import 'package:jemenai/shared/assets.dart';
 import 'package:jemenai/shared/navigator/app_route_string.dart';
@@ -817,6 +818,81 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void _confirmDelete(
+    BuildContext context,
+    Map<String, dynamic> chat,
+    int index,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        final theme = Theme.of(context);
+        return AlertDialog(
+          backgroundColor: theme.scaffoldBackgroundColor,
+          title: Text(
+            'Delete Chat',
+            style: JemenaiTheme.fontDisplay(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSurface,
+            ),
+          ),
+          content: Text(
+            'Are you sure you want to delete this conversation? This action cannot be undone.',
+            style: JemenaiTheme.fontBody(
+              fontSize: 14,
+              color: theme.jColors.mutedForeground,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'Cancel',
+                style: JemenaiTheme.fontBody(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                try {
+                  await DatabaseService().deleteSession(chat['id']);
+                  setState(() {
+                    _recentChats.removeAt(index);
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Conversation deleted'),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Failed to delete conversation: $e'),
+                    ),
+                  );
+                }
+              },
+              child: Text(
+                'Delete',
+                style: JemenaiTheme.fontBody(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.error,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _buildRecentChats(
     ThemeData theme,
     bool isDark,
@@ -866,89 +942,97 @@ class _HomeScreenState extends State<HomeScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Column(
-            children:
-                _recentChats.map((chat) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: InkWell(
-                      onTap: () {
-                        final modelName = chat['modelName'] as String?;
-                        final modelExists = models.any((m) => m.name == modelName);
-                        if (!modelExists) {
-                          AppRouter.showMessage("This chat's model no longer exists and it can't be accessed.");
-                          return;
-                        }
-                        AppRouter.push(
-                          AppRouteString.chat,
-                          args: ChatScreenArg(
-                            sessionId: chat['id'],
-                            modelName: chat['modelName'],
-                          ),
+            children: List.generate(_recentChats.length, (index) {
+              final chat = _recentChats[index];
+              return SwipeableChatItem(
+                onDelete: () => _confirmDelete(context, chat, index),
+                bottomMargin: 8.0,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: InkWell(
+                    onTap: () {
+                      final modelName = chat['modelName'] as String?;
+                      final modelExists = models.any(
+                        (m) => m.name == modelName,
+                      );
+                      if (!modelExists) {
+                        AppRouter.showMessage(
+                          "This chat's model no longer exists and it can't be accessed.",
                         );
-                      },
-                      borderRadius: BorderRadius.circular(20),
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: cardBg,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: border),
-                          boxShadow: JemenaiTheme.shadowCard(isDark),
+                        return;
+                      }
+                      AppRouter.push(
+                        AppRouteString.chat,
+                        args: ChatScreenArg(
+                          sessionId: chat['id'],
+                          modelName: chat['modelName'],
                         ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 32,
-                              height: 32,
-                              decoration: BoxDecoration(
-                                gradient:
-                                    isDark
-                                        ? JemenaiTheme.gradSubtleDark
-                                        : JemenaiTheme.gradSubtleLight,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Icon(
-                                Icons.auto_awesome,
-                                size: 14,
-                                color: theme.colorScheme.primary,
-                              ),
+                      );
+                    },
+                    borderRadius: BorderRadius.circular(20),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: cardBg,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: border),
+                        boxShadow: JemenaiTheme.shadowCard(isDark),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 32,
+                            height: 32,
+                            decoration: BoxDecoration(
+                              gradient:
+                                  isDark
+                                      ? JemenaiTheme.gradSubtleDark
+                                      : JemenaiTheme.gradSubtleLight,
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    chat['title'] as String? ?? 'New Chat',
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: JemenaiTheme.fontBody(
-                                      fontSize: 13,
-                                      color: foreColor,
-                                    ),
+                            child: Icon(
+                              Icons.auto_awesome,
+                              size: 14,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  chat['title'] as String? ?? 'New Chat',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: JemenaiTheme.fontBody(
+                                    fontSize: 13,
+                                    color: foreColor,
                                   ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    _timeAgo(chat['updatedAt'] as int),
-                                    style: JemenaiTheme.fontBody(
-                                      fontSize: 11,
-                                      color: mutedFore,
-                                    ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  _timeAgo(chat['updatedAt'] as int),
+                                  style: JemenaiTheme.fontBody(
+                                    fontSize: 11,
+                                    color: mutedFore,
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                            Icon(
-                              Icons.arrow_forward_ios,
-                              size: 16,
-                              color: mutedFore,
-                            ),
-                          ],
-                        ),
+                          ),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                            color: mutedFore,
+                          ),
+                        ],
                       ),
                     ),
-                  );
-                }).toList(),
+                  ),
+                ),
+              );
+            }),
           ),
         ),
       ],
