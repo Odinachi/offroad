@@ -45,6 +45,7 @@ class DashboardState extends State<Dashboard>
         child: Stack(
           children: [
             TabBarView(
+              physics: NeverScrollableScrollPhysics(),
               controller: _tabController,
               children: [
                 HomeScreen(
@@ -84,6 +85,7 @@ class DashboardState extends State<Dashboard>
                       ),
                       height: 60,
                       child: TabBar(
+                        physics: NeverScrollableScrollPhysics(),
                         onTap: (a) => navValue.value = a,
                         splashFactory: NoSplash.splashFactory,
                         overlayColor: WidgetStateProperty.all(
