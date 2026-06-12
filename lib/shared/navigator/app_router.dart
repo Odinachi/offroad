@@ -60,7 +60,10 @@ class AppRouter {
     final context = navKey.currentContext;
     if (context != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(text), behavior: SnackBarBehavior.floating),
+        SnackBar(
+          content: Text(text, maxLines: 3, overflow: TextOverflow.ellipsis),
+          behavior: SnackBarBehavior.floating,
+        ),
       );
     }
   }
