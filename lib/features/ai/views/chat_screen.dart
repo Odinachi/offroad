@@ -158,11 +158,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     try {
       _chat = await _inferenceModel!.createChat(isThinking: _isThinking);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Reasoning mode: ${_isThinking ? "ON" : "OFF"}'),
-          ),
-        );
+        AppRouter.showMessage('Reasoning mode: ${_isThinking ? "ON" : "OFF"}');
       }
     } catch (e) {
       debugPrint("Error switching thinking mode: $e");
@@ -244,9 +240,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         setState(() {
           _isLoadingModel = false;
         });
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Failed to load model: $e')));
+        AppRouter.showMessage("Failed to load model: $e");
       }
     }
   }
@@ -397,9 +391,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           _typing = false;
           _streaming = false;
         });
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("An error occurred: $e")));
+        AppRouter.showMessage("$e");
         _scrollToBottom();
       }
     }
@@ -821,12 +813,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   const SizedBox(width: 8),
                   _buildBubbleAction(Icons.content_copy, () {
                     Clipboard.setData(ClipboardData(text: msg.content));
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Copied to clipboard'),
-                        duration: Duration(seconds: 1),
-                      ),
-                    );
+                    AppRouter.showMessage('Copied to clipboard');
                   }),
 
                   _buildBubbleAction(Icons.volume_up, () {}),
