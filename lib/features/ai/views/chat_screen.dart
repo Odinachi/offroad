@@ -56,11 +56,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   AIModel get _currentAIModel =>
       models.firstWhere((m) => m.name == _model, orElse: () => models.first);
 
-  List<String> get _modelsList {
+  List<AIModel> get _modelsList {
     final cubit = context.read<ModelDownloadCubit>();
     return models
         .where((m) => cubit.statusFor(m.id).phase == DownloadPhase.installed)
-        .map((e) => e.name)
         .toList();
   }
 
@@ -438,27 +437,26 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                       ),
                       child: Row(
                         children: [
-                          Container(
-                            width: 32,
-                            height: 32,
-                            clipBehavior: Clip.antiAlias,
-                            decoration: BoxDecoration(
-                              gradient: JemenaiTheme.gradBrand,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child:
-                                _currentAIModel.image != null
-                                    ? _currentAIModel.image!.image(
-                                      width: 32,
-                                      height: 32,
-                                      fit: BoxFit.cover,
-                                    )
-                                    : const Icon(
-                                      Icons.auto_awesome,
-                                      color: Colors.white,
-                                      size: 16,
-                                    ),
-                          ),
+                          _currentAIModel.image != null
+                              ? _currentAIModel.image!.image(
+                                width: 32,
+                                height: 32,
+                                fit: BoxFit.cover,
+                              )
+                              : Container(
+                                width: 32,
+                                height: 32,
+                                clipBehavior: Clip.antiAlias,
+                                decoration: BoxDecoration(
+                                  gradient: JemenaiTheme.gradBrand,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: const Icon(
+                                  Icons.auto_awesome,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
+                              ),
                           const SizedBox(width: 10),
                           Expanded(
                             child: Column(
@@ -598,7 +596,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                         }
 
                         setState(() {
-                          _model = m;
+                          _model = m.name;
                           _showModels = false;
                         });
 
@@ -607,7 +605,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                           if (_currentSessionId != null) {
                             DatabaseService().updateSessionModel(
                               _currentSessionId!,
-                              m,
+                              m.name,
                             );
                           }
                         } else {
@@ -627,29 +625,35 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                         ),
                         child: Row(
                           children: [
-                            Container(
-                              width: 32,
-                              height: 32,
-                              decoration: BoxDecoration(
-                                gradient:
-                                    isDark
-                                        ? JemenaiTheme.gradSubtleDark
-                                        : JemenaiTheme.gradSubtleLight,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Icon(
-                                Icons.auto_awesome,
-                                size: 14,
-                                color: theme.colorScheme.primary,
-                              ),
-                            ),
+                            m.image != null
+                                ? m.image!.image(
+                                  width: 32,
+                                  height: 32,
+                                  fit: BoxFit.cover,
+                                )
+                                : Container(
+                                  width: 32,
+                                  height: 32,
+                                  decoration: BoxDecoration(
+                                    gradient:
+                                        isDark
+                                            ? JemenaiTheme.gradSubtleDark
+                                            : JemenaiTheme.gradSubtleLight,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Icon(
+                                    Icons.auto_awesome,
+                                    size: 14,
+                                    color: theme.colorScheme.primary,
+                                  ),
+                                ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    m,
+                                    m.name,
                                     style: JemenaiTheme.fontBody(
                                       fontSize: 13,
                                       fontWeight: FontWeight.bold,
