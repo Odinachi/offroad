@@ -39,9 +39,9 @@ dependencies:
   equatable: 
   flutter_bloc: 
   shared_preferences: ^2.5.5
-  flutter_gemma: ^0.16.4
+  flutter_gemma: 
+    path: flutter_gemma
   flutter_slidable: ^3.1.2
-  flutter_tts: any
   audio_waveforms: any
   url_launcher: ^6.3.0
   image_picker: ^1.1.2
@@ -51,6 +51,9 @@ dependencies:
   uuid: any
   disk_space_2: ^1.0.12
   path_provider: ^2.1.5
+
+      
+
 
 dependency_overrides:
   shared_preferences: 2.3.2

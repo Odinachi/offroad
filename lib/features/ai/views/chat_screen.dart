@@ -66,6 +66,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+
     _model = widget.args?.modelName ?? models.first.name;
     _currentSessionId = widget.args?.sessionId;
 
@@ -103,6 +104,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           _hasMoreMessages = false;
           _isLoadingMoreMessages = false;
         });
+
         return;
       }
 
@@ -168,26 +170,42 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     setState(() {
       _isLoadingModel = true;
     });
+
     try {
       final model = _currentAIModel;
+
       await FlutterGemma.installModel(
         modelType: model.modelType,
         fileType: model.fileType,
       ).fromNetwork(model.downloadUrl).install();
 
       final inferenceEngineStr = context.read<AppCubit>().inferenceEngine;
+
       final preferredBackend =
           kDebugMode
               ? PreferredBackend.cpu
               : (inferenceEngineStr == "gpu"
                   ? PreferredBackend.gpu
                   : PreferredBackend.cpu);
+      try {
+        _inferenceModel = await FlutterGemma.getActiveModel(
+          maxTokens: 1024,
+          preferredBackend: preferredBackend,
+        );
+      } catch (e) {
+        // Show user-friendly error (e.g. simulator not supported)
+        if (mounted) {
+          final errMsg = e.toString();
+          if (errMsg.contains('Simulator') || errMsg.contains('simulator')) {
+            AppRouter.showMessage(
+              "On-device AI is not available on the iOS Simulator. "
+              "Please use a physical device.",
+            );
+          }
+        }
+      }
 
-      _inferenceModel = await FlutterGemma.getActiveModel(
-        maxTokens: 1024,
-        preferredBackend: preferredBackend,
-      );
-      _chat = await _inferenceModel!.createChat(isThinking: _isThinking);
+      _chat = await _inferenceModel?.createChat(isThinking: _isThinking);
 
       if (_currentSessionId != null) {
         final messages = await DatabaseService().getMessages(
@@ -195,16 +213,21 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           limit: _messageLimit,
           offset: _messageOffset,
         );
+
         _messageOffset += messages.length;
         if (messages.length < _messageLimit) _hasMoreMessages = false;
 
         final List<Message> replayHistory = [];
+
         _messages.clear();
+
         for (final m in messages.reversed) {
           final isUser = m['role'] == 'user';
+
           replayHistory.add(
             Message(text: m['content'] as String, isUser: isUser),
           );
+
           _messages.add(
             ChatMessage(
               id: m['id'] as String,
@@ -215,9 +238,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             ),
           );
         }
+
         if (replayHistory.isNotEmpty) {
           await _chat!.clearHistory(replayHistory: replayHistory);
         }
+
         _scrollToBottom();
       }
 
