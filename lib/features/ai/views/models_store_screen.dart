@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jemenai/features/ai/model/ai_model.dart';
 import 'package:jemenai/features/ai/view_models/model_download_cubit.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../../shared/theme.dart';
 
 class ModelsStoreScreen extends StatefulWidget {
@@ -17,8 +18,24 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
   final Set<String> _expandedCompat = {};
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final cubit = context.read<ModelDownloadCubit>();
+        final statuses = cubit.state is ModelDownloadUpdated
+            ? (cubit.state as ModelDownloadUpdated).statuses
+            : <String, ModelDownloadStatus>{};
+        final isAnyDownloading = statuses.values.any((s) => s.phase == DownloadPhase.downloading);
+        WakelockPlus.toggle(enable: isAnyDownloading);
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
+    WakelockPlus.disable();
     super.dispose();
   }
 
@@ -39,7 +56,15 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
     final mutedFore = jc.mutedForeground;
     final border = jc.border;
 
-    return BlocBuilder<ModelDownloadCubit, ModelDownloadState>(
+    return BlocConsumer<ModelDownloadCubit, ModelDownloadState>(
+      listener: (context, downloadState) {
+        final statuses =
+            downloadState is ModelDownloadUpdated
+                ? downloadState.statuses
+                : <String, ModelDownloadStatus>{};
+        final isAnyDownloading = statuses.values.any((s) => s.phase == DownloadPhase.downloading);
+        WakelockPlus.toggle(enable: isAnyDownloading);
+      },
       builder: (context, downloadState) {
         final cubit = context.read<ModelDownloadCubit>();
 

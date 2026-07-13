@@ -70,7 +70,9 @@
 	<true/>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>This app requires local network access for model inference services.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app requires microphone access to record audio messages for transcription and AI assistant processing.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
-<true/>
+	<true/>
 </dict>
 </plist>

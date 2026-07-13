@@ -11,6 +11,10 @@ import 'package:flutter_gemma/flutter_gemma.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:record/record.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io' as io;
 
 import '../../../shared/theme.dart';
 import '../model/ai_model.dart';
@@ -52,6 +56,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   InferenceChat? _chat;
   InferenceModel? _inferenceModel;
   bool _isThinking = false;
+  final _audioRecorder = AudioRecorder();
+  bool _isRecording = false;
+  bool _isTranscribing = false;
 
   AIModel get _currentAIModel =>
       models.firstWhere((m) => m.name == _model, orElse: () => models.first);
@@ -187,10 +194,15 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               : (inferenceEngineStr == "gpu"
                   ? PreferredBackend.gpu
                   : PreferredBackend.cpu);
+      final supportImage = model.inputModalities.contains(AIModality.image);
+      final supportAudio = model.inputModalities.contains(AIModality.audio);
+
       try {
         _inferenceModel = await FlutterGemma.getActiveModel(
           maxTokens: 1024,
           preferredBackend: preferredBackend,
+          supportImage: supportImage,
+          supportAudio: supportAudio,
         );
       } catch (e) {
         // Show user-friendly error (e.g. simulator not supported)
@@ -205,7 +217,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         }
       }
 
-      _chat = await _inferenceModel?.createChat(isThinking: _isThinking);
+      _chat = await _inferenceModel?.createChat(
+        isThinking: _isThinking,
+        supportImage: supportImage,
+        supportAudio: supportAudio,
+      );
 
       if (_currentSessionId != null) {
         final messages = await DatabaseService().getMessages(
@@ -273,6 +289,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   void dispose() {
     _inputController.dispose();
     _scrollController.dispose();
+    _audioRecorder.dispose();
     super.dispose();
   }
 
@@ -418,6 +435,173 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         AppRouter.showMessage("$e");
         _scrollToBottom();
       }
+    }
+  }
+
+  Future<void> _toggleRecording() async {
+    if (_isRecording) {
+      await _stopRecording();
+    } else {
+      await _startRecording();
+    }
+  }
+
+  Future<void> _startRecording() async {
+    if (!kIsWeb && (io.Platform.isAndroid || io.Platform.isIOS)) {
+      final status = await Permission.microphone.request();
+
+      if (!status.isGranted) {
+        AppRouter.showMessage(
+          'Microphone permission required for audio recording',
+        );
+        return;
+      }
+    }
+
+    if (!await _audioRecorder.hasPermission()) {
+      AppRouter.showMessage('Microphone not available');
+      return;
+    }
+
+    try {
+      final tempDir = await getTemporaryDirectory();
+      final path = '${tempDir.path}/audio_recording.wav';
+
+      await _audioRecorder.start(
+        const RecordConfig(
+          encoder: AudioEncoder.wav,
+          sampleRate: 16000,
+          numChannels: 1,
+          bitRate: 256000,
+        ),
+        path: path,
+      );
+
+      setState(() {
+        _isRecording = true;
+      });
+    } catch (e) {
+      AppRouter.showMessage('Failed to start recording: $e');
+    }
+  }
+
+  Future<void> _stopRecording() async {
+    try {
+      final path = await _audioRecorder.stop();
+      setState(() {
+        _isRecording = false;
+      });
+
+      if (path != null) {
+        final file = io.File(path);
+        if (await file.exists()) {
+          final wavData = await file.readAsBytes();
+          await file.delete();
+          await _transcribeAndSend(wavData);
+        }
+      }
+    } catch (e) {
+      AppRouter.showMessage('Failed to save recording: $e');
+    }
+  }
+
+  Future<void> _transcribeAndSend(Uint8List wavData) async {
+    setState(() {
+      _isTranscribing = true;
+      _typing = true;
+    });
+    _scrollToBottom();
+
+    try {
+      final transcription = await _transcribeAudio(wavData);
+      
+      if (_chat != null) {
+        final List<Message> replayHistory = _messages.map((m) {
+          if (m.imageBytes != null) {
+            return Message.withImage(
+              text: m.content,
+              imageBytes: m.imageBytes!,
+              isUser: m.role == 'user',
+            );
+          } else {
+            return Message.text(
+              text: m.content,
+              isUser: m.role == 'user',
+            );
+          }
+        }).toList();
+        await _chat!.clearHistory(replayHistory: replayHistory);
+      }
+
+      setState(() {
+        _isTranscribing = false;
+        _typing = false;
+      });
+
+      if (transcription.isNotEmpty) {
+        await _send(transcription);
+      } else {
+        AppRouter.showMessage("Could not transcribe audio.");
+      }
+    } catch (e) {
+      if (_chat != null) {
+        final List<Message> replayHistory = _messages.map((m) {
+          if (m.imageBytes != null) {
+            return Message.withImage(
+              text: m.content,
+              imageBytes: m.imageBytes!,
+              isUser: m.role == 'user',
+            );
+          } else {
+            return Message.text(
+              text: m.content,
+              isUser: m.role == 'user',
+            );
+          }
+        }).toList();
+        try {
+          await _chat!.clearHistory(replayHistory: replayHistory);
+        } catch (_) {}
+      }
+
+      setState(() {
+        _isTranscribing = false;
+        _typing = false;
+      });
+      print("kkk error $e");
+      String userFriendlyError = "Transcription error: $e";
+      if (e.toString().contains("Failed to invoke the compiled model") ||
+          e.toString().contains("llm_litert_compiled_model_executor")) {
+        userFriendlyError = "On-device audio processing is not supported on the iOS Simulator's CPU backend. Please run on a physical device for GPU/Metal acceleration.";
+      }
+      AppRouter.showMessage(userFriendlyError);
+    }
+  }
+
+  Future<String> _transcribeAudio(Uint8List wavData) async {
+    if (_chat == null) return "";
+
+    try {
+      await _chat!.addQueryChunk(
+        Message.withAudio(
+          text:
+              "Transcribe the audio. Output only the transcript, nothing else. Do not summarize or respond to it.",
+          audioBytes: wavData,
+          isUser: true,
+        ),
+      );
+
+      final buffer = StringBuffer();
+      final stream = _chat!.generateChatResponseAsync();
+      await for (final response in stream) {
+        if (response is TextResponse) {
+          buffer.write(response.token);
+        }
+      }
+      return buffer.toString().trim();
+    } catch (e) {
+      debugPrint("Error transcribing audio: $e");
+      rethrow;
     }
   }
 
@@ -845,7 +1029,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     AppRouter.showMessage('Copied to clipboard');
                   }),
 
-                  _buildBubbleAction(Icons.volume_up, () {}),
                   _buildBubbleAction(Icons.delete_outline, () {
                     setState(() {
                       _messages.removeWhere((element) => element.id == msg.id);
@@ -938,10 +1121,25 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 20,
               ).copyWith(bottomLeft: const Radius.circular(4)),
             ),
-            child: SizedBox(
-              width: 36,
-              height: 12,
-              child: TypingBouncingDots(isDark: isDark),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (_isTranscribing) ...[
+                  Text(
+                    'Transcribing...',
+                    style: JemenaiTheme.fontBody(
+                      fontSize: 12,
+                      color: jc.mutedForeground,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                ],
+                SizedBox(
+                  width: 36,
+                  height: 12,
+                  child: TypingBouncingDots(isDark: isDark),
+                ),
+              ],
             ),
           ),
         ],
@@ -1167,11 +1365,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                       _buildInputMediaBtn(
                         _showAttachments ? Icons.close : Icons.add,
                         mutedFore,
-                        onTap: () {
-                          setState(() {
-                            _showAttachments = !_showAttachments;
-                          });
-                        },
+                        onTap:
+                            _isRecording
+                                ? null
+                                : () {
+                                  setState(() {
+                                    _showAttachments = !_showAttachments;
+                                  });
+                                },
                       ),
                       AnimatedSize(
                         duration: const Duration(milliseconds: 200),
@@ -1222,7 +1423,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: TextFormField(
                         controller: _inputController,
-
+                        readOnly: _isRecording || _isTranscribing,
                         keyboardType: TextInputType.multiline,
                         style: JemenaiTheme.fontBody(
                           fontSize: 14,
@@ -1231,7 +1432,12 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
                         onChanged: (text) => setState(() {}),
                         decoration: InputDecoration(
-                          hintText: 'Message OffRoad...',
+                          hintText:
+                              _isRecording
+                                  ? 'Recording... Tap Mic to Stop'
+                                  : (_isTranscribing
+                                      ? 'Transcribing...'
+                                      : 'Message OffRoad...'),
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide.none,
                           ),
@@ -1263,16 +1469,19 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                         AIModality.audio,
                       ))
                         _buildInputMediaBtn(
-                          Icons.mic,
-                          mutedFore,
-                          onTap: () {
-                            AppRouter.push(AppRouteString.voice);
-                          },
+                          _isRecording ? Icons.stop : Icons.mic,
+                          _isRecording ? Colors.red : mutedFore,
+                          onTap:
+                              (_typing && !_isRecording) ||
+                                      _streaming ||
+                                      _isLoadingModel
+                                  ? null
+                                  : _toggleRecording,
                         ),
                       const SizedBox(width: 4),
                       InkWell(
                         onTap:
-                            hasInput && !_typing && !_streaming
+                            hasInput && !_typing && !_streaming && !_isRecording
                                 ? () => _send()
                                 : null,
                         borderRadius: BorderRadius.circular(10),
@@ -1282,11 +1491,17 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                           height: 32,
                           decoration: BoxDecoration(
                             gradient:
-                                hasInput && !_typing && !_streaming
+                                hasInput &&
+                                        !_typing &&
+                                        !_streaming &&
+                                        !_isRecording
                                     ? JemenaiTheme.gradBrand
                                     : null,
                             color:
-                                hasInput && !_typing && !_streaming
+                                hasInput &&
+                                        !_typing &&
+                                        !_streaming &&
+                                        !_isRecording
                                     ? null
                                     : jc.secondaryFill,
                             borderRadius: BorderRadius.circular(10),
@@ -1295,7 +1510,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                             Icons.arrow_upward,
                             size: 16,
                             color:
-                                hasInput && !_typing && !_streaming
+                                hasInput &&
+                                        !_typing &&
+                                        !_streaming &&
+                                        !_isRecording
                                     ? Colors.white
                                     : mutedFore,
                           ),
