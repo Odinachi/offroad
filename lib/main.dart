@@ -58,7 +58,7 @@ class _JemenaiAppState extends State<JemenaiApp> {
             navigatorKey: AppRouter.navKey,
             initialRoute:
                 cacheService.getSeenOnboarding()
-                    ? AppRouteString.auth
+                    ? AppRouteString.dashboard
                     : AppRouteString.onboarding,
             onGenerateRoute: AppRouter.generateRoute,
           );

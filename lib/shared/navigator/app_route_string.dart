@@ -4,5 +4,4 @@ class AppRouteString {
   static const String chat = '/chat';
   static const String voice = '/voice';
   static const String chatsList = '/chats';
-  static const String auth = '/auth';
 }

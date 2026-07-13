@@ -19,7 +19,6 @@ class AppRouter {
       }(),
       AppRouteString.chatsList => ChatsListScreen(),
       AppRouteString.voice => const VoiceChatScreen(),
-      AppRouteString.auth => const AuthScreen(),
       AppRouteString.dashboard => const Dashboard(),
 
       _ => const OnboardingScreen(),

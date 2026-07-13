@@ -146,39 +146,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ],
             ),
-
-            // Sign Out
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20.0,
-                vertical: 8.0,
-              ),
-              child: OutlinedButton.icon(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.logout,
-                  size: 16,
-                  color: theme.colorScheme.error,
-                ),
-                label: Text(
-                  'Sign Out',
-                  style: JemenaiTheme.fontBody(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.error,
-                  ),
-                ),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  side: BorderSide(
-                    color: theme.colorScheme.error.withOpacity(0.25),
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),
