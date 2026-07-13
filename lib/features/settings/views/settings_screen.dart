@@ -31,77 +31,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Profile Card Header
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Row(
-                children: [
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      gradient: JemenaiTheme.gradBrand,
-                      borderRadius: BorderRadius.circular(18),
-                      boxShadow: JemenaiTheme.glowSm(isDark),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      'AW',
-                      style: JemenaiTheme.fontDisplay(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Alex Wilson',
-                          style: JemenaiTheme.fontDisplay(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: foreColor,
-                          ),
-                        ),
-                        Text(
-                          'alex@example.com',
-                          style: JemenaiTheme.fontBody(
-                            fontSize: 12,
-                            color: mutedFore,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            Container(
-                              width: 6,
-                              height: 6,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFF4ADE80),
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            const Text(
-                              'Pro Plan',
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF4ADE80),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            SizedBox(height: 30),
 
             // Appearance Section
             _buildSection(

@@ -204,16 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    _getGreeting().toUpperCase(),
-                    style: JemenaiTheme.fontBody(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                      color: mutedFore,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Alex Wilson',
+                    _getGreeting(),
                     style: JemenaiTheme.fontDisplay(
                       fontSize: 24,
                       fontWeight: FontWeight.w800,
