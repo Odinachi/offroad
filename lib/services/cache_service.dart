@@ -4,8 +4,8 @@ class CacheService {
   CacheService._();
   static final CacheService instance = CacheService._();
 
-  late final SharedPreferences _prefs;
-
+  late SharedPreferences _prefs;
+  
   final _darkModeKey = "isDarkMode";
   final _seenOnboardingKey = "seenOnboarding";
   final _huggingFaceTokenKey = "huggingFaceToken";
