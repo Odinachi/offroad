@@ -40,17 +40,12 @@ PODS:
     - DKImagePickerController/PhotoGallery
     - Flutter
   - Flutter (1.0.0)
-  - flutter_gemma (0.16.5):
+  - flutter_gemma (1.2.3):
     - Flutter
-    - MediaPipeTasksGenAI (= 0.10.33)
-    - MediaPipeTasksGenAIC (= 0.10.33)
   - image_picker_ios (0.0.1):
     - Flutter
   - large_file_handler (0.5.0):
     - Flutter
-  - MediaPipeTasksGenAI (0.10.33):
-    - MediaPipeTasksGenAIC (= 0.10.33)
-  - MediaPipeTasksGenAIC (0.10.33)
   - package_info_plus (0.4.5):
     - Flutter
   - path_provider_foundation (0.0.1):
@@ -97,8 +92,6 @@ SPEC REPOS:
   trunk:
     - DKImagePickerController
     - DKPhotoGallery
-    - MediaPipeTasksGenAI
-    - MediaPipeTasksGenAIC
     - SDWebImage
     - SwiftyGif
 
@@ -144,11 +137,9 @@ SPEC CHECKSUMS:
   DKPhotoGallery: b3834fecb755ee09a593d7c9e389d8b5d6deed60
   file_picker: b159e0c068aef54932bb15dc9fd1571818edaf49
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
-  flutter_gemma: 6bf34a12b45df17e3db9b33db7fea51506c8628f
+  flutter_gemma: 262b522c4525884161b7ce1ce53a4b1134e80814
   image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
   large_file_handler: 7f429f5609d4e1380a9468934d44c52fc7caef0c
-  MediaPipeTasksGenAI: 8eed8e6d03fe26d30c4205cb5295ec7b394432ad
-  MediaPipeTasksGenAIC: cb098ecea44e248efe8fe7e2f62b4cb0df781802
   package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   permission_handler_apple: ee2fe0fd04551b304eb002714ff067c371c822ed
