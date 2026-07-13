@@ -72,7 +72,9 @@
 	<string>This app requires local network access for model inference services.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This app requires microphone access to record audio messages for transcription and AI assistant processing.</string>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app requires access to the photo library to select and analyze images using local AI visual models.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This app requires camera access to capture photos for local AI visual analysis.</string>
 </dict>
 </plist>
