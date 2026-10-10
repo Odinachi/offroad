@@ -1,4 +1,4 @@
-import 'package:flutter_gemma/flutter_gemma.dart';
+import 'package:flutter_edge_ai/flutter_edge_ai.dart';
 import 'package:jemenai/shared/assets.dart';
 
 enum AICapability {
@@ -72,6 +72,20 @@ class AIModel {
   /// Extracts the model filename from the URL (e.g. `gemma-4-E2B-it.litertlm`).
   String get fileName => Uri.parse(url).pathSegments.last;
 
+  bool get supportsImage => inputModalities.contains(AIModality.image);
+  bool get supportsAudio => inputModalities.contains(AIModality.audio);
+  bool get canThink => capabilities?.contains(AICapability.thinking) ?? false;
+
+  /// Context window (prompt + history + reply) to allocate when loading.
+  ///
+  /// LiteRT bundles named `..._ekv1280...` were compiled with a fixed KV-cache
+  /// size, so asking for more than that fails; everything else gets 2048,
+  /// which keeps several turns of history without exhausting phone RAM.
+  int get contextTokens {
+    final match = RegExp(r'ekv(\d+)').firstMatch(fileName);
+    return match != null ? int.parse(match.group(1)!) : 2048;
+  }
+
   String get size =>
       sizeGB < 1
           ? '${(sizeGB * 1000).toStringAsFixed(0)} MB'
@@ -90,6 +104,14 @@ class AIModel {
     }
     return "General";
   }
+}
+
+/// Looks up a catalogue entry by its display name (as stored on chat sessions).
+AIModel? findModelByName(String? name) {
+  for (final m in models) {
+    if (m.name == name) return m;
+  }
+  return null;
 }
 
 final List<AIModel> models = [
@@ -231,6 +253,7 @@ final List<AIModel> models = [
     sizeMb: 1020,
     ramGB: 2,
     modelType: ModelType.gemmaIt,
+    requiresAuth: true,
     compactibility: [
       "iPhone 14+",
       "Pixel 7+",
@@ -259,6 +282,7 @@ final List<AIModel> models = [
     sizeMb: 300,
     ramGB: 1,
     modelType: ModelType.gemmaIt,
+    requiresAuth: true,
     fileType: ModelFileType.litertlm,
     compactibility: [
       "iPhone 12+",

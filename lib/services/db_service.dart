@@ -22,8 +22,9 @@ class DatabaseService {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
       onConfigure: (db) async {
         await db.execute('PRAGMA foreign_keys = ON');
       },
@@ -48,10 +49,17 @@ class DatabaseService {
         role TEXT,
         content TEXT,
         hasImage INTEGER,
+        thinking TEXT,
         createdAt INTEGER,
         FOREIGN KEY(sessionId) REFERENCES chat_sessions(id) ON DELETE CASCADE
       )
     ''');
+  }
+
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('ALTER TABLE chat_messages ADD COLUMN thinking TEXT');
+    }
   }
 
   // ── Session Methods ──
@@ -121,6 +129,21 @@ class DatabaseService {
     await db.delete('chat_sessions', where: 'id = ?', whereArgs: [id]);
   }
 
+  /// Wipes every conversation and message on the device.
+  Future<void> deleteAllSessions() async {
+    final db = await database;
+    await db.transaction((txn) async {
+      await txn.delete('chat_messages');
+      await txn.delete('chat_sessions');
+    });
+  }
+
+  Future<int> countSessions() async {
+    final db = await database;
+    final rows = await db.rawQuery('SELECT COUNT(*) AS n FROM chat_sessions');
+    return (rows.first['n'] as int?) ?? 0;
+  }
+
   Future<void> deleteSessionsByModel(String modelName) async {
     final db = await database;
     await db.transaction((txn) async {
@@ -155,6 +178,7 @@ class DatabaseService {
     required String role,
     required String content,
     bool hasImage = false,
+    String? thinking,
   }) async {
     final db = await database;
     final now = DateTime.now().millisecondsSinceEpoch;
@@ -164,6 +188,7 @@ class DatabaseService {
       'role': role,
       'content': content,
       'hasImage': hasImage ? 1 : 0,
+      'thinking': thinking,
       'createdAt': now,
     }, conflictAlgorithm: ConflictAlgorithm.replace);
     // Also update the session time so it bumps to the top
@@ -184,5 +209,10 @@ class DatabaseService {
       limit: limit,
       offset: offset,
     );
+  }
+
+  Future<void> deleteMessage(String id) async {
+    final db = await database;
+    await db.delete('chat_messages', where: 'id = ?', whereArgs: [id]);
   }
 }

@@ -1,4 +1,4 @@
-import 'package:flutter_gemma/flutter_gemma.dart';
+import 'package:flutter_edge_ai/flutter_edge_ai.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jemenai/services/cache_service.dart';
@@ -342,7 +342,7 @@ void main() {
       final cubit = ModelDownloadCubit(cacheService: cache);
       final testModel = models.first;
 
-      // Because FlutterGemma is uninitialized in unit test, installing will fail.
+      // Because FlutterEdgeAi is uninitialized in unit test, installing will fail.
       // We expect the cubit to capture this failure and transition to DownloadPhase.failed state.
       cubit.startDownload(testModel);
 

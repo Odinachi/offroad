@@ -1,5 +1,5 @@
 name: jemenai
-description: "A new Flutter project."
+description: "OffRoad — private, offline AI that runs entirely on your device."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -39,12 +39,14 @@ dependencies:
   equatable: 
   flutter_bloc: 
   shared_preferences: ^2.5.5
-  flutter_gemma: ^1.2.3
+  # On-device inference. Engines are opt-in: LiteRT-LM runs the .litertlm
+  # models, MediaPipe the .task ones — the catalogue uses both.
+  flutter_edge_ai: ^2.1.0
+  flutter_edge_ai_litertlm: ^1.9.0
+  flutter_edge_ai_mediapipe: ^1.1.0
   flutter_slidable: ^3.1.2
-  audio_waveforms: any
   url_launcher: ^6.3.0
   image_picker: ^1.1.2
-  file_picker: ^8.1.4
   sqflite: any
   path: any
   uuid: any
@@ -53,6 +55,9 @@ dependencies:
   record: ^6.0.0
   permission_handler: ^11.3.1
   wakelock_plus: ^1.2.8
+  flutter_tts: ^4.2.5
+  flutter_secure_storage: ^10.3.4
+  package_info_plus: ^9.0.1
 
       
 

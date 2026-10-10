@@ -5,6 +5,8 @@ import 'package:jemenai/shared/navigator/app_route_string.dart';
 import 'package:jemenai/shared/navigator/app_router.dart';
 import 'package:jemenai/services/db_service.dart';
 import 'package:jemenai/features/ai/model/ai_model.dart';
+import 'package:jemenai/shared/ui_helpers.dart';
+import 'package:jemenai/shared/widgets/model_avatar.dart';
 import '../../../shared/theme.dart';
 
 class ChatsListScreen extends StatefulWidget {
@@ -18,7 +20,6 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
   final List<Map<String, dynamic>> _chats = [];
   bool _isLoading = false;
   bool _hasMore = true;
-  int _offset = 0;
   final int _limit = 15;
   final ScrollController _scrollController = ScrollController();
 
@@ -42,107 +43,59 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
     }
   }
 
-  Future<void> _loadChats() async {
-    if (_isLoading || !_hasMore) return;
+  Future<void> _loadChats({bool reset = false}) async {
+    if (_isLoading || (!_hasMore && !reset)) return;
     setState(() => _isLoading = true);
     try {
       final sessions = await DatabaseService().getSessions(
         limit: _limit,
-        offset: _offset,
+        // Offset by what's on screen, so deletions don't skip rows.
+        offset: reset ? 0 : _chats.length,
       );
+      if (!mounted) return;
       setState(() {
-        if (sessions.isEmpty) {
-          _hasMore = false;
-        } else {
-          _chats.addAll(sessions);
-          _offset += _limit;
-        }
-        _isLoading = false;
+        if (reset) _chats.clear();
+        _chats.addAll(sessions);
+        _hasMore = sessions.length == _limit;
       });
     } catch (e) {
-      setState(() => _isLoading = false);
+      debugPrint('Failed to load chats: $e');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
-  String _timeAgo(int timestamp) {
-    final diff = DateTime.now().difference(
-      DateTime.fromMillisecondsSinceEpoch(timestamp),
+  Future<void> _confirmDelete(Map<String, dynamic> chat) async {
+    final confirmed = await confirmDestructive(
+      context,
+      title: 'Delete Chat',
+      message:
+          'Are you sure you want to delete this conversation? This action cannot be undone.',
     );
-    if (diff.inDays > 0) return '${diff.inDays}d ago';
-    if (diff.inHours > 0) return '${diff.inHours}h ago';
-    if (diff.inMinutes > 0) return '${diff.inMinutes}m ago';
-    return 'Just now';
+    if (!confirmed) return;
+    try {
+      await DatabaseService().deleteSession(chat['id'] as String);
+      if (!mounted) return;
+      setState(() => _chats.removeWhere((c) => c['id'] == chat['id']));
+      AppRouter.showMessage('Conversation deleted');
+    } catch (e) {
+      AppRouter.showMessage('Failed to delete conversation: $e');
+    }
   }
 
-  void _confirmDelete(BuildContext context, Map<String, dynamic> chat, int index) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        final theme = Theme.of(context);
-        return AlertDialog(
-          backgroundColor: theme.scaffoldBackgroundColor,
-          title: Text(
-            'Delete Chat',
-            style: JemenaiTheme.fontDisplay(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onSurface,
-            ),
-          ),
-          content: Text(
-            'Are you sure you want to delete this conversation? This action cannot be undone.',
-            style: JemenaiTheme.fontBody(
-              fontSize: 14,
-              color: theme.jColors.mutedForeground,
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                'Cancel',
-                style: JemenaiTheme.fontBody(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: theme.colorScheme.onSurface,
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.pop(context);
-                try {
-                  await DatabaseService().deleteSession(chat['id']);
-                  setState(() {
-                    _chats.removeAt(index);
-                  });
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Conversation deleted'),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Failed to delete conversation: $e'),
-                    ),
-                  );
-                }
-              },
-              child: Text(
-                'Delete',
-                style: JemenaiTheme.fontBody(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: theme.colorScheme.error,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
+  Future<void> _open(Map<String, dynamic> chat, AIModel? model) async {
+    if (model == null) {
+      AppRouter.showMessage("This chat's model is no longer available.");
+      return;
+    }
+    await AppRouter.push(
+      AppRouteString.chat,
+      args: ChatScreenArg(
+        sessionId: chat['id'] as String,
+        modelName: model.name,
+      ),
     );
+    if (mounted) await _loadChats(reset: true);
   }
 
   @override
@@ -198,9 +151,36 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
                 child:
                     _chats.isEmpty && !_isLoading
                         ? Center(
-                          child: Text(
-                            'No conversations yet.',
-                            style: TextStyle(color: mutedFore),
+                          child: Padding(
+                            padding: const EdgeInsets.all(32),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.forum_outlined,
+                                  size: 40,
+                                  color: mutedFore,
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  'No conversations yet',
+                                  style: JemenaiTheme.fontDisplay(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    color: foreColor,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Chats you start are saved privately on this device.',
+                                  textAlign: TextAlign.center,
+                                  style: JemenaiTheme.fontBody(
+                                    fontSize: 12,
+                                    color: mutedFore,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         )
                         : ListView.builder(
@@ -221,35 +201,18 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
                             }
 
                             final chat = _chats[index];
-                            final isPinned =
-                                false; // Add pin functionality later if needed
+                            final chatModel = findModelByName(
+                              chat['modelName'] as String?,
+                            );
 
                             return SwipeableChatItem(
-                              onDelete: () => _confirmDelete(context, chat, index),
+                              key: ValueKey(chat['id']),
+                              onDelete: () => _confirmDelete(chat),
                               bottomMargin: 10.0,
                               child: Padding(
                                 padding: const EdgeInsets.only(bottom: 10.0),
                                 child: InkWell(
-                                  onTap: () {
-                                    final modelName =
-                                        chat['modelName'] as String?;
-                                    final modelExists = models.any(
-                                      (m) => m.name == modelName,
-                                    );
-                                    if (!modelExists) {
-                                      AppRouter.showMessage(
-                                        "This chat's model no longer exists and it can't be accessed.",
-                                      );
-                                      return;
-                                    }
-                                    AppRouter.push(
-                                      AppRouteString.chat,
-                                      args: ChatScreenArg(
-                                        sessionId: chat['id'],
-                                        modelName: chat['modelName'],
-                                      ),
-                                    );
-                                  },
+                                  onTap: () => _open(chat, chatModel),
                                   borderRadius: BorderRadius.circular(20),
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(
@@ -260,7 +223,9 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
                                       color: cardBg,
                                       borderRadius: BorderRadius.circular(20),
                                       border: Border.all(color: border),
-                                      boxShadow: JemenaiTheme.shadowCard(isDark),
+                                      boxShadow: JemenaiTheme.shadowCard(
+                                        isDark,
+                                      ),
                                     ),
                                     child: Column(
                                       crossAxisAlignment:
@@ -268,14 +233,13 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
                                       children: [
                                         Row(
                                           children: [
-                                            if (isPinned) ...[
-                                              Text(
-                                                '📌',
-                                                style: JemenaiTheme.fontBody(
-                                                  fontSize: 12,
-                                                ),
+                                            if (chatModel != null) ...[
+                                              ModelAvatar(
+                                                model: chatModel,
+                                                size: 20,
+                                                radius: 6,
                                               ),
-                                              const SizedBox(width: 6),
+                                              const SizedBox(width: 8),
                                             ],
                                             Expanded(
                                               child: Text(
@@ -292,7 +256,11 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
                                             ),
                                             const SizedBox(width: 8),
                                             Text(
-                                              _timeAgo(chat['updatedAt'] as int),
+                                              timeAgo(
+                                                DateTime.fromMillisecondsSinceEpoch(
+                                                  chat['updatedAt'] as int,
+                                                ),
+                                              ),
                                               style: JemenaiTheme.fontBody(
                                                 fontSize: 11,
                                                 color: mutedFore,
@@ -308,7 +276,7 @@ class _ChatsListScreenState extends State<ChatsListScreen> {
                                             fontSize: 11,
                                             fontWeight: FontWeight.bold,
                                             color: theme.colorScheme.primary
-                                                .withOpacity(0.75),
+                                                .withValues(alpha: 0.75),
                                           ),
                                         ),
                                       ],

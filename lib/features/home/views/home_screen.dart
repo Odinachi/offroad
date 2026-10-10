@@ -8,6 +8,8 @@ import 'package:jemenai/shared/assets.dart';
 import 'package:jemenai/shared/navigator/app_route_string.dart';
 import 'package:jemenai/shared/navigator/app_router.dart';
 import 'package:jemenai/features/ai/view_models/model_download_cubit.dart';
+import 'package:jemenai/shared/ui_helpers.dart';
+import 'package:jemenai/shared/widgets/model_avatar.dart';
 import '../../../shared/theme.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -28,6 +30,8 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  // `draft` pre-fills the chat input for the user to finish; nothing is sent
+  // until they tap send.
   final List<Map<String, dynamic>> _quickActions = [
     {
       'id': 'text-assistant',
@@ -42,30 +46,33 @@ class _HomeScreenState extends State<HomeScreen> {
       'label': 'Pic-to-Text',
       'accent': const Color(0xFFA78BFA),
       'darkBg': const Color(0xFF16103A),
+      'needs': AIModality.image,
+      'draft': 'Extract all the text in this image.',
+      'pickImage': true,
     },
-
     {
       'id': 'voice-to-text',
       'icon': Icons.mic,
       'label': 'Voice-to-Text',
       'accent': const Color(0xFF34D399),
       'darkBg': const Color(0xFF022016),
+      'needs': AIModality.audio,
     },
-
     {
       'id': 'write-song',
       'icon': Icons.music_note,
       'label': 'Write Song',
       'accent': const Color(0xFFFB923C),
       'darkBg': const Color(0xFF1E0A00),
+      'draft': 'Write a song with two verses and a chorus about ',
     },
-
     {
       'id': 'brainstorm',
       'icon': Icons.lightbulb_outline,
       'label': 'Brainstorm Ideas',
       'accent': const Color(0xFFF97316),
       'darkBg': const Color(0xFF1E0800),
+      'draft': 'Brainstorm 10 creative ideas for ',
     },
     {
       'id': 'email-writer',
@@ -73,20 +80,18 @@ class _HomeScreenState extends State<HomeScreen> {
       'label': 'Email Writer',
       'accent': const Color(0xFF38BDF8),
       'darkBg': const Color(0xFF04141E),
+      'draft': 'Write a short, professional email to ',
     },
   ];
 
   final List<String> _prompts = [
     'Explain quantum computing simply',
     'Write a professional cold email',
-
-    'Summarize this research paper',
+    'Plan a relaxed 3-day trip to Lisbon',
   ];
 
   final List<Map<String, dynamic>> _recentChats = [];
   bool _isLoadingChats = false;
-  bool _hasMoreChats = true;
-  int _chatOffset = 0;
   final int _chatLimit = 5;
 
   @override
@@ -96,36 +101,32 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadRecentChats() async {
-    if (_isLoadingChats || !_hasMoreChats) return;
+    if (_isLoadingChats) return;
     setState(() => _isLoadingChats = true);
     try {
-      final sessions = await DatabaseService().getSessions(
-        limit: _chatLimit,
-        offset: _chatOffset,
-      );
+      final sessions = await DatabaseService().getSessions(limit: _chatLimit);
+      if (!mounted) return;
       setState(() {
-        if (sessions.isEmpty) {
-          _hasMoreChats = false;
-        } else {
-          _recentChats.addAll(sessions);
-          _chatOffset += _chatLimit;
-        }
-        _isLoadingChats = false;
+        _recentChats
+          ..clear()
+          ..addAll(sessions);
       });
     } catch (e) {
-      setState(() => _isLoadingChats = false);
+      debugPrint('Failed to load recent chats: $e');
+    } finally {
+      if (mounted) setState(() => _isLoadingChats = false);
     }
   }
 
-  String _timeAgo(int timestamp) {
-    final diff = DateTime.now().difference(
-      DateTime.fromMillisecondsSinceEpoch(timestamp),
-    );
-    if (diff.inDays > 0) return '${diff.inDays}d ago';
-    if (diff.inHours > 0) return '${diff.inHours}h ago';
-    if (diff.inMinutes > 0) return '${diff.inMinutes}m ago';
-    return 'Just now';
+  /// Opens a screen and refreshes Recent Chats when the user comes back,
+  /// since that screen may have created, renamed or deleted conversations.
+  Future<void> _openAndRefresh(String route, {Object? args}) async {
+    await AppRouter.push(route, args: args);
+    if (mounted) await _loadRecentChats();
   }
+
+  String _timeAgo(int timestamp) =>
+      timeAgo(DateTime.fromMillisecondsSinceEpoch(timestamp));
 
   String _getGreeting() {
     final hour = DateTime.now().hour;
@@ -159,6 +160,19 @@ class _HomeScreenState extends State<HomeScreen> {
               mutedFore,
               cardBg,
               border,
+            ),
+
+            // First-run nudge: nothing works until a model is on the device.
+            BlocBuilder<ModelDownloadCubit, ModelDownloadState>(
+              builder: (context, state) {
+                if (state is! ModelDownloadUpdated ||
+                    state.statuses.values.any(
+                      (s) => s.phase == DownloadPhase.installed,
+                    )) {
+                  return const SizedBox.shrink();
+                }
+                return _buildGetStartedCard(theme);
+              },
             ),
 
             // Suggested Prompts
@@ -231,7 +245,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Container(
                   width: 28,
                   height: 28,
-                  padding: EdgeInsets.all(3),
+                  padding: const EdgeInsets.all(3),
                   decoration: BoxDecoration(
                     gradient: JemenaiTheme.gradBrand,
                     borderRadius: BorderRadius.circular(10),
@@ -242,6 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(
                   child: TextFormField(
                     controller: _askController,
+                    textInputAction: TextInputAction.send,
                     decoration: InputDecoration(
                       filled: false,
                       enabledBorder: OutlineInputBorder(
@@ -283,9 +298,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 Row(
                   children: [
                     InkWell(
-                      onTap: () {
-                        AppRouter.push(AppRouteString.voice);
-                      },
+                      onTap: () => _openAndRefresh(AppRouteString.voice),
+                      borderRadius: BorderRadius.circular(8),
                       child: Container(
                         width: 28,
                         height: 28,
@@ -293,7 +307,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: theme.jColors.secondaryFill,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Icon(Icons.mic, color: mutedFore, size: 14),
+                        child: Icon(
+                          Icons.graphic_eq,
+                          color: mutedFore,
+                          size: 14,
+                          semanticLabel: 'Voice mode',
+                        ),
                       ),
                     ),
                   ],
@@ -302,6 +321,60 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildGetStartedCard(ThemeData theme) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 4, 20, 0),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => widget.callback?.call(1),
+          borderRadius: BorderRadius.circular(20),
+          child: Ink(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: JemenaiTheme.gradBrand,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.download_for_offline,
+                  color: Colors.white,
+                  size: 28,
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Download your first model',
+                        style: JemenaiTheme.fontDisplay(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Qwen2.5 0.5B is just 500 MB, needs no account, and runs on almost any phone.',
+                        style: JemenaiTheme.fontBody(
+                          fontSize: 12,
+                          color: Colors.white.withValues(alpha: 0.85),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_right, color: Colors.white),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -419,10 +492,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.primary.withOpacity(0.08),
+                          color: theme.colorScheme.primary.withValues(
+                            alpha: 0.08,
+                          ),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: theme.colorScheme.primary.withOpacity(0.15),
+                            color: theme.colorScheme.primary.withValues(
+                              alpha: 0.15,
+                            ),
                           ),
                         ),
                         child: Row(
@@ -476,13 +553,12 @@ class _HomeScreenState extends State<HomeScreen> {
         Navigator.pop(context);
         if (isInstalled) {
           _askController.clear();
-          AppRouter.push(
+          _openAndRefresh(
             AppRouteString.chat,
             args: ChatScreenArg(modelName: model.name, initialPrompt: query),
           );
         } else {
-          // Navigate to storage to download
-          AppRouter.push(AppRouteString.dashboard, args: {'index': 1});
+          AppRouter.openDashboardTab(AppRouter.modelsTab);
         }
       },
       borderRadius: BorderRadius.circular(18),
@@ -495,25 +571,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         child: Row(
           children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primary.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child:
-                  model.image != null
-                      ? Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Image.asset(model.image!.path),
-                      )
-                      : Icon(
-                        Icons.auto_awesome,
-                        color: theme.colorScheme.primary,
-                        size: 20,
-                      ),
-            ),
+            ModelAvatar(model: model, size: 40, radius: 12),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -619,24 +677,14 @@ class _HomeScreenState extends State<HomeScreen> {
             return InkWell(
               onTap: () {
                 final cubit = context.read<ModelDownloadCubit>();
-                final bool needsVision =
-                    action['id'] == 'pic-to-text' ||
-                    action['id'] == 'doc-analysis';
-                final bool needsAudio = action['id'] == 'voice-to-text';
-
-                final matchingModels =
-                    models.where((m) {
-                      if (needsVision &&
-                          !m.inputModalities.contains(AIModality.image))
-                        return false;
-                      if (needsAudio &&
-                          !m.inputModalities.contains(AIModality.audio))
-                        return false;
-                      return m.inputModalities.contains(AIModality.text);
-                    }).toList();
-
+                final needs = action['needs'] as AIModality?;
                 final downloadedModel =
-                    matchingModels
+                    models
+                        .where(
+                          (m) =>
+                              needs == null ||
+                              m.inputModalities.contains(needs),
+                        )
                         .where(
                           (m) =>
                               cubit.statusFor(m.id).phase ==
@@ -645,40 +693,48 @@ class _HomeScreenState extends State<HomeScreen> {
                         .firstOrNull;
 
                 if (downloadedModel != null) {
-                  AppRouter.push(
+                  _openAndRefresh(
                     AppRouteString.chat,
                     args: ChatScreenArg(
                       modelName: downloadedModel.name,
-                      initialPrompt: 'Help me with $label',
+                      draft: action['draft'] as String?,
+                      pickImage: action['pickImage'] == true,
                     ),
                   );
                 } else {
-                  // No model installed for this, prompt to store
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Please download a model that supports $label first.',
+                  final kind = switch (needs) {
+                    AIModality.image => 'an image-capable model',
+                    AIModality.audio => 'an audio-capable model',
+                    _ => 'a model',
+                  };
+                  ScaffoldMessenger.of(context)
+                    ..hideCurrentSnackBar()
+                    ..showSnackBar(
+                      SnackBar(
+                        behavior: SnackBarBehavior.floating,
+                        // Actions make SnackBars sticky by default.
+                        persist: false,
+                        content: Text(
+                          '$label needs $kind. Download one first.',
+                        ),
+                        action: SnackBarAction(
+                          label: 'Store',
+                          onPressed:
+                              () => AppRouter.openDashboardTab(
+                                AppRouter.modelsTab,
+                              ),
+                        ),
                       ),
-                      action: SnackBarAction(
-                        label: 'Store',
-                        onPressed: () {
-                          AppRouter.push(
-                            AppRouteString.dashboard,
-                            args: {'index': 1},
-                          );
-                        },
-                      ),
-                    ),
-                  );
+                    );
                 }
               },
               borderRadius: BorderRadius.circular(50),
               child: Container(
                 decoration: BoxDecoration(
-                  color: isDark ? darkBg : accent.withOpacity(0.08),
+                  color: isDark ? darkBg : accent.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(50),
                   border: Border.all(
-                    color: isDark ? darkBg : accent.withOpacity(0.12),
+                    color: isDark ? darkBg : accent.withValues(alpha: 0.12),
                   ),
                 ),
                 padding: const EdgeInsets.symmetric(
@@ -691,7 +747,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       width: 36,
                       height: 36,
                       decoration: BoxDecoration(
-                        color: accent.withOpacity(0.15),
+                        color: accent.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(icon, color: accent, size: 18),
@@ -707,7 +763,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           fontWeight: FontWeight.w700,
                           color:
                               isDark
-                                  ? Colors.white.withOpacity(0.88)
+                                  ? Colors.white.withValues(alpha: 0.88)
                                   : foreColor,
                           lineHeight: 1.1,
                         ),
@@ -809,79 +865,23 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _confirmDelete(
-    BuildContext context,
-    Map<String, dynamic> chat,
-    int index,
-  ) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        final theme = Theme.of(context);
-        return AlertDialog(
-          backgroundColor: theme.scaffoldBackgroundColor,
-          title: Text(
-            'Delete Chat',
-            style: JemenaiTheme.fontDisplay(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onSurface,
-            ),
-          ),
-          content: Text(
-            'Are you sure you want to delete this conversation? This action cannot be undone.',
-            style: JemenaiTheme.fontBody(
-              fontSize: 14,
-              color: theme.jColors.mutedForeground,
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                'Cancel',
-                style: JemenaiTheme.fontBody(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: theme.colorScheme.onSurface,
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.pop(context);
-                try {
-                  await DatabaseService().deleteSession(chat['id']);
-                  setState(() {
-                    _recentChats.removeAt(index);
-                  });
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Conversation deleted'),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Failed to delete conversation: $e'),
-                    ),
-                  );
-                }
-              },
-              child: Text(
-                'Delete',
-                style: JemenaiTheme.fontBody(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: theme.colorScheme.error,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
+  Future<void> _confirmDelete(Map<String, dynamic> chat) async {
+    final confirmed = await confirmDestructive(
+      context,
+      title: 'Delete Chat',
+      message:
+          'Are you sure you want to delete this conversation? This action cannot be undone.',
     );
+    if (!confirmed) return;
+    try {
+      await DatabaseService().deleteSession(chat['id'] as String);
+      if (!mounted) return;
+      setState(() => _recentChats.removeWhere((c) => c['id'] == chat['id']));
+      AppRouter.showMessage('Conversation deleted');
+      _loadRecentChats();
+    } catch (e) {
+      AppRouter.showMessage('Failed to delete conversation: $e');
+    }
   }
 
   Widget _buildRecentChats(
@@ -915,7 +915,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               InkWell(
-                onTap: () => AppRouter.push(AppRouteString.chatsList),
+                onTap: () => _openAndRefresh(AppRouteString.chatsList),
+                borderRadius: BorderRadius.circular(8),
                 child: Text(
                   'View all',
                   style: JemenaiTheme.fontBody(
@@ -929,34 +930,60 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
 
+        if (_recentChats.isEmpty && !_isLoadingChats)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: cardBg,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: border),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.forum_outlined, size: 18, color: mutedFore),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Your conversations will appear here. They never leave this device.',
+                      style: JemenaiTheme.fontBody(
+                        fontSize: 12,
+                        color: mutedFore,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
         // List
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Column(
             children: List.generate(_recentChats.length, (index) {
               final chat = _recentChats[index];
+              final chatModel = findModelByName(chat['modelName'] as String?);
               return SwipeableChatItem(
-                onDelete: () => _confirmDelete(context, chat, index),
+                key: ValueKey(chat['id']),
+                onDelete: () => _confirmDelete(chat),
                 bottomMargin: 8.0,
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
                   child: InkWell(
                     onTap: () {
-                      final modelName = chat['modelName'] as String?;
-                      final modelExists = models.any(
-                        (m) => m.name == modelName,
-                      );
-                      if (!modelExists) {
+                      if (chatModel == null) {
                         AppRouter.showMessage(
-                          "This chat's model no longer exists and it can't be accessed.",
+                          "This chat's model is no longer available.",
                         );
                         return;
                       }
-                      AppRouter.push(
+                      _openAndRefresh(
                         AppRouteString.chat,
                         args: ChatScreenArg(
-                          sessionId: chat['id'],
-                          modelName: chat['modelName'],
+                          sessionId: chat['id'] as String,
+                          modelName: chatModel.name,
                         ),
                       );
                     },
@@ -971,22 +998,25 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       child: Row(
                         children: [
-                          Container(
-                            width: 32,
-                            height: 32,
-                            decoration: BoxDecoration(
-                              gradient:
-                                  isDark
-                                      ? JemenaiTheme.gradSubtleDark
-                                      : JemenaiTheme.gradSubtleLight,
-                              borderRadius: BorderRadius.circular(10),
+                          if (chatModel != null)
+                            ModelAvatar(model: chatModel, size: 32)
+                          else
+                            Container(
+                              width: 32,
+                              height: 32,
+                              decoration: BoxDecoration(
+                                gradient:
+                                    isDark
+                                        ? JemenaiTheme.gradSubtleDark
+                                        : JemenaiTheme.gradSubtleLight,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Icon(
+                                Icons.auto_awesome,
+                                size: 14,
+                                color: theme.colorScheme.primary,
+                              ),
                             ),
-                            child: Icon(
-                              Icons.auto_awesome,
-                              size: 14,
-                              color: theme.colorScheme.primary,
-                            ),
-                          ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
@@ -1003,7 +1033,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  _timeAgo(chat['updatedAt'] as int),
+                                  [
+                                    if (chat['modelName'] != null)
+                                      chat['modelName'],
+                                    _timeAgo(chat['updatedAt'] as int),
+                                  ].join(' · '),
                                   style: JemenaiTheme.fontBody(
                                     fontSize: 11,
                                     color: mutedFore,

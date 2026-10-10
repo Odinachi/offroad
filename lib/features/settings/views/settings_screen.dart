@@ -1,6 +1,14 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jemenai/features/dashboard/view_models/app_cubit.dart';
+import 'package:jemenai/services/db_service.dart';
+import 'package:jemenai/services/storage_service.dart';
+import 'package:jemenai/shared/navigator/app_router.dart';
+import 'package:jemenai/shared/ui_helpers.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '../../../shared/theme.dart';
 import 'huggingface_token_screen.dart';
 
@@ -12,17 +20,181 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool _notifs = true;
-  bool _analytics = false;
+  String? _version;
+  String? _device;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAbout();
+  }
+
+  Future<void> _loadAbout() async {
+    String? version;
+    try {
+      final info = await PackageInfo.fromPlatform();
+      version = 'Version ${info.version} (${info.buildNumber})';
+    } catch (_) {}
+
+    final platform =
+        kIsWeb
+            ? 'Web'
+            : switch (defaultTargetPlatform) {
+              TargetPlatform.iOS => 'iOS ${_osVersion()}',
+              TargetPlatform.android => 'Android ${_osVersion()}',
+              TargetPlatform.macOS => 'macOS',
+              _ => defaultTargetPlatform.name,
+            };
+    final total = await StorageService.getTotalDiskSpaceGB();
+    final free = await StorageService.getFreeDiskSpaceGB();
+    final storage =
+        total == null
+            ? null
+            : free == null
+            ? '${total.round()} GB'
+            : '${free.toStringAsFixed(0)} of ${total.round()} GB free';
+
+    if (!mounted) return;
+    setState(() {
+      _version = version;
+      _device = [platform, if (storage != null) storage].join(' · ');
+    });
+  }
+
+  static String _osVersion() {
+    // e.g. "Version 18.5 (Build 22F76)" → "18.5"
+    final match = RegExp(
+      r'(\d+(\.\d+)*)',
+    ).firstMatch(Platform.operatingSystemVersion);
+    return match?.group(1) ?? '';
+  }
+
+  Future<void> _deleteAllChats() async {
+    final count = await DatabaseService().countSessions();
+    if (!mounted) return;
+    if (count == 0) {
+      AppRouter.showMessage('There are no conversations to delete.');
+      return;
+    }
+    final confirmed = await confirmDestructive(
+      context,
+      title: 'Delete all conversations?',
+      message:
+          'This permanently removes $count conversation${count == 1 ? '' : 's'} '
+          'from this device. Downloaded models are not affected.',
+      confirmLabel: 'Delete all',
+    );
+    if (!confirmed) return;
+    await DatabaseService().deleteAllSessions();
+    AppRouter.showMessage('All conversations deleted');
+  }
+
+  void _showPrivacy() {
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+    Widget point(IconData icon, String title, String body) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, size: 20, color: theme.colorScheme.primary),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: JemenaiTheme.fontBody(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    body,
+                    style: JemenaiTheme.fontBody(
+                      fontSize: 12.5,
+                      color: jc.mutedForeground,
+                      lineHeight: 1.4,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: jc.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder:
+          (context) => SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Your privacy',
+                    style: JemenaiTheme.fontDisplay(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  point(
+                    Icons.memory,
+                    'Inference happens on your device',
+                    'Prompts, images and voice recordings are processed by the '
+                        'model running locally. They are never sent to a server.',
+                  ),
+                  point(
+                    Icons.storage,
+                    'Conversations are stored locally',
+                    'Chats live in a database inside the app. Delete them any '
+                        'time from Settings, or by uninstalling the app.',
+                  ),
+                  point(
+                    Icons.cloud_download_outlined,
+                    'The internet is used only for downloads',
+                    'OffRoad connects to Hugging Face to download models you '
+                        'choose. If you add an access token it is sent only to '
+                        'Hugging Face, to authorise those downloads.',
+                  ),
+                  point(
+                    Icons.visibility_off_outlined,
+                    'No accounts, analytics or tracking',
+                    'There is no sign-in, telemetry or advertising SDK.',
+                  ),
+                  const SizedBox(height: 4),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Got it'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final jc = theme.jColors;
-
     final isDark = theme.brightness == Brightness.dark;
-    final foreColor = theme.colorScheme.onSurface;
-    final mutedFore = jc.mutedForeground;
 
     return Container(
       color: theme.scaffoldBackgroundColor,
@@ -31,7 +203,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
 
             // Appearance Section
             _buildSection(
@@ -66,7 +238,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   iBg: const Color(0xFF1E1B4B),
                   iColor: const Color(0xFF818CF8),
                   title: 'Inference Engine',
-                  sub: 'Choose processing hardware for local models',
+                  sub:
+                      'GPU is faster on most phones. Applies the next time a model loads.',
                   value: context.watch<AppCubit>().inferenceEngine,
                   options: const ['gpu', 'cpu'],
                   optionLabels: const {
@@ -104,8 +277,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   iBg: const Color(0xFF022016),
                   iColor: const Color(0xFF4ADE80),
                   title: 'Privacy Controls',
-                  sub: 'All data stays on-device',
-                  showChevron: false,
+                  sub: 'All data stays on-device · tap for details',
+                  onTap: _showPrivacy,
+                ),
+                _buildNavRow(
+                  icon: Icons.delete_sweep_outlined,
+                  iBg: const Color(0xFF2A0A0A),
+                  iColor: const Color(0xFFF87171),
+                  title: 'Delete All Conversations',
+                  sub: 'Permanently erase chat history on this device',
+                  onTap: _deleteAllChats,
                 ),
               ],
             ),
@@ -119,14 +300,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   iBg: const Color(0xFF1E1B4B),
                   iColor: const Color(0xFF818CF8),
                   title: 'OffRoad',
-                  sub: 'Version 2.0.0 · June 2026',
-                  rightWidget: Text(
-                    'Latest',
-                    style: JemenaiTheme.fontBody(
-                      fontSize: 11,
-                      color: mutedFore,
-                    ),
-                  ),
+                  sub: _version ?? 'Private local AI',
                   showChevron: false,
                 ),
                 _buildNavRow(
@@ -134,7 +308,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   iBg: const Color(0xFF1A1A2E),
                   iColor: const Color(0xFF6366F1),
                   title: 'Device',
-                  sub: 'iPhone 15 Pro · 128 GB',
+                  sub: _device ?? '…',
                   showChevron: false,
                 ),
                 _buildNavRow(
@@ -142,7 +316,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   iBg: const Color(0xFF1A1A2E),
                   iColor: const Color(0xFF6366F1),
                   title: 'Terms & Privacy Policy',
-                  onTap: () {},
+                  sub: 'How OffRoad handles your data',
+                  onTap: _showPrivacy,
                 ),
               ],
             ),
@@ -255,7 +430,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Switch.adaptive(
             value: value,
             onChanged: onChanged,
-            activeColor: theme.colorScheme.primary,
+            activeTrackColor: theme.colorScheme.primary,
           ),
         ],
       ),

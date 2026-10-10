@@ -29,18 +29,30 @@ class _HuggingFaceTokenScreenState extends State<HuggingFaceTokenScreen> {
     super.dispose();
   }
 
-  void _saveToken() async {
+  Future<void> _saveToken() async {
     final token = _tokenController.text.trim();
-    await CacheService.instance.saveHuggingFaceToken(token);
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
+    final messenger = ScaffoldMessenger.of(context);
+    if (token.isNotEmpty && !token.startsWith('hf_')) {
+      messenger.showSnackBar(
         const SnackBar(
-          content: Text('Hugging Face Token saved successfully!'),
-          duration: Duration(seconds: 2),
+          content: Text(
+            'Hugging Face tokens start with "hf_". Check and try again.',
+          ),
+          behavior: SnackBarBehavior.floating,
         ),
       );
-      Navigator.pop(context);
+      return;
     }
+    await CacheService.instance.saveHuggingFaceToken(token);
+    if (!mounted) return;
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(token.isEmpty ? 'Token removed' : 'Token saved'),
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+    Navigator.pop(context);
   }
 
   void _pasteFromClipboard() async {
@@ -84,7 +96,6 @@ class _HuggingFaceTokenScreenState extends State<HuggingFaceTokenScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-
               Text(
                 'Setup Instructions',
                 style: JemenaiTheme.fontDisplay(
@@ -102,7 +113,6 @@ class _HuggingFaceTokenScreenState extends State<HuggingFaceTokenScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-
               _buildStepRow(
                 step: '1',
                 title: 'Create an Account',
@@ -121,9 +131,7 @@ class _HuggingFaceTokenScreenState extends State<HuggingFaceTokenScreen> {
                 description:
                     'Search for your desired model (e.g., google/gemma-2b-it) and accept the User License Agreement if required.',
               ),
-
               const SizedBox(height: 32),
-
               InkWell(
                 onTap: () => Navigator.pop(context),
                 borderRadius: BorderRadius.circular(16),
@@ -168,7 +176,7 @@ class _HuggingFaceTokenScreenState extends State<HuggingFaceTokenScreen> {
           Container(
             width: 32,
             height: 32,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: JemenaiTheme.gradBrand,
               shape: BoxShape.circle,
             ),
@@ -312,7 +320,7 @@ class _HuggingFaceTokenScreenState extends State<HuggingFaceTokenScreen> {
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
                   borderSide: BorderSide(
-                    color: theme.colorScheme.primary.withOpacity(0.25),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.25),
                     width: 2,
                   ),
                 ),
@@ -346,10 +354,12 @@ class _HuggingFaceTokenScreenState extends State<HuggingFaceTokenScreen> {
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: const Color(0xFF022016).withOpacity(isDark ? 0.4 : 0.05),
+                color: const Color(
+                  0xFF022016,
+                ).withValues(alpha: isDark ? 0.4 : 0.05),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: const Color(0xFF4ADE80).withOpacity(0.15),
+                  color: const Color(0xFF4ADE80).withValues(alpha: 0.15),
                 ),
               ),
               child: Row(

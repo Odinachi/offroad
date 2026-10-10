@@ -1,48 +1,61 @@
 import 'dart:io';
+import 'dart:isolate';
+
 import 'package:disk_space_2/disk_space_2.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
 class StorageService {
-  static Future<double> getTotalDiskSpaceGB() async {
-    final double? totalDiskSpace = await DiskSpace.getTotalDiskSpace;
-    return (totalDiskSpace ?? 128000.0) / 1024.0;
+  /// Device capacity in GB, or null if the platform doesn't report it.
+  static Future<double?> getTotalDiskSpaceGB() async {
+    try {
+      final mb = await DiskSpace.getTotalDiskSpace;
+      return mb == null || mb <= 0 ? null : mb / 1024.0;
+    } catch (_) {
+      return null;
+    }
   }
 
-  static Future<double> getFreeDiskSpaceGB() async {
-    final double? freeDiskSpace = await DiskSpace.getFreeDiskSpace;
-    return (freeDiskSpace ?? 64000.0) / 1024.0;
+  /// Free space in GB, or null if the platform doesn't report it.
+  static Future<double?> getFreeDiskSpaceGB() async {
+    try {
+      final mb = await DiskSpace.getFreeDiskSpace;
+      return mb == null || mb < 0 ? null : mb / 1024.0;
+    } catch (_) {
+      return null;
+    }
   }
 
+  /// Everything OffRoad stores (models, chats, caches), in GB.
   static Future<double> getAppDirectorySizeGB() async {
-    double totalSize = 0;
     try {
-      final docsDir = await getApplicationDocumentsDirectory();
-      totalSize += _calculateFolderSize(docsDir);
-
-      final supportDir = await getApplicationSupportDirectory();
-      totalSize += _calculateFolderSize(supportDir);
-
-      final cacheDir = await getTemporaryDirectory();
-      totalSize += _calculateFolderSize(cacheDir);
+      final paths = [
+        (await getApplicationDocumentsDirectory()).path,
+        (await getApplicationSupportDirectory()).path,
+        (await getTemporaryDirectory()).path,
+      ];
+      // Walking multi-GB model folders is blocking IO; keep it off the UI
+      // thread.
+      final bytes = await Isolate.run(
+        () => paths.fold<int>(0, (sum, p) => sum + _folderSize(Directory(p))),
+      );
+      return bytes / (1024 * 1024 * 1024);
     } catch (e) {
-      print("Error calculating app size: $e");
+      debugPrint('Error calculating app size: $e');
+      return 0;
     }
-    return totalSize / (1024 * 1024 * 1024); // bytes to GB
   }
 
-  static double _calculateFolderSize(Directory dir) {
-    double totalSize = 0;
+  static int _folderSize(Directory dir) {
+    var total = 0;
     try {
-      if (dir.existsSync()) {
-        dir.listSync(recursive: true, followLinks: false).forEach((entity) {
-          if (entity is File) {
-            totalSize += entity.lengthSync();
-          }
-        });
+      if (!dir.existsSync()) return 0;
+      for (final entity in dir.listSync(recursive: true, followLinks: false)) {
+        if (entity is File) total += entity.lengthSync();
       }
-    } catch (e) {
-      // Ignore access errors
+    } catch (_) {
+      // Unreadable entries are skipped.
     }
-    return totalSize;
+    return total;
   }
 }

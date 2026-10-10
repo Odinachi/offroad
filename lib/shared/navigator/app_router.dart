@@ -10,6 +10,24 @@ import '../../features/ai/views/chat_screen.dart';
 class AppRouter {
   static final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
 
+  /// Selected tab of the root [Dashboard]. Write through [openDashboardTab].
+  static final ValueNotifier<int> dashboardTab = ValueNotifier(0);
+
+  static const int homeTab = 0;
+  static const int modelsTab = 1;
+  static const int storageTab = 2;
+  static const int settingsTab = 3;
+
+  /// Returns to the root dashboard (closing any pushed screens and sheets)
+  /// and selects [index].
+  static void openDashboardTab(int index) {
+    navKey.currentState?.popUntil(
+      (route) =>
+          route.settings.name == AppRouteString.dashboard || route.isFirst,
+    );
+    dashboardTab.value = index;
+  }
+
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final args = settings.arguments;
     final Widget page = switch (settings.name) {
@@ -17,10 +35,9 @@ class AppRouter {
       AppRouteString.chat => () {
         return ChatScreen(args: args as ChatScreenArg?);
       }(),
-      AppRouteString.chatsList => ChatsListScreen(),
-      AppRouteString.voice => const VoiceChatScreen(),
+      AppRouteString.chatsList => const ChatsListScreen(),
+      AppRouteString.voice => VoiceChatScreen(modelName: args as String?),
       AppRouteString.dashboard => const Dashboard(),
-
       _ => const OnboardingScreen(),
     };
     return CupertinoPageRoute<void>(builder: (_) => page, settings: settings);

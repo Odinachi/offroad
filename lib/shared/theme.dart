@@ -189,7 +189,7 @@ class JemenaiTheme {
         }),
         trackColor: WidgetStateProperty.resolveWith((states) {
           return states.contains(WidgetState.selected)
-              ? const Color(0xFF4F46E5).withOpacity(0.5)
+              ? const Color(0xFF4F46E5).withValues(alpha: 0.5)
               : const Color(0xFFD4D4D8);
         }),
       ),
@@ -251,7 +251,7 @@ class JemenaiTheme {
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(
-            color: const Color(0xFF818CF8).withOpacity(0.25),
+            color: const Color(0xFF818CF8).withValues(alpha: 0.25),
             width: 2,
           ),
         ),
@@ -264,7 +264,7 @@ class JemenaiTheme {
         }),
         trackColor: WidgetStateProperty.resolveWith((states) {
           return states.contains(WidgetState.selected)
-              ? const Color(0xFF818CF8).withOpacity(0.5)
+              ? const Color(0xFF818CF8).withValues(alpha: 0.5)
               : const Color(0xFF3F3F46);
         }),
       ),
@@ -333,12 +333,12 @@ class JemenaiTheme {
     if (isDark) {
       return [
         BoxShadow(
-          color: Colors.black.withOpacity(0.4),
+          color: Colors.black.withValues(alpha: 0.4),
           offset: const Offset(0, 1),
           blurRadius: 3,
         ),
         BoxShadow(
-          color: Colors.black.withOpacity(0.3),
+          color: Colors.black.withValues(alpha: 0.3),
           offset: const Offset(0, 4),
           blurRadius: 16,
         ),
@@ -346,12 +346,12 @@ class JemenaiTheme {
     } else {
       return [
         BoxShadow(
-          color: Colors.black.withOpacity(0.06),
+          color: Colors.black.withValues(alpha: 0.06),
           offset: const Offset(0, 1),
           blurRadius: 3,
         ),
         BoxShadow(
-          color: Colors.black.withOpacity(0.06),
+          color: Colors.black.withValues(alpha: 0.06),
           offset: const Offset(0, 4),
           blurRadius: 16,
         ),
@@ -362,7 +362,7 @@ class JemenaiTheme {
   static List<BoxShadow> shadowFloat(bool isDark) {
     return [
       BoxShadow(
-        color: Colors.black.withOpacity(isDark ? 0.5 : 0.12),
+        color: Colors.black.withValues(alpha: isDark ? 0.5 : 0.12),
         offset: const Offset(0, 8),
         blurRadius: 32,
       ),
@@ -372,7 +372,7 @@ class JemenaiTheme {
   static List<BoxShadow> shadowDeep(bool isDark) {
     return [
       BoxShadow(
-        color: Colors.black.withOpacity(isDark ? 0.6 : 0.18),
+        color: Colors.black.withValues(alpha: isDark ? 0.6 : 0.18),
         offset: const Offset(0, 24),
         blurRadius: 64,
       ),
@@ -382,7 +382,7 @@ class JemenaiTheme {
   static List<BoxShadow> glowSm(bool isDark) {
     return [
       BoxShadow(
-        color: const Color(0xFF6366F1).withOpacity(isDark ? 0.20 : 0.18),
+        color: const Color(0xFF6366F1).withValues(alpha: isDark ? 0.20 : 0.18),
         offset: Offset.zero,
         blurRadius: 20,
       ),
@@ -392,7 +392,7 @@ class JemenaiTheme {
   static List<BoxShadow> glowMd(bool isDark) {
     return [
       BoxShadow(
-        color: const Color(0xFF6366F1).withOpacity(isDark ? 0.25 : 0.22),
+        color: const Color(0xFF6366F1).withValues(alpha: isDark ? 0.25 : 0.22),
         offset: Offset.zero,
         blurRadius: 40,
       ),

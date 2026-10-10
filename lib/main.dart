@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gemma/core/api/flutter_gemma.dart';
+import 'package:flutter_edge_ai/flutter_edge_ai.dart';
+import 'package:flutter_edge_ai_litertlm/flutter_edge_ai_litertlm.dart';
+import 'package:flutter_edge_ai_mediapipe/flutter_edge_ai_mediapipe.dart';
 import 'package:jemenai/features/ai/view_models/model_download_cubit.dart';
 import 'package:jemenai/features/dashboard/view_models/app_cubit.dart';
 import 'package:jemenai/services/cache_service.dart';
@@ -14,8 +16,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await cacheService.init();
 
-  // Initialize flutter_gemma (optional HuggingFace token for gated models)
-  await FlutterGemma.initialize(
+  // Initialize flutter_edge_ai (optional HuggingFace token for gated models)
+  await FlutterEdgeAi.initialize(
+    // .litertlm models run on LiteRT-LM, .task models on MediaPipe.
+    inferenceEngines: const [LiteRtLmEngine(), MediaPipeEngine()],
     huggingFaceToken:
         const String.fromEnvironment('HUGGINGFACE_TOKEN').isEmpty
             ? null
@@ -47,12 +51,12 @@ class _JemenaiAppState extends State<JemenaiApp> {
         ),
       ],
       child: BlocBuilder<AppCubit, AppState>(
+        buildWhen: (prev, next) => prev.themeMode != next.themeMode,
         builder: (context, state) {
-          final isDark = context.read<AppCubit>().isDarkTheme;
-
           return MaterialApp(
+            title: 'OffRoad',
             debugShowCheckedModeBanner: false,
-            themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+            themeMode: state.themeMode,
             theme: JemenaiTheme.lightTheme(),
             darkTheme: JemenaiTheme.darkTheme(),
             navigatorKey: AppRouter.navKey,
@@ -61,6 +65,10 @@ class _JemenaiAppState extends State<JemenaiApp> {
                     ? AppRouteString.dashboard
                     : AppRouteString.onboarding,
             onGenerateRoute: AppRouter.generateRoute,
+            // By default '/dashboard' expands to ['/', '/dashboard'], and '/'
+            // is onboarding — so Back from the dashboard reopened onboarding.
+            onGenerateInitialRoutes:
+                (name) => [AppRouter.generateRoute(RouteSettings(name: name))],
           );
         },
       ),

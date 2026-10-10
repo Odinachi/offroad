@@ -3,6 +3,8 @@ import 'dart:math' as math;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../ai/model/ai_model.dart';
 import '../../ai/view_models/model_download_cubit.dart';
+import '../../../shared/navigator/app_router.dart';
+import '../../../shared/ui_helpers.dart';
 import '../../../services/storage_service.dart';
 import '../../../shared/theme.dart';
 
@@ -15,9 +17,10 @@ class StorageDashboardScreen extends StatefulWidget {
 
 class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
   // Storage data
-  double _totalGB = 128.0;
-  double _otherGB = 38.4;
-  double _offroadGB = 1.2;
+  // Zero until measured; the header says "Calculating…" meanwhile.
+  double _totalGB = 0;
+  double _otherGB = 0;
+  double _offroadGB = 0;
   bool _isLoadingStorage = true;
 
   final List<Color> _modelColors = [
@@ -36,22 +39,31 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
   }
 
   Future<void> _loadStorageData() async {
-    final total = await StorageService.getTotalDiskSpaceGB();
-    final free = await StorageService.getFreeDiskSpaceGB();
-    final usedByDevice = total - free;
-    
-    final appSize = await StorageService.getAppDirectorySizeGB();
+    final results = await Future.wait([
+      StorageService.getTotalDiskSpaceGB(),
+      StorageService.getFreeDiskSpaceGB(),
+      StorageService.getAppDirectorySizeGB(),
+    ]);
+    final total = results[0];
+    final free = results[1];
+    final appSize = results[2] ?? 0;
+    if (!mounted) return;
 
-    if (mounted) {
-      setState(() {
-        _totalGB = total > 0 ? total : 128.0;
-        _offroadGB = appSize;
-        
-        final other = usedByDevice - appSize;
-        _otherGB = other > 0 ? other : usedByDevice;
-        _isLoadingStorage = false;
-      });
-    }
+    setState(() {
+      _offroadGB = appSize;
+      if (total != null && free != null) {
+        _totalGB = total;
+        final other = (total - free) - appSize;
+        _otherGB = other > 0 ? other : 0;
+      }
+      _isLoadingStorage = false;
+    });
+  }
+
+  /// Re-measure after models are added or removed.
+  void _refreshSoon() {
+    setState(() => _isLoadingStorage = true);
+    _loadStorageData();
   }
 
   @override
@@ -95,7 +107,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
       }
       return acc + (m['gb'] as num).toDouble();
     });
-    
+
     final double usedGB = _otherGB + _offroadGB;
     final double freeGB = (_totalGB - usedGB) > 0 ? (_totalGB - usedGB) : 0;
     final double usedPct = _totalGB > 0 ? (usedGB / _totalGB) * 100 : 0;
@@ -147,7 +159,11 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        '$health · ${freeGB.toStringAsFixed(1)} GB free',
+                        _isLoadingStorage
+                            ? 'Calculating…'
+                            : _totalGB <= 0
+                            ? 'Device storage info unavailable'
+                            : '$health · ${freeGB.toStringAsFixed(1)} GB free',
                         style: JemenaiTheme.fontBody(
                           fontSize: 12,
                           color: mutedFore,
@@ -229,7 +245,9 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                           _buildDonutStatRow(
                             label: 'Used',
                             valueText:
-                                '${usedGB.toStringAsFixed(1)} / ${_totalGB.toInt()} GB',
+                                _totalGB <= 0
+                                    ? '${usedGB.toStringAsFixed(1)} GB'
+                                    : '${usedGB.toStringAsFixed(1)} / ${_totalGB.toInt()} GB',
                             pct: usedPct,
                             color: theme.colorScheme.primary,
                             isPrimary: true,
@@ -238,21 +256,29 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                           _buildDonutStatRow(
                             label: 'AI Models',
                             valueText: '${aiGB.toStringAsFixed(1)} GB',
-                            pct: (aiGB / _totalGB) * 100,
+                            pct: _totalGB > 0 ? (aiGB / _totalGB) * 100 : 0,
                             color: const Color(0xFF818CF8),
                           ),
                           const SizedBox(height: 8),
                           _buildDonutStatRow(
                             label: 'Offroad DB',
-                            valueText: '${(_offroadGB - aiGB > 0 ? _offroadGB - aiGB : 0).toStringAsFixed(1)} GB',
-                            pct: _totalGB > 0 ? ((_offroadGB - aiGB > 0 ? _offroadGB - aiGB : 0) / _totalGB) * 100 : 0,
+                            valueText:
+                                '${(_offroadGB - aiGB > 0 ? _offroadGB - aiGB : 0).toStringAsFixed(1)} GB',
+                            pct:
+                                _totalGB > 0
+                                    ? ((_offroadGB - aiGB > 0
+                                                ? _offroadGB - aiGB
+                                                : 0) /
+                                            _totalGB) *
+                                        100
+                                    : 0,
                             color: const Color(0xFF10B981),
                           ),
                           const SizedBox(height: 8),
                           _buildDonutStatRow(
                             label: 'Other',
                             valueText: '${_otherGB.toStringAsFixed(1)} GB',
-                            pct: (_otherGB / _totalGB) * 100,
+                            pct: _totalGB > 0 ? (_otherGB / _totalGB) * 100 : 0,
                             color: mutedFore,
                           ),
                         ],
@@ -343,6 +369,175 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
     );
   }
 
+  /// Stacked bar of everything OffRoad stores: one segment per model plus
+  /// chats/app data. With nothing stored yet it says so instead of drawing
+  /// an empty bar (which read as a loader that never finished).
+  Widget _buildBreakdownCard(
+    List<Map<String, dynamic>> activeModels,
+    Color foreColor,
+    Color mutedFore,
+  ) {
+    final theme = Theme.of(context);
+    final jc = theme.jColors;
+
+    final modelsGB = activeModels
+        .where((m) => m['partial'] != true)
+        .fold<double>(0, (sum, m) => sum + (m['gb'] as num).toDouble());
+    final appDataGB = math.max(0.0, _offroadGB - modelsGB);
+    final segments = <({String label, double gb, Color color})>[
+      for (final m in activeModels)
+        (
+          label: m['name'] as String,
+          gb:
+              m['partial'] == true
+                  ? (m['gb'] as num).toDouble() *
+                      ((m['progress'] as num?)?.toDouble() ?? 0) /
+                      100
+                  : (m['gb'] as num).toDouble(),
+          color: m['color'] as Color,
+        ),
+      if (!_isLoadingStorage && appDataGB >= 0.001)
+        (label: 'Chats & app data', gb: appDataGB, color: mutedFore),
+    ];
+    final totalGB = segments.fold<double>(0, (sum, s) => sum + s.gb);
+
+    if (segments.isEmpty && _isLoadingStorage) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LinearProgressIndicator(
+              minHeight: 12,
+              backgroundColor: jc.secondaryFill,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'Measuring what OffRoad stores…',
+            style: JemenaiTheme.fontBody(fontSize: 11, color: mutedFore),
+          ),
+        ],
+      );
+    }
+
+    if (activeModels.isEmpty) {
+      return Row(
+        children: [
+          Icon(Icons.inventory_2_outlined, size: 20, color: mutedFore),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'No models downloaded yet',
+                  style: JemenaiTheme.fontBody(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: foreColor,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  appDataGB >= 0.001
+                      ? 'Chats & app data use ${_formatGB(appDataGB)}.'
+                      : 'Models you download will appear here.',
+                  style: JemenaiTheme.fontBody(fontSize: 11, color: mutedFore),
+                ),
+              ],
+            ),
+          ),
+          TextButton(
+            onPressed: () => AppRouter.openDashboardTab(AppRouter.modelsTab),
+            child: const Text('Browse'),
+          ),
+        ],
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            height: 12,
+            color: jc.secondaryFill,
+            child: TweenAnimationBuilder<double>(
+              tween: Tween<double>(begin: 0.0, end: 1.0),
+              duration: const Duration(milliseconds: 1000),
+              curve: Curves.easeOutCubic,
+              builder: (context, val, child) {
+                return FractionallySizedBox(
+                  alignment: Alignment.centerLeft,
+                  widthFactor: val,
+                  child: child,
+                );
+              },
+              child: Row(
+                children: [
+                  for (final seg in segments)
+                    Expanded(
+                      flex:
+                          totalGB > 0
+                              ? (seg.gb / totalGB * 1000).round().clamp(1, 1000)
+                              : 1,
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 1.5),
+                        color: seg.color,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 12,
+          runSpacing: 6,
+          children: [
+            for (final seg in segments)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: seg.color,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    seg.label,
+                    style: JemenaiTheme.fontBody(
+                      fontSize: 11,
+                      color: foreColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    _formatGB(seg.gb),
+                    style: JemenaiTheme.fontBody(
+                      fontSize: 11,
+                      color: mutedFore,
+                    ),
+                  ),
+                ],
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  static String _formatGB(double gb) =>
+      gb < 1 ? '${(gb * 1024).round()} MB' : '${gb.toStringAsFixed(1)} GB';
+
   Widget _buildBreakdownSection(
     List<Map<String, dynamic>> activeModels,
     double totalModelsGB,
@@ -381,91 +576,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
               border: Border.all(color: border),
               boxShadow: JemenaiTheme.shadowCard(isDark),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Horizontal Stacked bar
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Container(
-                    height: 12,
-                    color: jc.secondaryFill,
-                    child:
-                        activeModels.isEmpty
-                            ? const SizedBox.shrink()
-                            : TweenAnimationBuilder<double>(
-                              tween: Tween<double>(begin: 0.0, end: 1.0),
-                              duration: const Duration(milliseconds: 1000),
-                              curve: Curves.easeOutCubic,
-                              builder: (context, val, child) {
-                                return FractionallySizedBox(
-                                  alignment: Alignment.centerLeft,
-                                  widthFactor: val,
-                                  child: child,
-                                );
-                              },
-                              child: Row(
-                                children:
-                                    activeModels.map((m) {
-                                      final ratio =
-                                          totalModelsGB > 0
-                                              ? (m['gb'] as num).toDouble() /
-                                                  totalModelsGB
-                                              : 0;
-                                      return Expanded(
-                                        flex: (ratio * 1000).toInt().clamp(
-                                          1,
-                                          1000,
-                                        ),
-                                        child: Container(
-                                          margin: const EdgeInsets.only(
-                                            right: 1.5,
-                                          ),
-                                          color: m['color'] as Color,
-                                        ),
-                                      );
-                                    }).toList(),
-                              ),
-                            ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-
-                // Labels
-                Wrap(
-                  spacing: 12,
-                  runSpacing: 6,
-                  children:
-                      activeModels.map((m) {
-                        return Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: BoxDecoration(
-                                color: m['color'] as Color,
-                                borderRadius: BorderRadius.circular(2),
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              (m['name'] as String)
-                                  .split(' ')
-                                  .take(2)
-                                  .join(' '),
-                              style: JemenaiTheme.fontBody(
-                                fontSize: 11,
-                                color: foreColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        );
-                      }).toList(),
-                ),
-              ],
-            ),
+            child: _buildBreakdownCard(activeModels, foreColor, mutedFore),
           ),
         ),
         const SizedBox(height: 12),
@@ -500,7 +611,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                                 width: 36,
                                 height: 36,
                                 decoration: BoxDecoration(
-                                  color: color.withOpacity(0.12),
+                                  color: color.withValues(alpha: 0.12),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Icon(
@@ -543,6 +654,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                                 ),
                                 const SizedBox(width: 8),
                                 IconButton(
+                                  tooltip: 'Cancel download',
                                   onPressed: () {
                                     context
                                         .read<ModelDownloadCubit>()
@@ -555,7 +667,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                                   ),
                                   style: IconButton.styleFrom(
                                     backgroundColor: theme.colorScheme.error
-                                        .withOpacity(0.08),
+                                        .withValues(alpha: 0.08),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
@@ -564,10 +676,19 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                                 ),
                               ] else
                                 IconButton(
-                                  onPressed: () {
-                                    context
-                                        .read<ModelDownloadCubit>()
-                                        .deleteModel(aiModel);
+                                  tooltip: 'Delete ${aiModel.name}',
+                                  onPressed: () async {
+                                    final cubit =
+                                        context.read<ModelDownloadCubit>();
+                                    final confirmed = await confirmDestructive(
+                                      context,
+                                      title: 'Delete Model',
+                                      message:
+                                          'Delete ${aiModel.name} to free ${aiModel.size}? Your conversations are kept.',
+                                    );
+                                    if (!confirmed) return;
+                                    await cubit.deleteModel(aiModel);
+                                    if (mounted) _refreshSoon();
                                   },
                                   icon: Icon(
                                     Icons.delete_outline,
@@ -576,7 +697,7 @@ class _StorageDashboardScreenState extends State<StorageDashboardScreen> {
                                   ),
                                   style: IconButton.styleFrom(
                                     backgroundColor: theme.colorScheme.error
-                                        .withOpacity(0.08),
+                                        .withValues(alpha: 0.08),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),

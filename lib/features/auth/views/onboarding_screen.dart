@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jemenai/features/dashboard/view_models/app_cubit.dart';
-import 'package:jemenai/shared/assets.dart';
 import 'package:jemenai/shared/navigator/app_route_string.dart';
 import 'package:jemenai/shared/navigator/app_router.dart';
 import '../../../shared/theme.dart';
@@ -125,8 +124,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             decoration: BoxDecoration(
                               color:
                                   isDark
-                                      ? Colors.white.withOpacity(0.06)
-                                      : Colors.black.withOpacity(0.04),
+                                      ? Colors.white.withValues(alpha: 0.06)
+                                      : Colors.black.withValues(alpha: 0.04),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
@@ -224,7 +223,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                   isActive
                                       ? accent
                                       : theme.jColors.mutedForeground
-                                          .withOpacity(0.3),
+                                          .withValues(alpha: 0.3),
                               borderRadius: BorderRadius.circular(4),
                             ),
                           );
@@ -248,7 +247,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             borderRadius: BorderRadius.circular(50),
                             boxShadow: [
                               BoxShadow(
-                                color: colors[0].withOpacity(0.3),
+                                color: colors[0].withValues(alpha: 0.3),
                                 blurRadius: 20,
                                 offset: const Offset(0, 10),
                               ),
@@ -295,7 +294,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: RadialGradient(
-                colors: [colors[0].withOpacity(0.25), Colors.transparent],
+                colors: [colors[0].withValues(alpha: 0.25), Colors.transparent],
               ),
             ),
           ),
@@ -309,7 +308,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: RadialGradient(
-                colors: [colors[1].withOpacity(0.18), Colors.transparent],
+                colors: [colors[1].withValues(alpha: 0.18), Colors.transparent],
               ),
             ),
           ),
@@ -347,12 +346,12 @@ class OnboardingGraphics extends StatelessWidget {
         border: Border.all(
           color:
               isDark
-                  ? Colors.white.withOpacity(0.05)
-                  : Colors.black.withOpacity(0.05),
+                  ? Colors.white.withValues(alpha: 0.05)
+                  : Colors.black.withValues(alpha: 0.05),
         ),
         boxShadow: [
           BoxShadow(
-            color: colors[0].withOpacity(isDark ? 0.08 : 0.05),
+            color: colors[0].withValues(alpha: isDark ? 0.08 : 0.05),
             blurRadius: 32,
             offset: const Offset(0, 8),
           ),
@@ -372,7 +371,7 @@ class OnboardingGraphics extends StatelessWidget {
                 height: 140,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: colors[0].withOpacity(0.1),
+                  color: colors[0].withValues(alpha: 0.1),
                 ),
               ),
             ),
@@ -384,7 +383,7 @@ class OnboardingGraphics extends StatelessWidget {
                 height: 120,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: colors[1].withOpacity(0.1),
+                  color: colors[1].withValues(alpha: 0.1),
                 ),
               ),
             ),
@@ -440,12 +439,12 @@ class OnboardingGraphics extends StatelessWidget {
         border: Border.all(
           color:
               isDark
-                  ? Colors.white.withOpacity(0.08)
-                  : Colors.black.withOpacity(0.08),
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.black.withValues(alpha: 0.08),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.06),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.06),
             blurRadius: 16,
             offset: const Offset(0, 8),
           ),
@@ -549,23 +548,27 @@ class OnboardingGraphics extends StatelessWidget {
                 color: const Color(0xFF022016),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: const Color(0xFF4ADE80).withOpacity(0.3),
+                  color: const Color(0xFF4ADE80).withValues(alpha: 0.3),
                 ),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.lock, color: Color(0xFF4ADE80), size: 12),
-                  const SizedBox(width: 4),
-                  Text(
-                    'ON-DEVICE ONLY',
-                    style: JemenaiTheme.fontBody(
-                      fontSize: 8,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFF4ADE80),
+              // Lives inside a fixed-size phone mockup; shrink rather than overflow.
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.lock, color: Color(0xFF4ADE80), size: 12),
+                    const SizedBox(width: 4),
+                    Text(
+                      'ON-DEVICE ONLY',
+                      style: JemenaiTheme.fontBody(
+                        fontSize: 8,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF4ADE80),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -586,12 +589,12 @@ class OnboardingGraphics extends StatelessWidget {
         border: Border.all(
           color:
               isDark
-                  ? Colors.white.withOpacity(0.08)
-                  : Colors.black.withOpacity(0.08),
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.black.withValues(alpha: 0.08),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.06),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.06),
             blurRadius: 16,
             offset: const Offset(0, 8),
           ),
@@ -622,7 +625,7 @@ class OnboardingGraphics extends StatelessWidget {
               color: const Color(0xFF022016),
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
-                color: const Color(0xFF4ADE80).withOpacity(0.2),
+                color: const Color(0xFF4ADE80).withValues(alpha: 0.2),
               ),
             ),
             child: Row(
@@ -661,9 +664,9 @@ class OnboardingGraphics extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.2)),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -684,7 +687,7 @@ class OnboardingGraphics extends StatelessWidget {
   }
 
   Widget _buildSpeedGraphic(bool isDark, ThemeData theme, JemenaiColors jc) {
-    return Container(
+    return SizedBox(
       key: const ValueKey(2),
       width: 150,
       height: 150,
@@ -700,8 +703,8 @@ class OnboardingGraphics extends StatelessWidget {
               color: accent,
               backgroundColor:
                   isDark
-                      ? Colors.white.withOpacity(0.08)
-                      : Colors.black.withOpacity(0.08),
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : Colors.black.withValues(alpha: 0.08),
             ),
           ),
           Column(
@@ -731,7 +734,7 @@ class OnboardingGraphics extends StatelessWidget {
   }
 
   Widget _buildModelsGraphic(bool isDark, ThemeData theme, JemenaiColors jc) {
-    return Container(
+    return SizedBox(
       key: const ValueKey(3),
       width: 240,
       height: 160,
@@ -781,12 +784,12 @@ class OnboardingGraphics extends StatelessWidget {
         border: Border.all(
           color:
               isDark
-                  ? Colors.white.withOpacity(0.08)
-                  : Colors.black.withOpacity(0.08),
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.black.withValues(alpha: 0.08),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),

@@ -2,7 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jemenai/features/ai/model/ai_model.dart';
 import 'package:jemenai/features/ai/view_models/model_download_cubit.dart';
-import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:jemenai/features/ai/views/chat_screen.dart';
+import 'package:jemenai/features/settings/views/huggingface_token_screen.dart';
+import 'package:jemenai/services/cache_service.dart';
+import 'package:jemenai/services/storage_service.dart';
+import 'package:jemenai/shared/navigator/app_route_string.dart';
+import 'package:jemenai/shared/navigator/app_router.dart';
+import 'package:jemenai/shared/ui_helpers.dart';
 import '../../../shared/theme.dart';
 
 class ModelsStoreScreen extends StatefulWidget {
@@ -18,31 +24,61 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
   final Set<String> _expandedCompat = {};
 
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        final cubit = context.read<ModelDownloadCubit>();
-        final statuses = cubit.state is ModelDownloadUpdated
-            ? (cubit.state as ModelDownloadUpdated).statuses
-            : <String, ModelDownloadStatus>{};
-        final isAnyDownloading = statuses.values.any((s) => s.phase == DownloadPhase.downloading);
-        WakelockPlus.toggle(enable: isAnyDownloading);
-      }
-    });
-  }
-
-  @override
   void dispose() {
     _searchController.dispose();
-    WakelockPlus.disable();
     super.dispose();
+  }
+
+  /// Checks the token and free space before kicking off a multi-GB download.
+  Future<void> _requestDownload(AIModel model, ModelDownloadCubit cubit) async {
+    if (model.requiresAuth == true &&
+        (CacheService.instance.getHuggingFaceToken()?.trim().isEmpty ?? true)) {
+      final addToken = await confirmDestructive(
+        context,
+        title: 'Token required',
+        message:
+            '${model.name} is gated by its publisher. Accept its license on '
+            'huggingface.co, then add a Hugging Face access token to download it.',
+        confirmLabel: 'Add token',
+      );
+      if (!addToken || !mounted) return;
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const HuggingFaceTokenScreen()),
+      );
+      if (!mounted ||
+          (CacheService.instance.getHuggingFaceToken()?.trim().isEmpty ??
+              true)) {
+        return;
+      }
+    }
+
+    try {
+      final freeGB = await StorageService.getFreeDiskSpaceGB();
+      if (freeGB != null && freeGB < model.sizeGB * 1.1) {
+        if (!mounted) return;
+        final proceed = await confirmDestructive(
+          context,
+          title: 'Low storage',
+          message:
+              '${model.name} needs about ${model.size}, but only '
+              '${freeGB.toStringAsFixed(1)} GB is free. The download will '
+              'probably fail.',
+          confirmLabel: 'Download anyway',
+        );
+        if (!proceed) return;
+      }
+    } catch (_) {
+      // Unknown free space: let the download try.
+    }
+    cubit.startDownload(model);
   }
 
   Map<String, dynamic> _getIQDetails(int iq) {
     if (iq >= 88) return {'label': 'Elite', 'color': const Color(0xFF818CF8)};
-    if (iq >= 80)
+    if (iq >= 80) {
       return {'label': 'Advanced', 'color': const Color(0xFF60A5FA)};
+    }
     if (iq >= 70) return {'label': 'Capable', 'color': const Color(0xFF34D399)};
     return {'label': 'Basic', 'color': const Color(0xFFFBBF24)};
   }
@@ -56,15 +92,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
     final mutedFore = jc.mutedForeground;
     final border = jc.border;
 
-    return BlocConsumer<ModelDownloadCubit, ModelDownloadState>(
-      listener: (context, downloadState) {
-        final statuses =
-            downloadState is ModelDownloadUpdated
-                ? downloadState.statuses
-                : <String, ModelDownloadStatus>{};
-        final isAnyDownloading = statuses.values.any((s) => s.phase == DownloadPhase.downloading);
-        WakelockPlus.toggle(enable: isAnyDownloading);
-      },
+    return BlocBuilder<ModelDownloadCubit, ModelDownloadState>(
       builder: (context, downloadState) {
         final cubit = context.read<ModelDownloadCubit>();
 
@@ -208,7 +236,9 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                             color:
-                                isDling ? jc.jmIndigo.withOpacity(0.3) : border,
+                                isDling
+                                    ? jc.jmIndigo.withValues(alpha: 0.3)
+                                    : border,
                           ),
                           boxShadow:
                               isDling
@@ -327,7 +357,9 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                                       border: Border.all(
                                                         color: const Color(
                                                           0xFF4ADE80,
-                                                        ).withOpacity(0.2),
+                                                        ).withValues(
+                                                          alpha: 0.2,
+                                                        ),
                                                       ),
                                                     ),
                                                     child: Text(
@@ -542,7 +574,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                       ),
                                       decoration: BoxDecoration(
                                         color: theme.colorScheme.error
-                                            .withOpacity(0.1),
+                                            .withValues(alpha: 0.1),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Row(
@@ -579,34 +611,69 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
                                         child: Wrap(
                                           spacing: 6,
                                           runSpacing: 4,
-                                          children:
-                                              model.tags.map((t) {
-                                                return Container(
-                                                  margin: const EdgeInsets.only(
-                                                    right: 0,
+                                          children: [
+                                            if (model.requiresAuth == true)
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 3,
+                                                    ),
+                                                decoration: BoxDecoration(
+                                                  color: const Color(
+                                                    0xFFF59E0B,
+                                                  ).withValues(alpha: 0.15),
+                                                  borderRadius:
+                                                      BorderRadius.circular(6),
+                                                ),
+                                                child: Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    const Icon(
+                                                      Icons.lock_outline,
+                                                      size: 10,
+                                                      color: Color(0xFFD97706),
+                                                    ),
+                                                    const SizedBox(width: 3),
+                                                    Text(
+                                                      'HF token',
+                                                      style:
+                                                          JemenaiTheme.fontBody(
+                                                            fontSize: 10,
+                                                            color: const Color(
+                                                              0xFFD97706,
+                                                            ),
+                                                          ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ...model.tags.map((t) {
+                                              return Container(
+                                                margin: const EdgeInsets.only(
+                                                  right: 0,
+                                                ),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 3,
+                                                    ),
+                                                decoration: BoxDecoration(
+                                                  color: jc.secondaryFill,
+                                                  borderRadius:
+                                                      BorderRadius.circular(6),
+                                                ),
+                                                child: Text(
+                                                  t,
+                                                  style: JemenaiTheme.fontBody(
+                                                    fontSize: 10,
+                                                    color: mutedFore,
                                                   ),
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                        horizontal: 8,
-                                                        vertical: 3,
-                                                      ),
-                                                  decoration: BoxDecoration(
-                                                    color: jc.secondaryFill,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          6,
-                                                        ),
-                                                  ),
-                                                  child: Text(
-                                                    t,
-                                                    style:
-                                                        JemenaiTheme.fontBody(
-                                                          fontSize: 10,
-                                                          color: mutedFore,
-                                                        ),
-                                                  ),
-                                                );
-                                              }).toList(),
+                                                ),
+                                              );
+                                            }),
+                                          ],
                                         ),
                                       ),
                                       InkWell(
@@ -731,7 +798,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
             ),
           ),
           content: Text(
-            'Are you sure you want to delete ${model.name}? You will need to download it again to use it.',
+            'Delete ${model.name} to free ${model.size}? Your conversations are kept, and you can download it again any time.',
             style: JemenaiTheme.fontBody(
               fontSize: 14,
               color: theme.jColors.mutedForeground,
@@ -780,22 +847,68 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
 
     switch (status.phase) {
       case DownloadPhase.installed:
-        return InkWell(
-          onTap: () => _confirmDelete(context, model, cubit),
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: theme.colorScheme.error.withOpacity(0.1),
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            InkWell(
+              onTap:
+                  () => AppRouter.push(
+                    AppRouteString.chat,
+                    args: ChatScreenArg(modelName: model.name),
+                  ),
               borderRadius: BorderRadius.circular(12),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  gradient: JemenaiTheme.gradBrand,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.chat_bubble_outline,
+                      size: 13,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Chat',
+                      style: JemenaiTheme.fontBody(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            child: Icon(
-              Icons.delete_outline,
-              size: 16,
-              color: theme.colorScheme.error,
+            const SizedBox(width: 6),
+            Tooltip(
+              message: 'Delete ${model.name}',
+              child: InkWell(
+                onTap: () => _confirmDelete(context, model, cubit),
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.error.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.delete_outline,
+                    size: 16,
+                    color: theme.colorScheme.error,
+                  ),
+                ),
+              ),
             ),
-          ),
+          ],
         );
 
       case DownloadPhase.downloading:
@@ -819,12 +932,12 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
 
       case DownloadPhase.failed:
         return InkWell(
-          onTap: () => cubit.startDownload(model),
+          onTap: () => _requestDownload(model, cubit),
           borderRadius: BorderRadius.circular(12),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             decoration: BoxDecoration(
-              color: theme.colorScheme.error.withOpacity(0.15),
+              color: theme.colorScheme.error.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -847,7 +960,7 @@ class _ModelsStoreScreenState extends State<ModelsStoreScreen> {
 
       case DownloadPhase.idle:
         return InkWell(
-          onTap: () => cubit.startDownload(model),
+          onTap: () => _requestDownload(model, cubit),
           borderRadius: BorderRadius.circular(12),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
