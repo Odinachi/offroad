@@ -134,7 +134,10 @@ p { margin: 0; }
   border-radius: 46px; padding: 11px; background: #101018;
   box-shadow: 0 0 0 1px #2a2a36, 0 40px 80px -30px rgb(79 70 229 / .55), 0 18px 36px -18px rgb(0 0 0 / .45);
 }
-.phone video, .phone img { width: 100%; height: 100%; object-fit: cover; border-radius: 36px; background: #fff; }
+.phone video, .phone img { width: 100%; height: 100%; object-fit: cover; border-radius: 36px; }
+/* The poster doubles as a background so the screen is never blank, even
+   before the first frame decodes or where autoplay is blocked. */
+.phone video { background: #fff url("assets/demo-poster.jpg") center / cover no-repeat; }
 .phone .float {
   position: absolute; display: flex; align-items: center; gap: 8px;
   padding: 10px 14px; border-radius: 14px; font-size: 13px; font-weight: 600;
