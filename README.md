@@ -8,12 +8,13 @@ OffRoad (formerly Jemenai) is a Flutter-based mobile application designed to run
 
 ## 🌟 Features
 
-- **On-Device Inference**: Powered by `flutter_gemma` to execute large language models locally on your hardware.
-- **Voice & Chat Screens**: Fully featured chat interface supporting text-based and voice-based conversation streams.
-- **Offline First**: Once models are downloaded, the app operates completely off-grid without requiring any internet connection.
-- **Privacy Centric**: Your conversations, tokens, and data never leave your device.
-- **Model Store**: Easily browse, download, and manage compatible local models directly from within the app.
-- **Rich Aesthetics**: Responsive, highly custom design with support for both light and dark modes.
+- **On-Device Inference**: Powered by `flutter_edge_ai` with the LiteRT-LM (`.litertlm`) and MediaPipe (`.task`) engines — Gemma, Qwen, Phi, DeepSeek and more run locally.
+- **Chat**: Streaming replies with Markdown (code blocks, tables, lists), stop/regenerate, image input for vision models, dictation for audio models, and a visible **reasoning** trace for thinking-capable models.
+- **Voice Mode**: Speak, the model transcribes and answers, and the reply is read aloud with the system's offline voice. Voice sessions are saved as regular chats.
+- **Offline First**: Once a model is downloaded, nothing needs the internet.
+- **Privacy Centric**: Conversations live in a local SQLite database; no accounts, analytics or telemetry. Settings can wipe all history.
+- **Model Store**: Browse, download (with progress, cancel and retry), chat with and delete models. Gated models prompt for a Hugging Face token; low storage is flagged before downloading.
+- **Light & Dark**: Follows the system theme until you pick one.
 
 ---
 
@@ -22,7 +23,7 @@ OffRoad (formerly Jemenai) is a Flutter-based mobile application designed to run
 - **Framework**: [Flutter](https://flutter.dev/) (pinned to version `3.44.0` via FVM)
 - **State Management**: `flutter_bloc` (using the Cubit pattern)
 - **Local Storage**: `shared_preferences` for caching settings and app state
-- **Core Engine**: `flutter_gemma` for local LLM execution
+- **Core Engine**: `flutter_edge_ai` + `flutter_edge_ai_litertlm` + `flutter_edge_ai_mediapipe` for local LLM execution
 
 ---
 
@@ -31,6 +32,7 @@ OffRoad (formerly Jemenai) is a Flutter-based mobile application designed to run
 ### Prerequisites
 
 - **FVM (Flutter Version Management)**: This project enforces Flutter SDK `3.44.0`. Install FVM and ensure it is configured.
+- **Platforms**: iOS 16+; Android 11+ (API 30, arm64) — required by the LiteRT-LM engine.
 - **Hardware**: Running on-device LLMs requires a device with sufficient RAM (typically 8GB+ is recommended for optimal performance on mobile devices).
 
 ### Run the App
@@ -55,8 +57,32 @@ OffRoad (formerly Jemenai) is a Flutter-based mobile application designed to run
 
 ## 📂 Architecture
 
-OffRoad follows a structured features-first directory layout:
+Features-first layout:
 
-- `lib/features/`: Contains distinct product features (e.g., `auth`, `ai`, `home`, `settings`, `dashboard`), with each folder maintaining its own `models/`, `view_models/` (Cubits), and `views/`.
-- `lib/services/`: Centralized singletons for cross-cutting services like `CacheService` and `StorageService`.
-- `lib/shared/`: Shared components, constants, styles, navigation (`AppRouter`), and theme assets.
+- `lib/features/<feature>/` — `model/`, `view_models/` (Cubits) and `views/` per feature (`ai`, `auth` (onboarding), `dashboard`, `home`, `settings`).
+- `lib/services/`
+  - `chat_engine.dart` — **the only code that talks to flutter_edge_ai for inference.** Activates an installed model (never downloads), builds the chat session, replays history, streams replies, stops generation and transcribes audio. Shared by the chat and voice screens.
+  - `db_service.dart` — SQLite (`chat_sessions`, `chat_messages`; schema v2 adds `thinking`).
+  - `cache_service.dart` — `shared_preferences` for settings.
+  - `storage_service.dart` — disk usage (returns `null` when the platform can't say).
+- `lib/shared/` — theme, navigation (`AppRouter`, including `openDashboardTab`), `widgets/markdown_text.dart` (a small, tested Markdown renderer) and UI helpers.
+
+### Notes
+
+- Downloads happen only in the Model Store (`ModelDownloadCubit`), which also keeps the screen awake while any download runs.
+- A model's context window comes from `AIModel.contextTokens`: LiteRT bundles named `…_ekvNNNN…` use that size, everything else 2048.
+- The `flutter_gemma/` directory is a git submodule of the old plugin (now `flutter_edge_ai`) kept for reference; it is excluded from analysis.
+
+---
+
+## 🧪 Development
+
+```bash
+fvm flutter analyze
+fvm flutter test
+fvm dart format lib test
+```
+
+Use `fvm dart`, not a global `dart`, so formatting matches the pinned SDK.
+
+On-device inference does not work in the iOS Simulator; use a physical device to try models. The UI runs fine in the simulator.
