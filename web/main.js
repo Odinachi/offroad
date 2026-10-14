@@ -2,8 +2,8 @@
 // Leave a value empty until it exists: store buttons then read "Coming soon"
 // and the contact link is hidden, so the page never links somewhere broken.
 const CONFIG = {
-  appStoreUrl: "", // e.g. https://apps.apple.com/app/id0000000000
-  playStoreUrl: "", // e.g. https://play.google.com/store/apps/details?id=com.odibillz.offroad
+  appStoreUrl: "https://apps.apple.com/us/app/offroad-ai/id6778114511",
+  playStoreUrl: "https://play.google.com/store/apps/details?id=com.odibillz.offroad",
   contactEmail: "", // e.g. hello@yourdomain.com
 };
 
@@ -12,7 +12,8 @@ document.querySelectorAll("[data-store]").forEach((link) => {
   const url = link.dataset.store === "appstore" ? CONFIG.appStoreUrl : CONFIG.playStoreUrl;
   if (url) {
     link.href = url;
-    link.rel = "noopener";
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
   } else {
     link.setAttribute("aria-disabled", "true");
     link.removeAttribute("href");
