@@ -1,16 +1,19 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Privacy Policy — OffRoad</title>
-  <meta name="description" content="OffRoad's privacy policy. Your conversations, prompts and voice recordings never leave your device. No accounts, no analytics, no tracking.">
+  <title>Privacy Policy</title>
+  <meta name="description"
+    content="OffRoad's privacy policy. Your conversations, prompts and voice recordings never leave your device. No accounts, no analytics, no tracking.">
   <meta name="theme-color" content="#4f46e5">
   <link rel="icon" href="assets/icon-32.png" sizes="32x32">
   <link rel="apple-touch-icon" href="assets/icon-180.png">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Privacy Policy — OffRoad">
-  <meta property="og:description" content="Your conversations never leave your device. No accounts, no analytics, no tracking.">
+  <meta property="og:title" content="Privacy Policy">
+  <meta property="og:description"
+    content="Your conversations never leave your device. No accounts, no analytics, no tracking.">
   <meta property="og:image" content="assets/og.png">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="preload" href="assets/fonts/jakarta-700.woff2" as="font" type="font/woff2" crossorigin>
@@ -23,29 +26,53 @@
       text-align: center;
       position: relative;
     }
+
     .legal-hero::before {
-      content: ""; position: absolute; inset: -20% -10% auto; height: 110%; z-index: -1;
+      content: "";
+      position: absolute;
+      inset: -20% -10% auto;
+      height: 110%;
+      z-index: -1;
       background:
         radial-gradient(40% 40% at 78% 30%, rgb(124 58 237 / .18), transparent 70%),
         radial-gradient(35% 35% at 15% 10%, rgb(79 70 229 / .12), transparent 70%);
       pointer-events: none;
     }
-    .legal-hero .eyebrow { margin-bottom: 16px; display: block; }
-    .legal-hero h1 { font-size: clamp(34px, 5vw, 58px); margin-bottom: 16px; }
-    .legal-hero .meta { color: var(--muted); font-size: 15px; }
+
+    .legal-hero .eyebrow {
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .legal-hero h1 {
+      font-size: clamp(34px, 5vw, 58px);
+      margin-bottom: 16px;
+    }
+
+    .legal-hero .meta {
+      color: var(--muted);
+      font-size: 15px;
+    }
 
     .legal-body {
       padding: 0 0 clamp(64px, 9vw, 120px);
     }
+
     .legal-grid {
       display: grid;
       grid-template-columns: 220px 1fr;
       gap: clamp(32px, 5vw, 72px);
       align-items: start;
     }
+
     @media (max-width: 840px) {
-      .legal-grid { grid-template-columns: 1fr; }
-      .legal-toc { display: none; }
+      .legal-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .legal-toc {
+        display: none;
+      }
     }
 
     /* Sticky table of contents */
@@ -57,6 +84,7 @@
       border-radius: 18px;
       padding: 20px 22px;
     }
+
     .legal-toc h2 {
       font-size: 13px;
       font-weight: 600;
@@ -65,26 +93,82 @@
       color: var(--indigo);
       margin-bottom: 14px;
     }
-    @media (prefers-color-scheme: dark) { .legal-toc h2 { color: #a5b4fc; } }
-    .legal-toc ol { margin: 0; padding: 0 0 0 18px; display: grid; gap: 8px; }
-    .legal-toc li { font-size: 14px; }
-    .legal-toc a { text-decoration: none; color: var(--muted); line-height: 1.4; }
-    .legal-toc a:hover { color: var(--text); }
+
+    @media (prefers-color-scheme: dark) {
+      .legal-toc h2 {
+        color: #a5b4fc;
+      }
+    }
+
+    .legal-toc ol {
+      margin: 0;
+      padding: 0 0 0 18px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .legal-toc li {
+      font-size: 14px;
+    }
+
+    .legal-toc a {
+      text-decoration: none;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .legal-toc a:hover {
+      color: var(--text);
+    }
 
     /* Article content */
-    .legal-article { min-width: 0; }
-    .legal-article section { margin-bottom: clamp(40px, 6vw, 64px); }
+    .legal-article {
+      min-width: 0;
+    }
+
+    .legal-article section {
+      margin-bottom: clamp(40px, 6vw, 64px);
+    }
+
     .legal-article h2 {
       font-size: clamp(20px, 2.4vw, 26px);
       margin-bottom: 16px;
       padding-bottom: 12px;
       border-bottom: 1px solid var(--border);
     }
-    .legal-article h3 { font-size: 17px; margin: 24px 0 10px; }
-    .legal-article p { color: var(--muted); line-height: 1.75; margin-bottom: 14px; }
-    .legal-article ul, .legal-article ol { color: var(--muted); line-height: 1.75; padding-left: 22px; margin: 0 0 14px; display: grid; gap: 6px; }
-    .legal-article a { color: var(--indigo); text-decoration: underline; text-underline-offset: 3px; }
-    @media (prefers-color-scheme: dark) { .legal-article a { color: #a5b4fc; } }
+
+    .legal-article h3 {
+      font-size: 17px;
+      margin: 24px 0 10px;
+    }
+
+    .legal-article p {
+      color: var(--muted);
+      line-height: 1.75;
+      margin-bottom: 14px;
+    }
+
+    .legal-article ul,
+    .legal-article ol {
+      color: var(--muted);
+      line-height: 1.75;
+      padding-left: 22px;
+      margin: 0 0 14px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .legal-article a {
+      color: var(--indigo);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .legal-article a {
+        color: #a5b4fc;
+      }
+    }
 
     /* Highlight box */
     .highlight-box {
@@ -95,21 +179,84 @@
       padding: 18px 22px;
       margin-bottom: 24px;
     }
-    .highlight-box p { margin: 0; color: var(--text); font-weight: 500; }
+
+    .highlight-box p {
+      margin: 0;
+      color: var(--text);
+      font-weight: 500;
+    }
 
     /* Data table */
-    .data-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); margin-bottom: 24px; }
-    .data-table { width: 100%; border-collapse: collapse; font-size: 14.5px; min-width: 460px; }
-    .data-table th { padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); background: var(--surface-2); border-bottom: 1px solid var(--border); }
-    .data-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); color: var(--muted); vertical-align: top; }
-    .data-table tr:last-child td { border-bottom: 0; }
-    .data-table td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
-    .badge { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; }
-    .badge-green { background: rgb(34 197 94 / .12); color: #15803d; }
-    .badge-amber { background: rgb(245 158 11 / .12); color: #b45309; }
+    .data-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--surface);
+      margin-bottom: 24px;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14.5px;
+      min-width: 460px;
+    }
+
+    .data-table th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .data-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+      vertical-align: top;
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .data-table td:first-child {
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge-green {
+      background: rgb(34 197 94 / .12);
+      color: #15803d;
+    }
+
+    .badge-amber {
+      background: rgb(245 158 11 / .12);
+      color: #b45309;
+    }
+
     @media (prefers-color-scheme: dark) {
-      .badge-green { color: #4ade80; }
-      .badge-amber { color: #fbbf24; }
+      .badge-green {
+        color: #4ade80;
+      }
+
+      .badge-amber {
+        color: #fbbf24;
+      }
     }
 
     /* Contact card */
@@ -120,8 +267,15 @@
       padding: 28px;
       text-align: center;
     }
-    .contact-card h3 { margin-bottom: 10px; }
-    .contact-card p { color: var(--muted); margin-bottom: 16px; }
+
+    .contact-card h3 {
+      margin-bottom: 10px;
+    }
+
+    .contact-card p {
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
   </style>
   <!-- Vercel Analytics -->
   <script>
@@ -134,6 +288,7 @@
   </script>
   <script defer src="/_vercel/speed-insights/script.js"></script>
 </head>
+
 <body>
   <a class="skip" href="#main">Skip to content</a>
 
@@ -155,7 +310,8 @@
       <div class="wrap">
         <span class="eyebrow">Legal</span>
         <h1>Privacy Policy</h1>
-        <p class="meta">Effective date: <time datetime="2026-10-14">14 October 2026</time> &nbsp;·&nbsp; Last updated: <time datetime="2026-10-14">14 October 2026</time></p>
+        <p class="meta">Effective date: <time datetime="2026-10-14">14 October 2026</time> &nbsp;·&nbsp; Last updated:
+          <time datetime="2026-10-14">14 October 2026</time></p>
       </div>
     </div>
 
@@ -187,21 +343,28 @@
             <section id="summary">
               <h2>1. Plain-language summary</h2>
               <div class="highlight-box">
-                <p>OffRoad is designed so that we never see your data. Everything you type, say or photograph is processed on your device by the AI model running locally. We do not operate servers that receive your prompts, conversations or personal information.</p>
+                <p>OffRoad is designed so that we never see your data. Everything you type, say or photograph is
+                  processed on your device by the AI model running locally. We do not operate servers that receive your
+                  prompts, conversations or personal information.</p>
               </div>
               <p>In short:</p>
               <ul>
                 <li>Your conversations are stored in a local database <strong>on your phone only</strong>.</li>
-                <li>AI inference — your prompts, images and voice recordings — happens <strong>entirely on-device</strong>. Nothing is sent to us or any AI provider.</li>
-                <li>The app <strong>does not require an account</strong> and collects no personal information at sign-up because there is no sign-up.</li>
-                <li>The only network requests the app makes are to <strong>Hugging Face</strong> when you choose to download a model file.</li>
+                <li>AI inference — your prompts, images and voice recordings — happens <strong>entirely
+                    on-device</strong>. Nothing is sent to us or any AI provider.</li>
+                <li>The app <strong>does not require an account</strong> and collects no personal information at sign-up
+                  because there is no sign-up.</li>
+                <li>The only network requests the app makes are to <strong>Hugging Face</strong> when you choose to
+                  download a model file.</li>
                 <li>We use <strong>no analytics, advertising or tracking SDKs</strong>.</li>
               </ul>
             </section>
 
             <section id="who-we-are">
               <h2>2. Who we are</h2>
-              <p>OffRoad is an independent open-source project. References to "we", "us" or "our" in this policy refer to the OffRoad project maintainers. The app is distributed via the Apple App Store and Google Play Store.</p>
+              <p>OffRoad is an independent open-source project. References to "we", "us" or "our" in this policy refer
+                to the OffRoad project maintainers. The app is distributed via the Apple App Store and Google Play
+                Store.</p>
               <p>This policy applies to:</p>
               <ul>
                 <li>The OffRoad mobile application (iOS and Android)</li>
@@ -280,7 +443,9 @@
 
             <section id="on-device">
               <h2>4. On-device AI processing</h2>
-              <p>All AI inference in OffRoad is performed by a model file downloaded to and running on your device. The inference engine (<code>flutter_edge_ai</code>) processes your input locally using your phone's CPU or GPU.</p>
+              <p>All AI inference in OffRoad is performed by a model file downloaded to and running on your device. The
+                inference engine (<code>flutter_edge_ai</code>) processes your input locally using your phone's CPU or
+                GPU.</p>
               <p>This means:</p>
               <ul>
                 <li>Your text prompts are never transmitted to a remote AI service.</li>
@@ -293,30 +458,42 @@
 
             <section id="network">
               <h2>5. Network use</h2>
-              <p>OffRoad connects to the internet in exactly one scenario: downloading model files you choose from <a href="https://huggingface.co" rel="noopener noreferrer">Hugging Face</a>.</p>
+              <p>OffRoad connects to the internet in exactly one scenario: downloading model files you choose from <a
+                  href="https://huggingface.co" rel="noopener noreferrer">Hugging Face</a>.</p>
 
               <h3>5.1 Model downloads</h3>
-              <p>When you tap the download button for a model, the app makes an HTTPS request to <code>huggingface.co</code> to fetch the model file. Hugging Face may log standard server-side data (IP address, timestamp, file requested) as part of their own infrastructure. Their privacy practices are governed by the <a href="https://huggingface.co/privacy" rel="noopener noreferrer">Hugging Face Privacy Policy</a>.</p>
+              <p>When you tap the download button for a model, the app makes an HTTPS request to
+                <code>huggingface.co</code> to fetch the model file. Hugging Face may log standard server-side data (IP
+                address, timestamp, file requested) as part of their own infrastructure. Their privacy practices are
+                governed by the <a href="https://huggingface.co/privacy" rel="noopener noreferrer">Hugging Face Privacy
+                  Policy</a>.</p>
 
               <h3>5.2 Gated models and access tokens</h3>
-              <p>Some models (e.g. certain Google Gemma variants) require you to accept the publisher's licence on Hugging Face and provide a read-only access token. If you enter a token in Settings, it is:</p>
+              <p>Some models (e.g. certain Google Gemma variants) require you to accept the publisher's licence on
+                Hugging Face and provide a read-only access token. If you enter a token in Settings, it is:</p>
               <ul>
                 <li>Stored locally in the OS secure keychain (iOS Keychain / Android EncryptedSharedPreferences).</li>
-                <li>Transmitted only to <code>huggingface.co</code> as an <code>Authorization</code> HTTP header during model downloads.</li>
+                <li>Transmitted only to <code>huggingface.co</code> as an <code>Authorization</code> HTTP header during
+                  model downloads.</li>
                 <li>Never sent to us or any other party.</li>
               </ul>
 
               <h3>5.3 No other outbound connections</h3>
-              <p>The app makes no other network requests. There are no analytics endpoints, no crash reporting services, no update-check pings and no advertising network calls.</p>
+              <p>The app makes no other network requests. There are no analytics endpoints, no crash reporting services,
+                no update-check pings and no advertising network calls.</p>
             </section>
 
             <section id="data-storage">
               <h2>6. Data storage and retention</h2>
               <p>All data created or stored by OffRoad exists solely on your device:</p>
               <ul>
-                <li><strong>Chat history</strong> — stored in a SQLite database in the app's private sandbox. You can delete individual messages, entire conversations or all history at once from Settings → Privacy Control.</li>
-                <li><strong>Model files</strong> — stored in the app's documents directory. You can delete any model from the Model Store or Settings → Storage.</li>
-                <li><strong>App preferences</strong> — stored in SharedPreferences. Uninstalling the app removes all data.</li>
+                <li><strong>Chat history</strong> — stored in a SQLite database in the app's private sandbox. You can
+                  delete individual messages, entire conversations or all history at once from Settings → Privacy
+                  Control.</li>
+                <li><strong>Model files</strong> — stored in the app's documents directory. You can delete any model
+                  from the Model Store or Settings → Storage.</li>
+                <li><strong>App preferences</strong> — stored in SharedPreferences. Uninstalling the app removes all
+                  data.</li>
               </ul>
               <p>We have no server-side retention schedule because we hold no server-side data.</p>
             </section>
@@ -332,39 +509,55 @@
                 <li>Social login (e.g. Sign in with Google, Sign in with Apple)</li>
               </ul>
 
-              <p>The only external service the app interacts with is <a href="https://huggingface.co" rel="noopener noreferrer">Hugging Face</a>, solely for model downloads, as described in Section 5.</p>
+              <p>The only external service the app interacts with is <a href="https://huggingface.co"
+                  rel="noopener noreferrer">Hugging Face</a>, solely for model downloads, as described in Section 5.</p>
 
               <h3>7.1 App Store and Google Play</h3>
-              <p>Distribution through the Apple App Store and Google Play Store means Apple and Google may collect standard platform-level data (e.g. purchase records if the app were paid, crash metadata at the OS level, app store search data). These are governed by their respective privacy policies and are outside our control.</p>
+              <p>Distribution through the Apple App Store and Google Play Store means Apple and Google may collect
+                standard platform-level data (e.g. purchase records if the app were paid, crash metadata at the OS
+                level, app store search data). These are governed by their respective privacy policies and are outside
+                our control.</p>
             </section>
 
             <section id="children">
               <h2>8. Children's privacy</h2>
-              <p>OffRoad is not directed at children under the age of 13 (or 16 in jurisdictions where that age applies under applicable law). We do not knowingly collect personal information from children. Because the app collects no personal information from any user, no special handling is required, but we ask that parents supervise use of AI applications by minors.</p>
+              <p>OffRoad is not directed at children under the age of 13 (or 16 in jurisdictions where that age applies
+                under applicable law). We do not knowingly collect personal information from children. Because the app
+                collects no personal information from any user, no special handling is required, but we ask that parents
+                supervise use of AI applications by minors.</p>
             </section>
 
             <section id="your-rights">
               <h2>9. Your rights</h2>
-              <p>Because OffRoad does not collect or hold personal data on any server, most data-subject rights (access, rectification, erasure, portability) are exercised by you directly on your device:</p>
+              <p>Because OffRoad does not collect or hold personal data on any server, most data-subject rights (access,
+                rectification, erasure, portability) are exercised by you directly on your device:</p>
               <ul>
                 <li><strong>Access</strong> — your data is in your app, readable by you.</li>
-                <li><strong>Erasure</strong> — delete messages, conversations or all history in Settings, or uninstall the app.</li>
-                <li><strong>Portability</strong> — your data is not locked in a server; it lives in files on your device.</li>
+                <li><strong>Erasure</strong> — delete messages, conversations or all history in Settings, or uninstall
+                  the app.</li>
+                <li><strong>Portability</strong> — your data is not locked in a server; it lives in files on your
+                  device.</li>
               </ul>
-              <p>If you are in the European Economic Area (EEA), United Kingdom or other jurisdiction with data protection laws, and you believe we have processed personal data about you, please contact us at the address in Section 11. We will respond within 30 days.</p>
+              <p>If you are in the European Economic Area (EEA), United Kingdom or other jurisdiction with data
+                protection laws, and you believe we have processed personal data about you, please contact us at the
+                address in Section 11. We will respond within 30 days.</p>
             </section>
 
             <section id="changes">
               <h2>10. Changes to this policy</h2>
-              <p>We may update this Privacy Policy from time to time. When we do, we will update the "Last updated" date at the top of this page and, if the change is material, provide notice through the app or on our website.</p>
-              <p>We encourage you to review this policy periodically. Continued use of the app after a change constitutes acceptance of the revised policy.</p>
+              <p>We may update this Privacy Policy from time to time. When we do, we will update the "Last updated" date
+                at the top of this page and, if the change is material, provide notice through the app or on our
+                website.</p>
+              <p>We encourage you to review this policy periodically. Continued use of the app after a change
+                constitutes acceptance of the revised policy.</p>
             </section>
 
             <section id="contact">
               <h2>11. Contact</h2>
               <div class="contact-card">
                 <h3>Questions about privacy?</h3>
-                <p>If you have questions about this policy or your data, open an issue on the project repository or use the contact link below.</p>
+                <p>If you have questions about this policy or your data, open an issue on the project repository or use
+                  the contact link below.</p>
                 <a class="btn btn-primary" href="index.html" data-contact>Contact us</a>
               </div>
             </section>
@@ -404,4 +597,5 @@
     sections.forEach(s => observer.observe(s));
   </script>
 </body>
+
 </html>
