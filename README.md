@@ -11,6 +11,16 @@
   </p>
 
   <p>
+    <a href="https://apps.apple.com/us/app/offroad-ai/id6778114511" target="_blank">
+      <img src="https://img.shields.io/badge/App_Store-Download-000000?style=for-the-badge&logo=apple&logoColor=white" alt="Download on App Store">
+    </a>
+    &nbsp;
+    <a href="https://play.google.com/store/apps/details?id=com.odibillz.offroad" target="_blank">
+      <img src="https://img.shields.io/badge/Google_Play-Get_it_on-000000?style=for-the-badge&logo=googleplay&logoColor=white" alt="Get it on Google Play">
+    </a>
+  </p>
+
+  <p>
     <a href="#-screenshots"><img src="https://img.shields.io/badge/screenshots-6-blueviolet?style=flat-square" alt="screenshots"></a>
     <img src="https://img.shields.io/badge/Flutter-3.44.0-02569B?style=flat-square&logo=flutter" alt="Flutter">
     <img src="https://img.shields.io/badge/iOS-16%2B-black?style=flat-square&logo=apple" alt="iOS 16+">

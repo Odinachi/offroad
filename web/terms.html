@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Terms of Service — OffRoad</title>
+  <meta name="description" content="OffRoad Terms of Service. Free to use, open source, no accounts required. Read our terms before using the app.">
+  <meta name="theme-color" content="#4f46e5">
+  <link rel="icon" href="assets/icon-32.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="assets/icon-180.png">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Terms of Service — OffRoad">
+  <meta property="og:description" content="OffRoad Terms of Service. Free to use, open source, no accounts required.">
+  <meta property="og:image" content="assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preload" href="assets/fonts/jakarta-700.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ── Legal page layout (shared with privacy.html) ── */
+    .legal-hero {
+      padding: clamp(48px, 8vw, 96px) 0 clamp(32px, 5vw, 56px);
+      text-align: center;
+      position: relative;
+    }
+    .legal-hero::before {
+      content: ""; position: absolute; inset: -20% -10% auto; height: 110%; z-index: -1;
+      background:
+        radial-gradient(40% 40% at 78% 30%, rgb(124 58 237 / .18), transparent 70%),
+        radial-gradient(35% 35% at 15% 10%, rgb(79 70 229 / .12), transparent 70%);
+      pointer-events: none;
+    }
+    .legal-hero .eyebrow { margin-bottom: 16px; display: block; }
+    .legal-hero h1 { font-size: clamp(34px, 5vw, 58px); margin-bottom: 16px; }
+    .legal-hero .meta { color: var(--muted); font-size: 15px; }
+
+    .legal-body { padding: 0 0 clamp(64px, 9vw, 120px); }
+    .legal-grid {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: clamp(32px, 5vw, 72px);
+      align-items: start;
+    }
+    @media (max-width: 840px) {
+      .legal-grid { grid-template-columns: 1fr; }
+      .legal-toc { display: none; }
+    }
+
+    .legal-toc {
+      position: sticky; top: 84px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 18px; padding: 20px 22px;
+    }
+    .legal-toc h2 {
+      font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+      color: var(--indigo); margin-bottom: 14px;
+    }
+    @media (prefers-color-scheme: dark) { .legal-toc h2 { color: #a5b4fc; } }
+    .legal-toc ol { margin: 0; padding: 0 0 0 18px; display: grid; gap: 8px; }
+    .legal-toc li { font-size: 14px; }
+    .legal-toc a { text-decoration: none; color: var(--muted); line-height: 1.4; }
+    .legal-toc a:hover { color: var(--text); }
+
+    .legal-article { min-width: 0; }
+    .legal-article section { margin-bottom: clamp(40px, 6vw, 64px); }
+    .legal-article h2 {
+      font-size: clamp(20px, 2.4vw, 26px); margin-bottom: 16px;
+      padding-bottom: 12px; border-bottom: 1px solid var(--border);
+    }
+    .legal-article h3 { font-size: 17px; margin: 24px 0 10px; }
+    .legal-article p { color: var(--muted); line-height: 1.75; margin-bottom: 14px; }
+    .legal-article ul, .legal-article ol { color: var(--muted); line-height: 1.75; padding-left: 22px; margin: 0 0 14px; display: grid; gap: 6px; }
+    .legal-article a { color: var(--indigo); text-decoration: underline; text-underline-offset: 3px; }
+    @media (prefers-color-scheme: dark) { .legal-article a { color: #a5b4fc; } }
+
+    .highlight-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-left: 4px solid var(--indigo); border-radius: 0 14px 14px 0;
+      padding: 18px 22px; margin-bottom: 24px;
+    }
+    .highlight-box p { margin: 0; color: var(--text); font-weight: 500; }
+
+    .notice-box {
+      background: rgb(245 158 11 / .08); border: 1px solid rgb(245 158 11 / .25);
+      border-radius: 14px; padding: 16px 20px; margin-bottom: 24px;
+    }
+    .notice-box p { margin: 0; color: var(--muted); font-size: 14.5px; }
+    .notice-box strong { color: var(--text); }
+
+    .contact-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 18px; padding: 28px; text-align: center;
+    }
+    .contact-card h3 { margin-bottom: 10px; }
+    .contact-card p { color: var(--muted); margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav" id="top">
+    <div class="wrap">
+      <a class="brand" href="index.html"><img src="assets/icon-180.png" alt="" width="32" height="32">OffRoad</a>
+      <ul class="nav-links">
+        <li><a href="index.html#features">Features</a></li>
+        <li><a href="index.html#privacy">Privacy</a></li>
+        <li><a href="index.html#models">Models</a></li>
+        <li><a href="index.html#faq">FAQ</a></li>
+      </ul>
+      <a class="btn btn-primary btn-small" href="index.html#download">Get the app</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="legal-hero">
+      <div class="wrap">
+        <span class="eyebrow">Legal</span>
+        <h1>Terms of Service</h1>
+        <p class="meta">Effective date: <time datetime="2026-10-14">14 October 2026</time> &nbsp;·&nbsp; Last updated: <time datetime="2026-10-14">14 October 2026</time></p>
+      </div>
+    </div>
+
+    <div class="legal-body">
+      <div class="wrap">
+        <div class="legal-grid">
+
+          <!-- Sticky TOC -->
+          <nav class="legal-toc" aria-label="Table of contents">
+            <h2>Contents</h2>
+            <ol>
+              <li><a href="#acceptance">Acceptance</a></li>
+              <li><a href="#description">What OffRoad is</a></li>
+              <li><a href="#license">Licence to use</a></li>
+              <li><a href="#open-source">Open-source software</a></li>
+              <li><a href="#third-party-models">Third-party models</a></li>
+              <li><a href="#your-content">Your content</a></li>
+              <li><a href="#acceptable-use">Acceptable use</a></li>
+              <li><a href="#disclaimer">Disclaimer of warranties</a></li>
+              <li><a href="#liability">Limitation of liability</a></li>
+              <li><a href="#indemnification">Indemnification</a></li>
+              <li><a href="#app-stores">App Store terms</a></li>
+              <li><a href="#changes">Changes to these terms</a></li>
+              <li><a href="#governing-law">Governing law</a></li>
+              <li><a href="#contact">Contact</a></li>
+            </ol>
+          </nav>
+
+          <!-- Article -->
+          <article class="legal-article">
+
+            <section id="acceptance">
+              <h2>1. Acceptance of terms</h2>
+              <div class="highlight-box">
+                <p>By downloading, installing or using OffRoad, you agree to these Terms of Service. If you do not agree, please do not use the app.</p>
+              </div>
+              <p>These Terms of Service ("Terms") form a legally binding agreement between you and the OffRoad project maintainers ("we", "us" or "our"). They govern your use of the OffRoad mobile application and associated website.</p>
+              <p>You must be at least 13 years old to use OffRoad (or 16 years old if you are located in the European Economic Area).</p>
+            </section>
+
+            <section id="description">
+              <h2>2. What OffRoad is</h2>
+              <p>OffRoad is a mobile application that allows you to run open-weight AI language models locally on your iOS or Android device. Key characteristics:</p>
+              <ul>
+                <li>All AI inference is performed on your device. No prompts or responses are transmitted to our servers.</li>
+                <li>Model files are downloaded from <a href="https://huggingface.co" rel="noopener noreferrer">Hugging Face</a> at your request.</li>
+                <li>The app is free to download and use. The underlying models are published by third parties under their own licences.</li>
+                <li>No account registration is required or available.</li>
+              </ul>
+            </section>
+
+            <section id="license">
+              <h2>3. Licence to use</h2>
+              <p>Subject to these Terms, we grant you a limited, non-exclusive, non-transferable, revocable licence to install and use OffRoad on devices you own or control, solely for your personal, non-commercial purposes.</p>
+              <p>You may not:</p>
+              <ul>
+                <li>Copy, modify or distribute OffRoad except as permitted under the open-source licence (see Section 4).</li>
+                <li>Reverse-engineer or attempt to extract the source code, except to the extent permitted by law or the open-source licence.</li>
+                <li>Remove or alter any proprietary notices or labels.</li>
+                <li>Use OffRoad in any way that violates applicable law or these Terms.</li>
+              </ul>
+            </section>
+
+            <section id="open-source">
+              <h2>4. Open-source software</h2>
+              <p>OffRoad's source code is published under the <strong>MIT Licence</strong>. You are free to view, fork, modify and distribute the code in accordance with that licence. The full licence text is available in the project repository.</p>
+              <p>The MIT Licence permits commercial use, modification and distribution, provided the copyright notice and licence are preserved. It does not grant any rights in the AI model files themselves, which are governed by their publishers' own licences (see Section 5).</p>
+              <p>Contributions to OffRoad via pull request are welcome. By submitting a contribution you agree that it will be licensed under the same MIT Licence.</p>
+            </section>
+
+            <section id="third-party-models">
+              <h2>5. Third-party AI models</h2>
+              <p>OffRoad provides access to model files published by third parties including Google, Alibaba, Microsoft, DeepSeek, Apple and Hugging Face. Each model is distributed under its own licence. By downloading and using a model you agree to comply with that model's licence terms.</p>
+
+              <h3>5.1 Model licences</h3>
+              <p>Common licences used by models in the OffRoad catalogue include:</p>
+              <ul>
+                <li><strong>Google Gemma</strong> — <a href="https://ai.google.dev/gemma/terms" rel="noopener noreferrer">Gemma Terms of Use</a>. Gated variants require accepting the licence on Hugging Face.</li>
+                <li><strong>Alibaba Qwen</strong> — Qwen Licence (permissive for most sizes, commercial restrictions above 100M MAU).</li>
+                <li><strong>Microsoft Phi</strong> — MIT Licence.</li>
+                <li><strong>DeepSeek</strong> — DeepSeek Model Licence.</li>
+                <li><strong>Apple FastVLM</strong> — Apple Sample Code Licence.</li>
+                <li><strong>Hugging Face SmolLM</strong> — Apache 2.0.</li>
+              </ul>
+              <p>We make no warranties regarding the accuracy, safety or fitness for purpose of any AI model. Model outputs are probabilistic and may be incorrect, incomplete, offensive or otherwise unsuitable. You are responsible for how you use and act upon model outputs.</p>
+
+              <h3>5.2 No modification of model files</h3>
+              <p>OffRoad downloads model files as-is from Hugging Face. We do not modify, fine-tune or censor model outputs. The app applies no content filtering unless the model itself applies filtering.</p>
+            </section>
+
+            <section id="your-content">
+              <h2>6. Your content</h2>
+              <p>Because all processing occurs on your device and nothing is transmitted to us, we do not receive, host or have any access to your prompts, conversations, images or voice recordings.</p>
+              <p>You retain full ownership of anything you input into or generate using OffRoad. You are solely responsible for ensuring your use of the app and any content you generate complies with applicable laws and third-party rights.</p>
+            </section>
+
+            <section id="acceptable-use">
+              <h2>7. Acceptable use</h2>
+              <p>You agree not to use OffRoad to:</p>
+              <ul>
+                <li>Generate content that is illegal in your jurisdiction, including content that exploits or harms minors.</li>
+                <li>Generate, distribute or facilitate harassment, hate speech, incitement to violence or defamatory content.</li>
+                <li>Infringe the intellectual property rights of any person or entity.</li>
+                <li>Attempt to circumvent, disable or interfere with any security features of the app or connected services.</li>
+                <li>Engage in any activity that violates the terms of service of Hugging Face or any model publisher.</li>
+              </ul>
+              <div class="notice-box">
+                <p><strong>Important:</strong> Because inference runs on your device, we have no technical ability to monitor, filter or log what you do with OffRoad. This makes responsible use entirely your own responsibility.</p>
+              </div>
+            </section>
+
+            <section id="disclaimer">
+              <h2>8. Disclaimer of warranties</h2>
+              <p>OffRoad is provided <strong>"as is"</strong> and <strong>"as available"</strong>, without warranty of any kind, express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, accuracy, reliability or non-infringement.</p>
+              <p>We do not warrant that:</p>
+              <ul>
+                <li>The app will operate uninterrupted or error-free.</li>
+                <li>Model outputs will be accurate, complete, safe or suitable for any purpose.</li>
+                <li>The app will be compatible with every device or operating system version.</li>
+                <li>Any defects will be corrected.</li>
+              </ul>
+              <p>AI model outputs should not be relied upon for medical, legal, financial, safety-critical or other high-stakes decisions without independent expert verification.</p>
+            </section>
+
+            <section id="liability">
+              <h2>9. Limitation of liability</h2>
+              <p>To the fullest extent permitted by applicable law, we and our contributors, officers and agents shall not be liable for any indirect, incidental, special, consequential or punitive damages, including but not limited to:</p>
+              <ul>
+                <li>Loss of profits, revenue or data.</li>
+                <li>Harm resulting from reliance on AI model outputs.</li>
+                <li>Loss or corruption of data stored on your device.</li>
+                <li>Costs of procuring substitute goods or services.</li>
+              </ul>
+              <p>Our total aggregate liability to you for any claim arising from these Terms or your use of OffRoad shall not exceed the amount you paid for the app (which is zero, as OffRoad is free).</p>
+              <p>Some jurisdictions do not allow the exclusion of certain warranties or the limitation of liability for certain types of damages. In those jurisdictions, our liability is limited to the maximum extent permitted by law.</p>
+            </section>
+
+            <section id="indemnification">
+              <h2>10. Indemnification</h2>
+              <p>You agree to indemnify, defend and hold harmless the OffRoad maintainers and contributors from and against any claims, damages, losses, liabilities, costs and expenses (including reasonable legal fees) arising from:</p>
+              <ul>
+                <li>Your use of OffRoad.</li>
+                <li>Your violation of these Terms.</li>
+                <li>Your violation of any law or the rights of any third party.</li>
+                <li>Content you generate using the app.</li>
+              </ul>
+            </section>
+
+            <section id="app-stores">
+              <h2>11. App Store and Google Play terms</h2>
+              <p>OffRoad is distributed through the Apple App Store and Google Play Store. Your use of those platforms is governed by the applicable terms of Apple Inc. and Google LLC respectively, which take precedence over these Terms to the extent they conflict.</p>
+
+              <h3>11.1 Apple App Store</h3>
+              <p>If you obtained OffRoad from the App Store, the following applies in addition to these Terms:</p>
+              <ul>
+                <li>These Terms are between you and us only, not Apple.</li>
+                <li>Apple has no obligation to provide maintenance or support for OffRoad.</li>
+                <li>In the event of any failure of OffRoad to conform to any applicable warranty, you may notify Apple and Apple will refund the purchase price (if any). Apple has no other warranty obligations with respect to OffRoad.</li>
+                <li>Apple is not responsible for addressing any claims by you or any third party relating to OffRoad or your possession or use of OffRoad.</li>
+                <li>If a third party claims that OffRoad infringes that party's intellectual property rights, Apple will not be responsible for the investigation, defence, settlement or discharge of such claim.</li>
+                <li>Apple and its subsidiaries are third-party beneficiaries of these Terms and, upon your acceptance, will have the right (and will be deemed to have accepted the right) to enforce these Terms against you.</li>
+              </ul>
+            </section>
+
+            <section id="changes">
+              <h2>12. Changes to these terms</h2>
+              <p>We may update these Terms from time to time. We will notify you of material changes by updating the "Last updated" date on this page and, where appropriate, by in-app notice.</p>
+              <p>Continued use of OffRoad after updated Terms are posted constitutes your acceptance of those changes. If you do not agree to the revised Terms, you must stop using the app.</p>
+            </section>
+
+            <section id="governing-law">
+              <h2>13. Governing law and disputes</h2>
+              <p>These Terms are governed by and construed in accordance with the laws of the jurisdiction in which the primary maintainer is resident, without regard to conflict-of-law principles.</p>
+              <p>Any dispute arising out of or in connection with these Terms shall first be attempted to be resolved through good-faith negotiation. If a resolution cannot be reached within 30 days, disputes shall be submitted to the courts of competent jurisdiction in that jurisdiction.</p>
+              <p>If any provision of these Terms is found to be unenforceable or invalid, the remaining provisions will remain in full force and effect.</p>
+              <p>These Terms, together with our <a href="privacy.html">Privacy Policy</a>, constitute the entire agreement between you and us regarding OffRoad.</p>
+            </section>
+
+            <section id="contact">
+              <h2>14. Contact</h2>
+              <div class="contact-card">
+                <h3>Questions about these terms?</h3>
+                <p>If you have any questions about these Terms of Service, please open an issue on the project repository or contact us directly.</p>
+                <a class="btn btn-primary" href="index.html" data-contact>Contact us</a>
+              </div>
+            </section>
+
+          </article>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>© <span id="year">2026</span> OffRoad. Private AI. Anywhere. Anytime.</span>
+      <nav aria-label="Footer">
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="index.html#faq">FAQ</a>
+        <a href="#" data-contact>Contact</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="main.js" defer></script>
+  <script>
+    // Highlight active TOC link on scroll
+    const sections = document.querySelectorAll(".legal-article section[id]");
+    const links = document.querySelectorAll(".legal-toc a");
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          links.forEach(l => l.style.color = "");
+          const active = document.querySelector(`.legal-toc a[href="#${e.target.id}"]`);
+          if (active) active.style.color = "var(--indigo)";
+        }
+      });
+    }, { rootMargin: "-20% 0px -70% 0px" });
+    sections.forEach(s => observer.observe(s));
+  </script>
+</body>
+</html>
