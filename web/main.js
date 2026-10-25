@@ -27,6 +27,38 @@ document.querySelectorAll("[data-contact]").forEach((link) => {
   else link.remove();
 });
 
+// GitHub star count on the header button. Fetched in the visitor's browser,
+// cached for an hour (the API allows 60 unauthenticated calls per hour), and
+// only shown once there's at least one star; on any failure the button just
+// reads "Star".
+(async () => {
+  const link = document.querySelector("[data-gh-stars]");
+  if (!link) return;
+  const KEY = "offroad:gh-stars";
+  const show = (n) => {
+    if (!(n > 0)) return;
+    const el = link.querySelector(".gh-count");
+    el.textContent = n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k` : String(n);
+    el.hidden = false;
+    link.setAttribute("aria-label", `Star OffRoad on GitHub, ${n} stars`);
+  };
+  try {
+    const cached = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (cached && Date.now() - cached.at < 3600_000) return show(cached.n);
+  } catch {}
+  try {
+    const res = await fetch("https://api.github.com/repos/Odinachi/offroad", {
+      headers: { Accept: "application/vnd.github+json" },
+    });
+    if (!res.ok) return;
+    const n = (await res.json()).stargazers_count;
+    show(n);
+    try {
+      localStorage.setItem(KEY, JSON.stringify({ n, at: Date.now() }));
+    } catch {}
+  } catch {}
+})();
+
 document.getElementById("year").textContent = new Date().getFullYear();
 
 // Nav border once the page scrolls

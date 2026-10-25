@@ -85,10 +85,25 @@ p { margin: 0; }
 .nav-links a:hover { color: var(--text); }
 .nav-actions { display: flex; align-items: center; gap: 10px; }
 .gh-link {
-  display: grid; place-items: center; width: 38px; height: 38px; border-radius: 999px;
+  display: inline-flex; align-items: center; gap: 7px; height: 38px; padding: 0 12px 0 10px;
+  border-radius: 999px; text-decoration: none; font: 600 14px/1 "Inter", sans-serif;
   color: var(--muted); border: 1px solid var(--border); background: var(--surface);
   transition: color .15s, border-color .15s, transform .15s;
 }
+.gh-label { display: inline-flex; align-items: center; gap: 4px; }
+.gh-star { color: #f5b301; }
+.gh-count {
+  padding: 3px 7px; border-radius: 999px; background: var(--surface-2);
+  color: var(--text); font-variant-numeric: tabular-nums; font-size: 12.5px;
+}
+@media (max-width: 380px) {
+  .gh-label { display: none; }
+  .nav .wrap { gap: 8px; }
+  .nav-actions { gap: 6px; }
+  .gh-link { padding: 0 9px 0 8px; }
+  .nav .btn-small { padding: 9px 13px; }
+}
+.nav .btn { white-space: nowrap; }
 .gh-link:hover { color: var(--text); border-color: var(--muted); transform: translateY(-1px); }
 @media (max-width: 760px) { .nav-links { display: none; } }
 
